@@ -1,0 +1,48 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${APP_PORT:-8080}:80"
+    env_file:
+      - .env
+    environment:
+      APP_ENV: prod
+      DATABASE_URL: mysql://${MYSQL_USER:-caert}:${MYSQL_PASSWORD:-caert}@db:3306/${MYSQL_DATABASE:-caert_db}?serverVersion=8.0&charset=utf8mb4
+    volumes:
+      - caert_uploads:/var/www/html/var/uploads
+      - caert_logs:/var/www/html/var/log
+      - caert_backups:/var/www/html/var/backups
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-caert_db}
+      MYSQL_USER: ${MYSQL_USER:-caert}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-caert}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    volumes:
+      - caert_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  caert_mysql_data:
+  caert_uploads:
+  caert_logs:
+  caert_backups:

@@ -1,0 +1,27 @@
+
+{% set alertClass = {
+    'success': 'success',
+    'warning': 'warning',
+    'danger': 'danger',
+    'error': 'danger',
+    'info': 'info'
+} %}
+{% set alertTitle = {
+    'success': 'Succès',
+    'warning': 'Attention',
+    'danger': 'Erreur',
+    'error': 'Erreur',
+    'info': 'Information'
+} %}
+
+{% for type, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="alert alert-{{ alertClass[type]|default(type) }} alert-dismissible fade show" role="alert">
+            <button class="close" type="button" data-dismiss="alert" aria-label="Fermer">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <strong>{{ alertTitle[type]|default(type|capitalize) }} —</strong>
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}

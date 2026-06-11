@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block body_class %}caert-app caert-auth{% endblock %}
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+<div class="wrapper">
+    <div class="caert-auth-shell">
+        <div class="caert-auth-card">
+            <div class="caert-auth-brand">
+                <h1>CAERT</h1>
+                <p>Plateforme de reporting d'incidents — AUCTC</p>
+            </div>
+            <div class="caert-auth-body">
+                {% include "_flash_message.html.twig" %}
+                <form method="POST" novalidate>
+                    <div class="form-group">
+                        <label for="loginEmail">Adresse e-mail</label>
+                        <div class="input-group">
+                            <input class="form-control" id="loginEmail" name="email" type="email"
+                                   placeholder="vous@exemple.com"
+                                   value="{{ app.session.get(constant('App\\Controller\\SecurityController::LAST_EMAIL')) }}"
+                                   autocomplete="email" required>
+                            <div class="input-group-append">
+                                <span class="input-group-text"><em class="fa fa-envelope text-muted"></em></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Mot de passe</label>
+                        <div class="input-group with-focus">
+                            <input class="form-control border-right-0" id="loginPassword" name="password" type="password" placeholder="••••••••" required>
+                            <div class="input-group-append">
+                                <span class="input-group-text text-muted bg-transparent border-left-0"><em class="fa fa-lock"></em></span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token('login_form') }}">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="checkbox c-checkbox mb-0">
+                            <label class="mb-0 small">
+                                <input type="checkbox" name="_remember_me">
+                                <span class="fa fa-check"></span> Rester connecté
+                            </label>
+                        </div>
+                        <a class="small" href="{{ path('app_forgotten_password') }}">Mot de passe oublié ?</a>
+                    </div>
+                    <button class="btn btn-primary btn-block" type="submit" data-loading-label="Connexion…">Se connecter</button>
+                </form>
+            </div>
+            <div class="caert-auth-footer">
+                <a href="{{ path('app_user_register') }}">Créer un compte</a>
+            </div>
+        </div>
+        <p class="text-center text-white-50 small mt-3 mb-0">&copy; {{ 'now'|date('Y') }} CAERT</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/caert-auth-form.js') }}"></script>
+    {% include 'security/_password_toggle.html.twig' %}
+{% endblock %}

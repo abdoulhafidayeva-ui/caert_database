@@ -1,0 +1,7 @@
+{% extends 'notification/_layout.html.twig' %}
+
+{% block content %}
+<p>Bonjour {{ user.prenoms }} {{ user.name }},</p>
+<p>Votre compte sur {{ appName }} a été créé. Cliquez sur le lien ci-dessous pour confirmer votre adresse e-mail :</p>
+<p><a href="{{ actionUrl }}">Confirmer mon compte</a></p>
+{% endblock %}

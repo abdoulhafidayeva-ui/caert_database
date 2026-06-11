@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Groupes terroristes{% endblock %}
+
+{% block body %}
+<div class="wrapper">
+    {% include "_header.html.twig" %}
+    {% include "_aside.html.twig" %}
+    <section class="section-container">
+        <div class="content-wrapper">
+            {% include '_partials/referential_list_content.html.twig' with {
+                title: 'Groupes terroristes',
+                subtitle: 'Référentiel',
+                backUrl: path('perpetrateur'),
+                formPanelTitle: 'Ajouter un groupe',
+                listPanelTitle: 'Liste des groupes terroristes',
+                tableWrapperId: 'perpetrateurTable-wrapper',
+                form: form
+            } %}
+        </div>
+    </section>
+    {% include "_footer.html.twig" %}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="{{ asset('bundles/datatables/js/datatables.js') }}"></script>
+<script type="text/javascript">
+$(function() {
+    $('#perpetrateurTable-wrapper').initDataTables({{ datatable_settings(datatable) }}, {
+        buttons: [{ extend: 'excel', className: 'btn btn-warning btn-square' }]
+    });
+});
+</script>
+{% endblock %}

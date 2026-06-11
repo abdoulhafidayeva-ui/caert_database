@@ -1,0 +1,190 @@
+{% extends 'base.html.twig' %}
+
+{% block title 'Home' %}
+
+{% block body %}
+<div class="wrapper">
+
+    {% include "_header.html.twig" %}
+    {% include "_aside.html.twig" %}
+
+    <section class="section-container">
+        <!-- Page content-->
+        <div class="content-wrapper">
+            <div class="content-heading">
+               <div>Tableau de bord<small>Incidents</small></div>
+               <div class="ml-auto">
+                    {% if is_granted('ROLE_ADMIN') and pendingCount > 0 %}
+                    <a class="btn btn-sm btn-warning" href="{{ path('workflow_inbox') }}">
+                        <em class="fas fa-inbox"></em> À valider ({{ pendingCount }})
+                    </a>
+                    {% endif %}
+                    <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#dataImport">
+                        <em class="fas fa-file-import"></em> Importer
+                    </button>
+                    <a class="btn btn-sm btn-primary" href="{{ path('new_data') }}">
+                        <em class="fas fa-plus"></em> Nouvel incident
+                    </a>
+               </div>
+                       
+            </div>         
+            {% include "_flash_message.html.twig" %}
+            {% if importErrors is not empty %}
+            <div class="alert alert-warning">
+                <strong>Erreurs d'import</strong>
+                <ul class="mb-0 mt-2 pl-3">
+                    {% for err in importErrors|slice(0, 15) %}
+                        <li>Ligne {{ err.row }} : {{ err.message }}</li>
+                    {% endfor %}
+                </ul>
+                {% if importErrors|length > 15 %}
+                    <p class="mb-0 mt-2 small text-muted">… et {{ importErrors|length - 15 }} autre(s) erreur(s).</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% if summary %}
+            <div class="row caert-dashboard-kpis mb-4">
+                <div class="col-6 col-md-4 col-lg-2 mb-2">
+                    <div class="caert-kpi-card mb-0">
+                        <div class="kpi-value text-primary">{{ summary.published }}</div>
+                        <div class="kpi-label">Publiés</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 mb-2">
+                    <div class="caert-kpi-card kpi-warning mb-0">
+                        <div class="kpi-value text-warning">{{ summary.pending }}</div>
+                        <div class="kpi-label">En attente</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 mb-2">
+                    <div class="caert-kpi-card kpi-danger mb-0">
+                        <div class="kpi-value text-danger">{{ summary.rejected }}</div>
+                        <div class="kpi-label">Rejetés</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 mb-2">
+                    <div class="caert-kpi-card kpi-purple mb-0">
+                        <div class="kpi-value" style="color:#7c3aed;">{{ summary.deaths }}</div>
+                        <div class="kpi-label">Décès</div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4 mb-2 d-flex align-items-stretch">
+                    <div class="caert-quick-actions w-100">
+                        <a href="{{ path('executive_dashboard') }}" class="btn btn-sm btn-outline-primary"><em class="fas fa-chart-bar"></em> Synthèse</a>
+                        <a href="{{ path('app_map') }}" class="btn btn-sm btn-outline-secondary"><em class="fas fa-map-marked-alt"></em> Carte</a>
+                        <a href="{{ path('graphique') }}" class="btn btn-sm btn-outline-info"><em class="fas fa-chart-area"></em> Analyses</a>
+                        {% if pendingCount > 0 %}
+                        <a href="{{ path('workflow_inbox') }}" class="btn btn-sm btn-warning"><em class="fas fa-inbox"></em> Valider ({{ pendingCount }})</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="caert-panel">
+                <div class="caert-panel-header">
+                    <em class="fas fa-filter"></em> Filtres de recherche
+                </div>
+                <div class="caert-panel-body">
+                    {% include "home/_filter_form.html.twig" %}
+                </div>
+            </div>
+
+            <div class="caert-panel">
+                <div class="caert-panel-header">
+                    <em class="fas fa-list"></em> Liste des incidents
+                </div>
+                <div class="caert-panel-body p-0 pt-3 px-3 pb-3">
+                    <div id="alldatasTable-wrapper" class="table-responsive">
+                        Traitement en cours...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% include "_footer.html.twig" %}
+</div>
+
+    {% include 'home/_inport_modal.html.twig' %}
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/datatables/js/datatables.js') }}"></script>
+    <script src="{{ asset('js/caert-dashboard-filter.js') }}?v=11"></script>
+    <script>
+        $(function() {
+            var today = new Date();
+            var date = today.getFullYear() + '' + (today.getMonth() + 1) + '' + today.getDate() + '-' + today.getHours() + 'h' + today.getMinutes();
+
+            $('#alldatasTable-wrapper').initDataTables({{ datatable_settings(table) }}, {
+                responsive: true,
+                processing: true,
+                order: [[4, 'desc'], [2, 'desc']],
+                buttons: [
+                    {
+                        extend: 'excel',
+                        className: 'btn btn-outline-primary btn-square ml-1',
+                        title: 'CAERT-DB-' + date,
+                        exportOptions: { columns: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35] }
+                    },
+                    {
+                        extend: 'pdf',
+                        className: 'btn btn-outline-warning btn-square ml-1',
+                        orientation: 'landscape',
+                        pageSize: 'TABLOID',
+                        title: 'CAERT-DB-' + date,
+                        exportOptions: { columns: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35] }
+                    }
+                ]
+            }).then(function (dt) {
+                if (typeof window.caertInitDashboardFilter === 'function') {
+                    window.caertInitDashboardFilter(dt);
+                }
+            });
+        });
+    </script>
+
+    <script>
+            {# function formModalObjet(id){
+                var url = Routing.generate('publish_or_not', {allData:id})
+                document.getElementById("objectForm").setAttribute("action", url);
+                $("#formObjectModal").modal("show");
+            }; #}
+            {# function formModalObjet(id){
+                var msg = $('#objetRejet'+id).val();
+                $.ajax({
+                    method: 'POST',
+                    url: Routing.generate('publish_or_not', {allData:id}),
+                    async: false,
+                    data:{objetRejet:objetRejet},
+                    success : function (response) {
+                        if (response.msg) {
+                            $('#formModalViewMsg').html('rrr');
+                        }else{ 
+                            $('#formModalViewMsg').html('Aucun commentaire!');
+                        }
+                    }
+                });
+                $("#formModalView").modal("show");
+            } #}
+            function formModalView(id){
+                $.ajax({
+                    method: 'GET',
+                    url: Routing.generate('objet_rejet_msg', {id:id}),
+                    async: false,
+                    success : function (response) {
+                        if (response.msg) {
+                            Swal.fire(response.msg);
+                        }else{ 
+                            Swal.fire('Aucun commentaire!');
+                        }
+                    }
+                });
+            }
+
+            
+        
+        
+    </script>
+{% endblock javascripts %}

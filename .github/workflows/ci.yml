@@ -1,0 +1,78 @@
+name: CAERT CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: caert_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      APP_ENV: test
+      DATABASE_URL: mysql://root:root@127.0.0.1:3306/caert_test?serverVersion=8.0
+      APP_SECRET: ci-secret-key-change-me
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: intl, zip, pdo_mysql
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: yarn
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Install frontend dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build frontend assets
+        run: yarn build
+
+      - name: Lint container
+        run: php bin/console lint:container
+
+      - name: Run migrations
+        run: php bin/console doctrine:migrations:migrate --no-interaction
+
+      - name: Validate schema
+        run: php bin/console doctrine:schema:validate --skip-sync
+
+      - name: PHPUnit
+        run: vendor/bin/phpunit
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t caert:ci .
+
+      - name: Verify health tools in image
+        run: docker run --rm caert:ci curl --version

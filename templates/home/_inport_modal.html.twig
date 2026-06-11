@@ -1,0 +1,32 @@
+<div class="modal fade caert-modal" id="dataImport" tabindex="-1" role="dialog" aria-labelledby="dataImportTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form action="{{ path('data_import') }}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="_token" value="{{ csrf_token('import_data') }}">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="dataImportTitle">Importer des données (Excel)</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-3">
+                        Fichier <strong>.xlsx</strong> — la colonne A contient la date d'attaque.
+                        Les libellés (pays, cible, type d'attaque, etc.) doivent correspondre aux référentiels du système.
+                        Vous pouvez exporter un fichier depuis le tableau pour voir le format attendu.
+                    </p>
+                    <div class="form-group mb-0">
+                        <label for="importFile">Fichier Excel</label>
+                        <input id="importFile" name="file" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required class="form-control-file">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">
+                        <em class="fas fa-file-import"></em> Lancer l'import
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

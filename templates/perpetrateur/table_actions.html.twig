@@ -1,0 +1,7 @@
+<div class="btn-group mb-1">
+	<button class="btn dropdown-toggle btn-primary" type="button" data-toggle="dropdown">Actions</button>
+	<div class="dropdown-menu" role="menu">
+		<a class="dropdown-item" href="{{ path('perpetrateur', {perpetrateur: row.id}) }}">Modifier</a>
+  	<div class="dropdown-divider"></div>
+  	<a class="dropdown-item delPerpetrateur" href="{{ path('deletePerpetrateur', {perpetrateur: row.id}) }}">Supprimer</a>
+</div>

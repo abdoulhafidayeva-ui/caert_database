@@ -1,0 +1,1092 @@
+/**
+ * CAERT — Wave UX design system (overlay non-breaking sur Bootstrap 4).
+ */
+:root {
+    --caert-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --caert-primary: #1e3a5f;
+    --caert-primary-light: #2d5a8a;
+    --caert-accent: #0ea5e9;
+    --caert-success: #059669;
+    --caert-warning: #d97706;
+    --caert-danger: #dc2626;
+    --caert-bg: #f1f5f9;
+    --caert-surface: #ffffff;
+    --caert-border: #e2e8f0;
+    --caert-text: #0f172a;
+    --caert-text-muted: #64748b;
+    --caert-sidebar-bg: #ffffff;
+    --caert-sidebar-text: #1e293b;
+    --caert-sidebar-text-muted: #64748b;
+    --caert-sidebar-active-bg: #e0f2fe;
+    --caert-sidebar-active-text: #0284c7;
+    --caert-sidebar-hover-bg: #f1f5f9;
+    --caert-sidebar-hover-text: #0f172a;
+    --caert-radius: 0.625rem;
+    --caert-radius-sm: 0.375rem;
+    --caert-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+    --caert-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+/* ── Base ── */
+body.caert-app {
+    font-family: var(--caert-font);
+    color: var(--caert-text);
+    -webkit-font-smoothing: antialiased;
+}
+
+body.caert-app .section-container {
+    background-color: var(--caert-bg);
+}
+
+body.caert-app .content-wrapper {
+    padding: 1.25rem 1.5rem 2rem;
+    max-width: 1600px;
+}
+
+/* ── Top navbar ── */
+body.caert-app .topnavbar {
+    background: var(--caert-surface) !important;
+    border-bottom: 1px solid var(--caert-border);
+    box-shadow: var(--caert-shadow);
+}
+
+body.caert-app .topnavbar .navbar-header {
+    background: var(--caert-primary) !important;
+}
+
+body.caert-app .topnavbar .navbar-header .navbar-brand,
+body.caert-app .topnavbar .navbar-header .brand-logo {
+    color: #fff !important;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+}
+
+body.caert-app .topnavbar .navbar-nav > .nav-item > .nav-link {
+    color: var(--caert-text-muted) !important;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--caert-radius-sm);
+    transition: background 0.15s, color 0.15s;
+}
+
+body.caert-app .topnavbar .navbar-nav > .nav-item > .nav-link:hover {
+    color: var(--caert-primary) !important;
+    background: var(--caert-bg);
+}
+
+body.caert-app .caert-user-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.75rem;
+    background: var(--caert-bg);
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    color: var(--caert-text);
+}
+
+body.caert-app .caert-user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--caert-primary);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body.caert-app .topnavbar .navbar-form {
+    display: none !important;
+}
+
+body.caert-app .topnavbar .nav-link.btn-logout {
+    color: var(--caert-danger) !important;
+}
+
+/* ── Sidebar (fond blanc d'origine, textes sombres) ── */
+body.caert-app .aside-container,
+body.caert-app .aside-container .aside-inner,
+body.caert-app .sidebar {
+    background: var(--caert-sidebar-bg) !important;
+    border-right: 1px solid var(--caert-border);
+}
+
+/* Sidebar fixe : ne défile pas avec le contenu principal */
+@media (min-width: 768px) {
+    body.caert-app .wrapper .topnavbar-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 121;
+    }
+
+    body.caert-app .wrapper .aside-container {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        height: auto !important;
+        min-height: 0 !important;
+    }
+
+    body.caert-app .wrapper .aside-container .aside-inner {
+        position: absolute !important;
+        top: 55px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding-top: 0 !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    body.caert-app.aside-collapsed .wrapper .aside-container,
+    body.caert-app.aside-collapsed .wrapper .aside-container .aside-inner {
+        width: 70px !important;
+    }
+
+    body.caert-app.aside-collapsed .wrapper .section-container,
+    body.caert-app.aside-collapsed .wrapper .footer-container {
+        margin-left: 70px;
+    }
+
+    body.caert-app.aside-collapsed .caert-sidebar-user,
+    body.caert-app.aside-collapsed .caert-nav-label {
+        display: none !important;
+    }
+
+    body.caert-app.aside-collapsed .caert-sidebar-brand img {
+        max-width: 40px;
+        padding: 0.15rem;
+    }
+
+    body.caert-app.aside-collapsed .sidebar > .sidebar-nav > li > a,
+    body.caert-app.aside-collapsed .sidebar > .sidebar-nav > li > .nav-item {
+        text-align: center;
+        padding: 0.85rem 0 !important;
+        margin: 0.125rem 0.25rem;
+    }
+
+    body.caert-app.aside-collapsed .sidebar > .sidebar-nav > li > a > span,
+    body.caert-app.aside-collapsed .sidebar > .sidebar-nav > li > .nav-item > span,
+    body.caert-app.aside-collapsed .sidebar > .sidebar-nav .sidebar-nav {
+        display: none !important;
+    }
+
+    body.caert-app.aside-collapsed .sidebar > .sidebar-nav > li > a em,
+    body.caert-app.aside-collapsed .sidebar > .sidebar-nav > li > .nav-item em {
+        margin-right: 0 !important;
+        width: auto;
+        font-size: 1.25rem;
+    }
+
+    body.caert-app .wrapper .section-container {
+        margin-top: 55px;
+    }
+}
+
+body.caert-app .sidebar {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding-bottom: 1.5rem;
+}
+
+body.caert-app .sidebar:not(.show-scrollbar) {
+    margin-right: 0 !important;
+    overflow-y: visible !important;
+}
+
+body.caert-app .sidebar:after {
+    background: var(--caert-border) !important;
+}
+
+body.caert-app .sidebar-nav > li {
+    border-left: 3px solid transparent !important;
+}
+
+body.caert-app .sidebar-nav > li > a,
+body.caert-app .sidebar-nav > li > .nav-item {
+    color: var(--caert-sidebar-text) !important;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.65rem 1rem;
+    border-radius: var(--caert-radius-sm);
+    margin: 0.125rem 0.5rem;
+    transition: background 0.15s, color 0.15s;
+    border-left: none !important;
+    box-shadow: none !important;
+}
+
+body.caert-app .sidebar-nav > li > a span,
+body.caert-app .sidebar-nav > li > .nav-item span,
+body.caert-app .sidebar-nav > li > a em,
+body.caert-app .sidebar-nav > li > .nav-item em,
+body.caert-app .sidebar-nav > li > a .fa,
+body.caert-app .sidebar-nav > li > a .fas {
+    color: inherit !important;
+    width: 1.25rem;
+    margin-right: 0.5rem;
+}
+
+body.caert-app .sidebar-nav > li > a:hover,
+body.caert-app .sidebar-nav > li > .nav-item:hover,
+body.caert-app .sidebar-nav > li > a:focus,
+body.caert-app .sidebar-nav > li > .nav-item:focus {
+    background: var(--caert-sidebar-hover-bg) !important;
+    color: var(--caert-sidebar-hover-text) !important;
+    text-decoration: none;
+}
+
+body.caert-app .sidebar-nav > li.active {
+    border-left-color: var(--caert-accent) !important;
+}
+
+body.caert-app .sidebar-nav > li.open:not(.active) {
+    border-left-color: transparent !important;
+}
+
+body.caert-app .sidebar-nav > li.active > a,
+body.caert-app .sidebar-nav > li.active > .nav-item,
+body.caert-app .sidebar-nav > li.active > a:hover,
+body.caert-app .sidebar-nav > li.open > a,
+body.caert-app .sidebar-nav > li.open > .nav-item,
+body.caert-app .sidebar-nav > li.open > a:hover {
+    background: var(--caert-sidebar-active-bg) !important;
+    background-color: var(--caert-sidebar-active-bg) !important;
+    color: var(--caert-sidebar-active-text) !important;
+    font-weight: 600;
+    border-left: none !important;
+    box-shadow: none !important;
+}
+
+body.caert-app .sidebar-subnav {
+    background: #f8fafc !important;
+    margin: 0 0.5rem 0.25rem;
+    border-radius: var(--caert-radius-sm);
+    border: 1px solid var(--caert-border);
+}
+
+body.caert-app .sidebar-subnav > li > a,
+body.caert-app .sidebar-subnav > li > .nav-item {
+    color: var(--caert-sidebar-text-muted) !important;
+    font-size: 0.8125rem;
+    padding: 0.5rem 1rem 0.5rem 2.25rem !important;
+    background-color: transparent !important;
+}
+
+body.caert-app .sidebar-subnav > li > a:hover,
+body.caert-app .sidebar-subnav > li > .nav-item:hover {
+    color: var(--caert-sidebar-hover-text) !important;
+    background: var(--caert-sidebar-hover-bg) !important;
+}
+
+body.caert-app .sidebar-subnav > li.active > a,
+body.caert-app .sidebar-subnav > li.active > .nav-item {
+    color: var(--caert-sidebar-active-text) !important;
+    background: var(--caert-sidebar-active-bg) !important;
+    font-weight: 600;
+}
+
+body.caert-app .sidebar-subnav-header {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--caert-sidebar-text-muted) !important;
+    padding: 0.75rem 1rem 0.25rem !important;
+}
+
+body.caert-app .caert-sidebar-brand {
+    padding: 1rem 1rem 0.5rem;
+    text-align: center;
+}
+
+body.caert-app .caert-sidebar-brand img {
+    max-width: 72px;
+    border-radius: var(--caert-radius-sm);
+    padding: 0.35rem;
+}
+
+body.caert-app .caert-sidebar-user {
+    padding: 0 1rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid var(--caert-border);
+    margin-bottom: 0.5rem;
+}
+
+body.caert-app .caert-sidebar-user .name {
+    color: var(--caert-text);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+body.caert-app .caert-sidebar-user .role {
+    color: var(--caert-sidebar-text-muted);
+    font-size: 0.75rem;
+}
+
+body.caert-app .caert-nav-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--caert-sidebar-text-muted);
+    padding: 1rem 1rem 0.35rem;
+    margin: 0;
+}
+
+/* ── Page heading ── */
+body.caert-app .content-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.75rem;
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 1.25rem;
+}
+
+body.caert-app .content-heading > div:first-child {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--caert-text);
+    letter-spacing: -0.02em;
+}
+
+body.caert-app .content-heading small {
+    display: block;
+    color: var(--caert-text-muted);
+    font-weight: 400;
+    font-size: 0.875rem;
+    margin-top: 0.2rem;
+}
+
+body.caert-app .content-heading .ml-auto {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-left: auto !important;
+}
+
+/* ── Panels & cards ── */
+.caert-panel {
+    background: var(--caert-surface);
+    border: 1px solid var(--caert-border);
+    border-radius: var(--caert-radius);
+    box-shadow: var(--caert-shadow);
+    margin-bottom: 1.25rem;
+    overflow: visible;
+}
+
+.caert-panel-header {
+    padding: 0.875rem 1.25rem;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: var(--caert-text);
+    background: var(--caert-surface);
+    border-bottom: 1px solid var(--caert-border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.caert-panel-header em {
+    color: var(--caert-accent);
+}
+
+.caert-panel-body {
+    padding: 1.25rem;
+}
+
+body.caert-app .card {
+    border: 1px solid var(--caert-border);
+    border-radius: var(--caert-radius);
+    box-shadow: var(--caert-shadow);
+}
+
+body.caert-app .card-header.bg-light {
+    background: var(--caert-bg) !important;
+    border-bottom: 1px solid var(--caert-border);
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+body.caert-app .footer-container {
+    background: var(--caert-surface);
+    border-top: 1px solid var(--caert-border);
+    color: var(--caert-text-muted);
+    font-size: 0.8125rem;
+}
+
+/* ── Buttons ── */
+body.caert-app .btn-primary {
+    background-color: var(--caert-primary);
+    border-color: var(--caert-primary);
+}
+
+body.caert-app .btn-primary:hover {
+    background-color: var(--caert-primary-light);
+    border-color: var(--caert-primary-light);
+}
+
+body.caert-app .btn {
+    border-radius: var(--caert-radius-sm);
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+body.caert-app .btn.text-sm,
+body.caert-app .btn-sm.text-sm {
+    margin-left: 0;
+}
+
+/* ── Forms ── */
+body.caert-app .form-control {
+    border-radius: var(--caert-radius-sm);
+    border-color: var(--caert-border);
+    font-size: 0.875rem;
+}
+
+body.caert-app .form-control:focus {
+    border-color: var(--caert-accent);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+}
+
+body.caert-app label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--caert-text);
+}
+
+/* ── KPI cards ── */
+.caert-kpi-card {
+    border-radius: var(--caert-radius);
+    border: 1px solid var(--caert-border);
+    border-left: 4px solid var(--caert-accent);
+    background: var(--caert-surface);
+    box-shadow: var(--caert-shadow);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    transition: box-shadow 0.15s;
+}
+
+.caert-kpi-card:hover {
+    box-shadow: var(--caert-shadow-md);
+}
+
+.caert-kpi-card.kpi-success { border-left-color: var(--caert-success); }
+.caert-kpi-card.kpi-success .kpi-value { color: var(--caert-success); }
+.caert-kpi-card.kpi-warning { border-left-color: var(--caert-warning); }
+.caert-kpi-card.kpi-danger { border-left-color: var(--caert-danger); }
+.caert-kpi-card.kpi-purple { border-left-color: #7c3aed; }
+
+.caert-kpi-card .kpi-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.caert-kpi-card .kpi-label {
+    color: var(--caert-text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.caert-dashboard-kpis .caert-kpi-card {
+    margin-bottom: 0;
+    height: 100%;
+}
+
+.caert-quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    background: var(--caert-surface);
+    border: 1px solid var(--caert-border);
+    border-radius: var(--caert-radius);
+    padding: 0.85rem 1rem;
+    box-shadow: var(--caert-shadow);
+}
+
+/* ── Tables / DataTables ── */
+.table-responsive {
+    font-size: 0.875rem;
+}
+
+#alldatasTable-wrapper table.dataTable {
+    border-collapse: separate !important;
+    border-spacing: 0;
+}
+
+#alldatasTable-wrapper table.dataTable thead th {
+    background: var(--caert-bg);
+    border-bottom: 2px solid var(--caert-border) !important;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--caert-text-muted);
+    font-weight: 600;
+    padding: 0.75rem 0.65rem !important;
+}
+
+#alldatasTable-wrapper table.dataTable tbody td {
+    padding: 0.65rem !important;
+    vertical-align: middle;
+    border-color: var(--caert-border) !important;
+}
+
+#alldatasTable-wrapper table.dataTable tbody tr:hover {
+    background-color: #f8fafc !important;
+}
+
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+    font-size: 0.8125rem;
+    color: var(--caert-text-muted);
+}
+
+.dataTables_wrapper .dt-buttons .btn {
+    margin-bottom: 0.5rem;
+    border-radius: var(--caert-radius-sm);
+}
+
+#alldatasTable-wrapper .dataTables_wrapper .table-responsive,
+#alldatasTable-wrapper table.dataTable {
+    overflow: visible;
+}
+
+.caert-user-list-table .table-responsive {
+    overflow: visible;
+}
+
+/* ── User list toggle ── */
+.caert-user-toggle-form {
+    display: inline-block;
+}
+
+.caert-user-toggle {
+    display: inline-flex;
+    text-decoration: none;
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.caert-user-toggle:focus {
+    outline: 2px solid var(--caert-accent);
+    outline-offset: 2px;
+}
+
+.caert-user-toggle-track {
+    display: inline-block;
+    width: 2.5rem;
+    height: 1.35rem;
+    border-radius: 999px;
+    background: #cbd5e1;
+    position: relative;
+    transition: background 0.2s;
+}
+
+.caert-user-toggle-thumb {
+    position: absolute;
+    top: 0.15rem;
+    left: 0.15rem;
+    width: 1.05rem;
+    height: 1.05rem;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.15);
+    transition: transform 0.2s;
+}
+
+.caert-user-toggle.is-on .caert-user-toggle-track {
+    background: var(--caert-success);
+}
+
+.caert-user-toggle.is-on .caert-user-toggle-thumb {
+    transform: translateX(1.15rem);
+}
+
+.caert-user-toggle.is-disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* ── Badges ── */
+body.caert-app .badge {
+    font-weight: 600;
+    font-size: 0.7rem;
+    padding: 0.35em 0.65em;
+    border-radius: 999px;
+}
+
+body.caert-app .badge-lg {
+    font-size: 0.8125rem;
+    padding: 0.45em 0.85em;
+}
+
+/* ── Alerts ── */
+body.caert-app .alert {
+    border-radius: var(--caert-radius-sm);
+    border: none;
+    font-size: 0.875rem;
+    box-shadow: var(--caert-shadow);
+}
+
+body.caert-app .alert-success { background: #ecfdf5; color: #065f46; }
+body.caert-app .alert-warning { background: #fffbeb; color: #92400e; }
+body.caert-app .alert-danger { background: #fef2f2; color: #991b1b; }
+
+/* ── Auth pages ── */
+body.caert-auth {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0c4a6e 100%);
+    min-height: 100vh;
+}
+
+body.caert-auth .wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+}
+
+.caert-auth-shell {
+    width: 100%;
+    max-width: 420px;
+    padding: 1.5rem;
+}
+
+.caert-auth-card {
+    background: var(--caert-surface);
+    border-radius: var(--caert-radius);
+    box-shadow: var(--caert-shadow-md);
+    overflow: hidden;
+}
+
+.caert-auth-brand {
+    background: var(--caert-primary);
+    color: #fff;
+    text-align: center;
+    padding: 1.75rem 1.5rem;
+}
+
+.caert-auth-brand h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.caert-auth-brand p {
+    margin: 0.35rem 0 0;
+    font-size: 0.8125rem;
+    opacity: 0.85;
+}
+
+.caert-auth-body {
+    padding: 1.75rem 1.5rem;
+}
+
+.caert-auth-body .form-group {
+    margin-bottom: 1rem;
+}
+
+.caert-auth-footer {
+    text-align: center;
+    padding: 0 1.5rem 1.5rem;
+    font-size: 0.8125rem;
+}
+
+.caert-auth-footer a {
+    color: var(--caert-primary-light);
+    font-weight: 500;
+}
+
+body.caert-auth .btn-primary.btn-block {
+    padding: 0.65rem;
+    font-weight: 600;
+}
+
+/* ── Detail page toolbar ── */
+.caert-detail-toolbar {
+    background: var(--caert-surface);
+    border: 1px solid var(--caert-border);
+    border-radius: var(--caert-radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    box-shadow: var(--caert-shadow);
+}
+
+/* ── Map ── */
+#map {
+    min-height: 480px;
+    border-radius: var(--caert-radius);
+    border: 1px solid var(--caert-border);
+    box-shadow: var(--caert-shadow);
+}
+
+.caert-map-legend {
+    background: var(--caert-surface);
+    border: 1px solid var(--caert-border);
+    border-radius: var(--caert-radius-sm);
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.caert-map-legend .dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #c0392b;
+    margin-right: 0.35rem;
+    vertical-align: middle;
+}
+
+.caert-summary-table th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--caert-text-muted);
+    border-top: none;
+    font-weight: 600;
+}
+
+/* ── Row actions ── */
+.caert-row-actions .dropdown-toggle::after {
+    display: none;
+}
+
+.caert-row-actions .dropdown-menu,
+.caert-row-actions-menu.dropdown-menu {
+    min-width: 11rem;
+    border-radius: var(--caert-radius-sm);
+    box-shadow: var(--caert-shadow-md);
+    border: 1px solid var(--caert-border);
+}
+
+.caert-row-actions-menu.dropdown-menu.show {
+    display: block;
+}
+
+/* ── Password toggle ── */
+.password-toggle-btn {
+    border-color: var(--caert-border);
+    padding: 0.375rem 0.75rem;
+    line-height: 1.5;
+}
+
+.password-toggle-btn:focus {
+    box-shadow: none;
+}
+
+.input-group .password-toggle-btn + .input-group-text {
+    border-left: 0;
+}
+
+.password-toggle-wrapper .form-control {
+    border-right: 0;
+}
+
+/* ── Modals ── */
+body.modal-open .modal-backdrop {
+    z-index: 10040;
+}
+
+body.modal-open .caert-modal.modal,
+body.modal-open .modal.caert-modal {
+    z-index: 10050;
+}
+
+/* SweetAlert2 (toasts / confirmations) au-dessus des modales */
+.swal2-container {
+    z-index: 10070 !important;
+}
+
+.caert-modal .caert-swal-in-modal.swal2-container {
+    position: absolute !important;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0.75rem !important;
+    pointer-events: none;
+}
+
+.caert-modal .caert-swal-in-modal .swal2-popup {
+    pointer-events: auto;
+}
+
+.caert-modal .caert-swal-in-modal .swal2-popup.swal2-toast {
+    width: auto !important;
+    max-width: 40rem;
+    min-height: 0;
+    padding: 0.45rem 0.65rem;
+    margin: 0 0 0 auto;
+    font-size: 0.8125rem;
+    box-shadow: var(--caert-shadow-md);
+}
+
+.caert-modal .caert-swal-in-modal .swal2-popup.swal2-toast .swal2-icon {
+    width: 1.5rem;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    margin: 0 0.45rem 0 0;
+    scale: 1;
+}
+
+.caert-modal .caert-swal-in-modal .swal2-popup.swal2-toast .swal2-title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    margin: 0;
+    padding: 0;
+}
+
+.caert-modal .caert-swal-in-modal .swal2-popup.swal2-toast .swal2-timer-progress-bar-container {
+    height: 2px;
+}
+
+.caert-modal .modal-content {
+    border-radius: var(--caert-radius);
+    border: 1px solid var(--caert-border);
+    box-shadow: var(--caert-shadow-md);
+}
+
+.caert-modal .modal-header {
+    background: var(--caert-bg);
+    border-bottom: 1px solid var(--caert-border);
+}
+
+/* ── Wave UX 2: Forms & filters ── */
+.caert-filter-form .form-group label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--caert-text);
+    margin-bottom: 0.35rem;
+}
+
+.caert-filter-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--caert-border);
+    margin-top: 0.5rem;
+}
+
+.caert-form-section {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--caert-border);
+}
+
+.caert-form-section:first-of-type {
+    padding-top: 0;
+}
+
+.caert-form-section:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.caert-form-section-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--caert-primary);
+    margin-bottom: 1rem;
+}
+
+.caert-form-section-title em {
+    margin-right: 0.5rem;
+    opacity: 0.85;
+}
+
+.caert-incident-form .form-control,
+.caert-incident-form .custom-select {
+    border-radius: var(--caert-radius-sm);
+    border-color: var(--caert-border);
+}
+
+.caert-incident-form .form-control:focus {
+    border-color: var(--caert-accent);
+    box-shadow: 0 0 0 0.15rem rgba(14, 165, 233, 0.15);
+}
+
+.caert-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding-top: 1.25rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--caert-border);
+}
+
+/* ── Wave UX 2: Detail fields ── */
+.caert-detail-field {
+    background: var(--caert-bg);
+    border: 1px solid var(--caert-border);
+    border-radius: var(--caert-radius-sm);
+    padding: 0.75rem 1rem;
+    height: 100%;
+}
+
+.caert-detail-field-highlight {
+    background: rgba(14, 165, 233, 0.06);
+    border-color: rgba(14, 165, 233, 0.25);
+}
+
+.caert-detail-field-wide {
+    background: var(--caert-surface);
+}
+
+.caert-detail-reject {
+    background: rgba(220, 38, 38, 0.04);
+    border-color: rgba(220, 38, 38, 0.2);
+}
+
+.caert-detail-reject .caert-detail-value {
+    color: var(--caert-danger);
+}
+
+.caert-detail-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--caert-text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.caert-detail-value {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--caert-text);
+    word-break: break-word;
+}
+
+.caert-detail-field-wide .caert-detail-value {
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+/* ── Wave UX 2: Charts ── */
+.caert-chart-panel .caert-panel-body {
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.caert-chart-panel canvas {
+    max-height: 320px;
+    width: 100% !important;
+}
+
+.caert-chart-result {
+    min-height: 2rem;
+}
+
+.caert-chart-result canvas {
+    max-height: 400px;
+}
+
+.caert-chart-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    padding: 2rem;
+    color: var(--caert-text-muted);
+    background: var(--caert-bg);
+    border: 1px dashed var(--caert-border);
+    border-radius: var(--caert-radius);
+}
+
+.caert-chart-loading p {
+    margin: 1rem 0 0;
+    font-size: 0.875rem;
+}
+
+.caert-chart-loading-spinner,
+.caert-btn-spinner {
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid var(--caert-border);
+    border-top-color: var(--caert-accent);
+    border-radius: 50%;
+    animation: caert-spin 0.75s linear infinite;
+    vertical-align: middle;
+}
+
+.caert-btn-spinner {
+    width: 1rem;
+    height: 1rem;
+    border-width: 2px;
+    margin-right: 0.35rem;
+}
+
+#generateGraphBtn.is-loading,
+body.caert-auth .btn-primary.is-loading,
+.btn-primary.is-loading {
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+.caert-panel.is-processing .caert-panel-body {
+    position: relative;
+}
+
+.caert-panel.is-processing .caert-filter-form > .row,
+.caert-panel.is-processing .caert-filter-actions {
+    opacity: 0.65;
+    pointer-events: none;
+}
+
+.caert-chart-error {
+    color: var(--caert-text-muted);
+}
+
+@keyframes caert-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Datepicker popup (masqué tant qu'on n'a pas cliqué dans le champ) */
+.datepicker-dropdown {
+    z-index: 10060 !important;
+}
+
+.input-group.date > .datepicker {
+    display: none !important;
+}
+
+/* ── Responsive ── */
+@media (max-width: 767px) {
+    .caert-kpi-card .kpi-value {
+        font-size: 1.35rem;
+    }
+
+    body.caert-app .content-wrapper {
+        padding: 1rem;
+    }
+
+    body.caert-app .content-heading > div:first-child {
+        font-size: 1.125rem;
+    }
+}

@@ -1,0 +1,139 @@
+{# Actions sur la fiche incident — incident variable requise #}
+
+{% set canEdit = is_granted(constant('App\\Security\\Voter\\AllDataVoter::EDIT'), incident) and incident.isPublished is null %}
+
+{% set canPublish = is_granted(constant('App\\Security\\Voter\\AllDataVoter::PUBLISH'), incident) %}
+
+{% set isPending = incident.isPublished is null %}
+
+{% set isPublished = incident.isPublished == true %}
+
+{% set isRejected = incident.isPublished == false %}
+
+
+
+<div class="caert-detail-toolbar">
+<div class="d-flex flex-wrap align-items-center mb-3">
+
+    {% if isPending %}
+
+        <span class="badge badge-warning badge-lg mr-2 mb-1">En attente de validation</span>
+
+    {% elseif isPublished %}
+
+        <span class="badge badge-success badge-lg mr-2 mb-1">Publié</span>
+
+    {% elseif isRejected %}
+
+        <span class="badge badge-danger badge-lg mr-2 mb-1">Rejeté</span>
+
+    {% endif %}
+
+</div>
+
+
+
+<div class="btn-toolbar mb-0 flex-wrap" role="toolbar">
+
+    <div class="btn-group mr-2 mb-2">
+
+        <a href="{{ backUrl|default(path('app_home')) }}" class="btn btn-outline-secondary">Retour</a>
+
+    </div>
+
+
+
+    {% if canEdit %}
+
+        <div class="btn-group mr-2 mb-2">
+
+            <a href="{{ path('update_all_data', {allData: incident.id}) }}" class="btn btn-primary">
+
+                <em class="fa fa-pencil"></em> Modifier
+
+            </a>
+
+        </div>
+
+    {% endif %}
+
+
+
+    {% if canPublish and isPending %}
+
+        <div class="btn-group mr-2 mb-2">
+
+            <form method="post" action="{{ path('publish_or_not', {allData: incident.id}) }}" class="d-inline">
+
+                <input type="hidden" name="_return" value="view">
+
+                <button type="submit" class="btn btn-success">
+
+                    <em class="fa fa-check"></em> Publier
+
+                </button>
+
+            </form>
+
+        </div>
+
+        <div class="btn-group mr-2 mb-2">
+
+            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#rejectModalDetail">
+
+                <em class="fa fa-times"></em> Rejeter
+
+            </button>
+
+        </div>
+
+    {% elseif canPublish and isPublished %}
+
+        <div class="btn-group mr-2 mb-2">
+
+            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#rejectModalDetail">
+
+                <em class="fa fa-times"></em> Rejeter
+
+            </button>
+
+        </div>
+
+    {% endif %}
+
+
+
+    {% if isRejected and incident.objetRejet %}
+
+        <div class="btn-group mr-2 mb-2">
+
+            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#rejectReasonModal">
+
+                Voir motif du rejet
+
+            </button>
+
+        </div>
+
+    {% endif %}
+
+
+
+    {% if is_granted(constant('App\\Security\\Voter\\AllDataVoter::DELETE'), incident) %}
+
+        <div class="btn-group mb-2">
+
+            <form method="post" action="{{ path('delete_all_data', {allData: incident.id}) }}" onsubmit="return confirm('Confirmer la suppression ?');">
+
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ incident.id) }}">
+
+                <button type="submit" class="btn btn-outline-danger">Supprimer</button>
+
+            </form>
+
+        </div>
+
+    {% endif %}
+
+</div>
+</div>

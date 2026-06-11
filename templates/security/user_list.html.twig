@@ -1,0 +1,285 @@
+{% extends 'base.html.twig' %}
+
+
+
+{% block title %}Utilisateurs{% endblock %}
+
+
+
+{% block body %}
+
+<div class="wrapper">
+
+    {% include "_header.html.twig" %}
+
+    {% include "_aside.html.twig" %}
+
+    <section class="section-container">
+
+        <div class="content-wrapper">
+
+            <div class="content-heading">
+
+                <div>Utilisateurs<small>Gestion des comptes</small></div>
+
+                {% if is_granted('ROLE_SUPER_ADMIN') %}
+
+                <div class="ml-auto">
+
+                    <a class="btn btn-sm btn-primary" href="{{ path('app_register') }}">
+
+                        <em class="fas fa-user-plus"></em> Ajouter un utilisateur
+
+                    </a>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+            {% include "_flash_message.html.twig" %}
+
+
+
+            <div class="caert-panel">
+
+                <div class="caert-panel-header">
+
+                    <em class="fas fa-users"></em> Liste des utilisateurs
+
+                </div>
+
+                <div class="caert-panel-body p-0 pt-3 px-3 pb-3 caert-user-list-table">
+
+                    <div class="table-responsive">
+
+                        <table class="table table-striped my-4 w-100" id="datatable3">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th data-priority="1">Nom</th>
+
+                                    <th>Prénom</th>
+
+                                    <th>Email</th>
+
+                                    <th class="sort-numeric">Créé le</th>
+
+                                    <th class="sort-numeric">Vérification</th>
+
+                                    <th class="sort-numeric">Actif</th>
+
+                                    <th class="sort-alpha" data-priority="2">Actions</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {% for user in users %}
+
+                                    {% set isSelf = app.user and app.user.id == user.id %}
+
+                                    <tr>
+
+                                        <td>{{ user.name }}</td>
+
+                                        <td>{{ user.prenoms }}</td>
+
+                                        <td>{{ user.email }}</td>
+
+                                        <td>{{ user.createdAt|date('d/m/Y') }}</td>
+
+                                        <td>
+
+                                            {% if user.isVerified %}
+
+                                                <span class="badge badge-success">Vérifié</span>
+
+                                            {% else %}
+
+                                                <span class="badge badge-secondary">Non vérifié</span>
+
+                                            {% endif %}
+
+                                        </td>
+
+                                        <td>
+
+                                            {% if user.isVerified and not isSelf %}
+
+                                                <form method="post"
+
+                                                      action="{{ path('app_user_toggle_active', { id: user.id }) }}"
+
+                                                      class="caert-user-toggle-form m-0 p-0"
+
+                                                      data-active="{{ user.enable ? '1' : '0' }}">
+
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ user.id) }}">
+
+                                                    <button type="submit"
+
+                                                            class="caert-user-toggle {% if user.enable %}is-on{% endif %}"
+
+                                                            title="{{ user.enable ? 'Suspendre le compte' : 'Activer le compte' }}"
+
+                                                            aria-label="{{ user.enable ? 'Suspendre' : 'Activer' }}">
+
+                                                        <span class="caert-user-toggle-track">
+
+                                                            <span class="caert-user-toggle-thumb"></span>
+
+                                                        </span>
+
+                                                    </button>
+
+                                                </form>
+
+                                            {% elseif isSelf %}
+
+                                                <span class="badge badge-info">Vous</span>
+
+                                            {% else %}
+
+                                                <span class="caert-user-toggle is-disabled" title="Compte non vérifié">
+
+                                                    <span class="caert-user-toggle-track">
+
+                                                        <span class="caert-user-toggle-thumb"></span>
+
+                                                    </span>
+
+                                                </span>
+
+                                            {% endif %}
+
+                                        </td>
+
+                                        <td>
+
+                                            <div class="btn-group btn-group-sm caert-row-actions">
+
+                                                <button class="btn btn-outline-secondary dropdown-toggle"
+
+                                                        type="button"
+
+                                                        data-caert-actions-toggle
+
+                                                        aria-haspopup="true"
+
+                                                        aria-expanded="false">
+
+                                                    Actions
+
+                                                </button>
+
+                                                <div class="dropdown-menu dropdown-menu-right">
+
+                                                    <a class="dropdown-item" href="{{ path('app_user_edit', { id: user.id }) }}">
+
+                                                        <em class="fas fa-edit fa-fw"></em> Modifier
+
+                                                    </a>
+
+                                                    <button type="button"
+
+                                                            class="dropdown-item caert-reset-password-btn"
+
+                                                            data-action="{{ path('app_user_reset_password', { id: user.id }) }}"
+
+                                                            data-token="{{ csrf_token('reset_password' ~ user.id) }}"
+
+                                                            data-user-name="{{ user.prenoms }} {{ user.name }}"
+
+                                                            data-user-email="{{ user.email }}">
+
+                                                        <em class="fas fa-key fa-fw"></em> Réinitialiser le mot de passe
+
+                                                    </button>
+
+                                                    {% if not isSelf %}
+
+                                                    <div class="dropdown-divider"></div>
+
+                                                    <form method="post"
+
+                                                          action="{{ path('app_user_delete', { id: user.id }) }}"
+
+                                                          class="m-0 p-0 caert-delete-user-form"
+
+                                                          data-user-name="{{ user.prenoms }} {{ user.name }}">
+
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+
+                                                        <button type="submit" class="dropdown-item text-danger">
+
+                                                            <em class="fas fa-trash fa-fw"></em> Supprimer
+
+                                                        </button>
+
+                                                    </form>
+
+                                                    {% endif %}
+
+                                                </div>
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+
+                                {% else %}
+
+                                    <tr>
+
+                                        <td colspan="7" class="text-center text-muted py-4">Aucun utilisateur.</td>
+
+                                    </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    <div class="pagination justify-content-center pb-3">
+
+                        {{ knp_pagination_render(users) }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    {% include "_footer.html.twig" %}
+
+</div>
+
+{% include 'security/_user_reset_password_modal.html.twig' %}
+
+{% endblock %}
+
+
+
+{% block javascripts %}
+
+    {{ parent() }}
+
+    <script src="{{ asset('js/caert-user-list.js') }}?v=7"></script>
+
+{% endblock %}
+
+

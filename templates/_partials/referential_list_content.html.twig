@@ -1,0 +1,42 @@
+{# Contenu référentiel : formulaire + liste DataTable #}
+<div class="content-heading">
+    <div>{{ title }}<small>{{ subtitle|default('Référentiel') }}</small></div>
+    {% if backUrl is defined and backUrl %}
+        <div class="ml-auto">
+            <a class="btn btn-sm btn-outline-secondary" href="{{ backUrl }}">
+                <em class="fas fa-arrow-left"></em> Retour
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+{% include "_flash_message.html.twig" %}
+
+<div class="caert-panel mb-4">
+    <div class="caert-panel-header">
+        <em class="fas fa-plus-circle"></em> {{ formPanelTitle|default('Ajouter') }}
+    </div>
+    <div class="caert-panel-body">
+        {{ form_start(form, {'method': form.vars.method, 'action': form.vars.action}) }}
+        <div class="row align-items-end">
+            <div class="col-md-8 col-lg-9">
+                {{ form_row(form.libelle) }}
+            </div>
+            <div class="col-md-4 col-lg-3 text-md-right mb-3">
+                {{ form_widget(form.save, { attr: { class: 'btn btn-primary btn-block' } }) }}
+            </div>
+        </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+
+<div class="caert-panel">
+    <div class="caert-panel-header">
+        <em class="fas fa-list"></em> {{ listPanelTitle|default('Liste') }}
+    </div>
+    <div class="caert-panel-body p-0 pt-3 px-3 pb-3">
+        <div id="{{ tableWrapperId }}" class="table-responsive">
+            Traitement en cours...
+        </div>
+    </div>
+</div>

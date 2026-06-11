@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Matériel récupéré{% endblock %}
+
+{% block body %}
+<div class="wrapper">
+    {% include "_header.html.twig" %}
+    {% include "_aside.html.twig" %}
+    <section class="section-container">
+        <div class="content-wrapper">
+            {% include '_partials/referential_list_content.html.twig' with {
+                title: 'Matériel récupéré',
+                subtitle: 'Référentiel',
+                backUrl: path('attaque'),
+                formPanelTitle: 'Ajouter un matériel récupéré',
+                listPanelTitle: 'Liste du matériel récupéré',
+                tableWrapperId: 'materielAttaqueTable-wrapper',
+                form: form
+            } %}
+        </div>
+    </section>
+    {% include "_footer.html.twig" %}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="{{ asset('bundles/datatables/js/datatables.js') }}"></script>
+<script type="text/javascript">
+$(function() {
+    $('#materielAttaqueTable-wrapper').initDataTables({{ datatable_settings(datatable) }}, {
+        buttons: [{ extend: 'excel', className: 'btn btn-warning btn-square' }]
+    });
+});
+</script>
+{% endblock %}

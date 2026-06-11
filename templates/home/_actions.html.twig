@@ -1,0 +1,62 @@
+{% set canEdit = is_granted(constant('App\\Security\\Voter\\AllDataVoter::EDIT'), row) and row.isPublished is null %}
+{% set canPublish = is_granted(constant('App\\Security\\Voter\\AllDataVoter::PUBLISH'), row) %}
+{% set canDelete = is_granted(constant('App\\Security\\Voter\\AllDataVoter::DELETE'), row) %}
+{% set isPending = row.isPublished is null %}
+{% set isPublished = row.isPublished == true %}
+{% set isRejected = row.isPublished == false %}
+{% set hasExtra = canEdit
+    or (canPublish and (isPending or isPublished))
+    or (isRejected and row.objetRejet)
+    or canDelete %}
+
+<div class="btn-group btn-group-sm caert-row-actions" role="group">
+    <a class="btn btn-info btn-square" href="{{ path('view_all_data', {allData: row.id}) }}" title="Voir le détail">
+        <em class="fa fa-eye"></em>
+    </a>
+    {% if hasExtra %}
+        <button type="button"
+                class="btn btn-outline-secondary btn-square dropdown-toggle"
+                data-caert-actions-toggle
+                title="Autres actions"
+                aria-haspopup="true"
+                aria-expanded="false">
+            <em class="fa fa-plus"></em>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right">
+            {% if canEdit %}
+                <a class="dropdown-item" href="{{ path('update_all_data', {allData: row.id}) }}">
+                    <em class="fa fa-pencil fa-fw"></em> Modifier
+                </a>
+            {% endif %}
+            {% if canPublish and isPending %}
+                <form method="post" action="{{ path('publish_or_not', {allData: row.id}) }}" class="m-0 p-0">
+                    <button type="submit" class="dropdown-item text-success">
+                        <em class="fa fa-check fa-fw"></em> Publier
+                    </button>
+                </form>
+            {% endif %}
+            {% if canPublish and (isPending or isPublished) %}
+                <a class="dropdown-item text-warning" href="{{ path('view_all_data', {allData: row.id}) }}?reject=1">
+                    <em class="fa fa-times fa-fw"></em> Rejeter…
+                </a>
+            {% endif %}
+            {% if isRejected and row.objetRejet %}
+                <a class="dropdown-item" href="{{ path('view_all_data', {allData: row.id}) }}?reason=1">
+                    <em class="fa fa-comment fa-fw"></em> Motif du rejet
+                </a>
+            {% endif %}
+            {% if canDelete %}
+                <div class="dropdown-divider"></div>
+                <form method="post"
+                      action="{{ path('delete_all_data', {allData: row.id}) }}"
+                      onsubmit="return confirm('Confirmer la suppression ?');"
+                      class="m-0 p-0">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ row.id) }}">
+                    <button type="submit" class="dropdown-item text-danger">
+                        <em class="fa fa-trash fa-fw"></em> Supprimer
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>

@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+{% import 'home/_detail_macros.html.twig' as detail %}
+
+{% block title %}Incident #{{ incident.id }}{% endblock %}
+
+{% block body %}
+<div class="wrapper">
+    {% include "_header.html.twig" %}
+    {% include "_aside.html.twig" %}
+    <section class="section-container">
+        <div class="content-wrapper">
+            <div class="content-heading">
+                <div>Incident #{{ incident.id }}<small>Fiche détaillée</small></div>
+            </div>
+            {% include "_flash_message.html.twig" %}
+
+            {% include 'home/_incident_detail_actions.html.twig' with {
+                incident: incident,
+                backUrl: backUrl
+            } %}
+
+            <div class="caert-panel mb-4">
+                <div class="caert-panel-header">
+                    <em class="fas fa-fingerprint"></em> Identification
+                </div>
+                <div class="caert-panel-body">
+                    <div class="row caert-detail-grid">
+                        {{ detail.field('Date d\'attaque', incident.dateAttaque ? incident.dateAttaque|date('d/m/Y H:i') : null) }}
+                        {{ detail.field('Pays', incident.pays ? incident.pays.libelle : null) }}
+                        {{ detail.field('Localité', incident.localite) }}
+                        {{ detail.field('Espace', incident.espace ? incident.espace.libelle : null) }}
+                        {{ detail.field('Type d\'attaque', incident.attaque ? incident.attaque.libelle : null) }}
+                        {{ detail.field('Moyen d\'attaque', incident.moyenAttaque ? incident.moyenAttaque.libelle : null) }}
+                        {{ detail.field('Groupe', incident.perpetrateur ? incident.perpetrateur.libelle : null) }}
+                        {{ detail.field('Cible', incident.cible ? incident.cible.libelle : null) }}
+                        {{ detail.field('Matériaux', incident.materieaux ? incident.materieaux.libelle : null) }}
+                        {{ detail.field('Matériel récupéré', incident.materielAttaque ? incident.materielAttaque.libelle : null) }}
+                        {{ detail.fieldWide('Détails', incident.details) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="caert-panel mb-4">
+                <div class="caert-panel-header">
+                    <em class="fas fa-users"></em> Victimes
+                </div>
+                <div class="caert-panel-body">
+                    <div class="row caert-detail-grid">
+                        {{ detail.field('Morts civils', incident.mortCivil) }}
+                        {{ detail.field('Morts sécurité / militaire', incident.mortSecuriteMilitaire) }}
+                        {{ detail.field('Morts terroristes', incident.mortTerroriste) }}
+                        {{ detail.field('Total décès', incident.totalDeces, true) }}
+                        {{ detail.field('Disparus civils', incident.disparuCivil) }}
+                        {{ detail.field('Disparus sécurité', incident.disparuSecuriteMilitaire) }}
+                        {{ detail.field('Disparus terroristes', incident.disparuTerroriste) }}
+                        {{ detail.field('Total disparus', incident.totalDisparus, true) }}
+                        {{ detail.field('Blessés civils', incident.blesseCivil) }}
+                        {{ detail.field('Blessés sécurité', incident.blesseSecuriteMilitaire) }}
+                        {{ detail.field('Blessés terroristes', incident.blesseTerroriste) }}
+                        {{ detail.field('Total blessés', incident.totalBlesses, true) }}
+                        {{ detail.field('Otages', incident.otages) }}
+                        {{ detail.field('Libérés', incident.liberes) }}
+                        {{ detail.field('Terroristes arrêtés', incident.terroristeArretes) }}
+                        {{ detail.fieldWide('Autres victimes', incident.autres) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="caert-panel mb-4">
+                <div class="caert-panel-header">
+                    <em class="fas fa-clipboard-check"></em> Suivi
+                </div>
+                <div class="caert-panel-body">
+                    <div class="row caert-detail-grid">
+                        {{ detail.field('Saisi par', incident.user ? incident.user.email : null) }}
+                        {{ detail.field('Saisi le', incident.createdAt ? incident.createdAt|date('d/m/Y H:i') : null) }}
+                        {{ detail.fieldWide('Remarque', incident.remarque) }}
+                        {% if incident.objetRejet %}
+                            {{ detail.fieldWide('Motif du rejet', incident.objetRejet, 'caert-detail-reject') }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% include "_footer.html.twig" %}
+</div>
+
+{% include 'home/_incident_reject_modals.html.twig' with { incident: incident } %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(function () {
+            {% if app.request.query.get('reject') %}
+                $('#rejectModalDetail').modal('show');
+            {% endif %}
+            {% if app.request.query.get('reason') %}
+                $('#rejectReasonModal').modal('show');
+            {% endif %}
+        });
+    </script>
+{% endblock %}

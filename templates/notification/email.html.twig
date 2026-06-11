@@ -1,0 +1,8 @@
+{% extends 'notification/_layout.html.twig' %}
+
+{% block content %}
+<p>Bonjour {{ user.prenoms }} {{ user.name }},</p>
+<p>Votre compte sur {{ appName }} a été créé. Cliquez sur le lien ci-dessous pour définir votre mot de passe :</p>
+<p><a href="{{ actionUrl }}">Définir mon mot de passe</a></p>
+<p>Ce lien est valable 24 heures.</p>
+{% endblock %}

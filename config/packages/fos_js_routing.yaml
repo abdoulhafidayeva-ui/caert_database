@@ -1,0 +1,2 @@
+fos_js_routing:
+    routes_to_expose: [connected_agents, nbre_ticket_agent, get_ticket_discussions, app_version_data]

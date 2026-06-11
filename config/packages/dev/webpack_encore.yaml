@@ -1,0 +1,3 @@
+webpack_encore:
+    # En dev, ne pas bloquer si entrypoints.json provient du dev-server
+    strict_mode: false

@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}File de validation{% endblock %}
+
+{% block body %}
+
+<div class="wrapper">
+
+    {% include "_header.html.twig" %}
+
+    {% include "_aside.html.twig" %}
+
+    <section class="section-container">
+
+        <div class="content-wrapper">
+
+            <div class="content-heading">
+
+                <div>File de validation <small>{{ total }} en attente</small></div>
+
+                <div class="ml-auto">
+
+                    <a href="{{ path('executive_dashboard') }}" class="btn btn-sm btn-outline-primary">Synthèse opérationnelle</a>
+
+                </div>
+
+            </div>
+
+            {% include "_flash_message.html.twig" %}
+
+            <div class="caert-panel">
+                <div class="caert-panel-header"><em class="fas fa-inbox"></em> Incidents en attente</div>
+                <div class="caert-panel-body table-responsive p-0">
+                    <table class="table table-striped table-hover mb-0">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>#</th>
+
+                                <th>Date attaque</th>
+
+                                <th>Pays</th>
+
+                                <th>Localité</th>
+
+                                <th>Décès</th>
+
+                                <th>Saisie par</th>
+
+                                <th>Saisie le</th>
+
+                                <th class="text-right">Actions</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        {% for item in pending %}
+
+                            <tr>
+
+                                <td>{{ item.id }}</td>
+
+                                <td>{{ item.dateAttaque ? item.dateAttaque|date('d/m/Y') : '—' }}</td>
+
+                                <td>{{ item.pays ? item.pays.libelle : '—' }}</td>
+
+                                <td>{{ item.localite }}</td>
+
+                                <td><span class="badge badge-danger">{{ item.totalDeces }}</span></td>
+
+                                <td>{{ item.user ? item.user.email : '—' }}</td>
+
+                                <td>{{ item.createdAt|date('d/m/Y H:i') }}</td>
+
+                                <td class="text-right">
+
+                                    <a class="btn btn-sm btn-info" href="{{ path('view_all_data', {allData: item.id, from: 'inbox'}) }}">
+                                        <em class="fas fa-eye"></em> Détail
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                        {% else %}
+
+                            <tr><td colspan="8" class="text-center text-muted py-4">Aucun incident en attente de validation.</td></tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+    {% include "_footer.html.twig" %}
+
+</div>
+
+{% endblock %}
+
+

@@ -1,0 +1,17 @@
+{% macro field(label, value, highlight) %}
+    <div class="col-md-6 col-lg-4 mb-3">
+        <div class="caert-detail-field{% if highlight %} caert-detail-field-highlight{% endif %}">
+            <div class="caert-detail-label">{{ label }}</div>
+            <div class="caert-detail-value">{% if value is null %}—{% else %}{{ value }}{% endif %}</div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro fieldWide(label, value, extraClass) %}
+    <div class="col-12 mb-3">
+        <div class="caert-detail-field caert-detail-field-wide{% if extraClass %} {{ extraClass }}{% endif %}">
+            <div class="caert-detail-label">{{ label }}</div>
+            <div class="caert-detail-value">{{ value|default('—')|nl2br }}</div>
+        </div>
+    </div>
+{% endmacro %}

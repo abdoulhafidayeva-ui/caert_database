@@ -1,0 +1,50 @@
+security:
+    password_hashers:
+        App\Entity\User:
+            algorithm: auto
+
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_USERS_MANAGEMENT]
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            lazy: true
+            provider: app_user_provider
+            user_checker: App\Security\UserChecker
+            form_login:
+                login_path: app_login
+                check_path: login
+            logout:
+                path: app_logout
+                target: /login
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800
+                path: /
+            custom_authenticators:
+                - App\Security\LoginFormAuthenticator
+
+    access_control:
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/install, roles: PUBLIC_ACCESS }
+        - { path: ^/first-user, roles: PUBLIC_ACCESS }
+        - { path: ^/forgotten-pass, roles: PUBLIC_ACCESS }
+        - { path: ^/user/register, roles: PUBLIC_ACCESS }
+        - { path: ^/user/mail/verif/*, roles: PUBLIC_ACCESS }
+        - { path: ^/verif-account/*, roles: PUBLIC_ACCESS }
+        - { path: ^/api/pays-by-region, roles: PUBLIC_ACCESS }
+        - { path: ^/health, roles: PUBLIC_ACCESS }
+        - { path: ^/users, roles: ROLE_SUPER_ADMIN }
+        - { path: ^/user/, roles: ROLE_SUPER_ADMIN }
+        - { path: ^/register, roles: ROLE_SUPER_ADMIN }
+        - { path: ^/, roles: ROLE_USER }

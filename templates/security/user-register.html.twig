@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block body_class %}caert-app caert-auth{% endblock %}
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+<div class="wrapper">
+    <div class="caert-auth-shell" style="max-width: 560px;">
+        <div class="caert-auth-card">
+            <div class="caert-auth-brand">
+                <h1>Inscription</h1>
+                <p>Demande d'accès à la plateforme CAERT</p>
+            </div>
+            <div class="caert-auth-body">
+                {% include "_flash_message.html.twig" %}
+                {{ include('security/_register_form.html.twig', {form: form, button: "M'inscrire"}) }}
+            </div>
+            <div class="caert-auth-footer">
+                <a href="{{ path('app_login') }}">Déjà un compte ? Se connecter</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/caert-auth-form.js') }}"></script>
+    {% include 'security/_password_toggle.html.twig' %}
+{% endblock %}

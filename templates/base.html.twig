@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            {% block title %}Welcome!
+            {% endblock %}
+        </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="keywords" content="CAERT, AUCTC, incidents, sécurité">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="{{ asset('vendor/@fortawesome/fontawesome-free/css/brands.css') }}">
+        <link rel="stylesheet" href="{{ asset('vendor/@fortawesome/fontawesome-free/css/regular.css')}}">
+        <link rel="stylesheet" href="{{ asset('vendor/@fortawesome/fontawesome-free/css/solid.css')}}">
+        <link
+        rel="stylesheet" href="{{ asset('vendor/@fortawesome/fontawesome-free/css/fontawesome.css')}}">
+        <!-- SIMPLE LINE ICONS-->
+        <link
+        rel="stylesheet" href="{{ asset('vendor/simple-line-icons/css/simple-line-icons.css')}}">
+        <!-- ANIMATE.CSS-->
+        <link
+        rel="stylesheet" href="{{ asset('vendor/animate.css/animate.css')}}">
+        <!-- WHIRL (spinners)-->
+        <link rel="stylesheet" href="{{ asset('vendor/whirl/dist/whirl.css')}}">
+        <!-- STYLES.CSS-->
+        <link rel="stylesheet" href="{{ asset('css/app.css')}}">
+        <link rel="stylesheet" href="{{ asset('css/caert-enterprise.css')}}">
+        <!-- =============== PAGE VENDOR STYLES ===============-->
+        <!-- Datatables (CDN — fichiers locaux vendor absents du dépôt) -->
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.0/css/jquery.dataTables.min.css"/>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css"/>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/keytable/2.7.0/css/keyTable.dataTables.min.css"/>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.3.0/css/responsive.dataTables.min.css"/>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/bs/jszip-2.5.0,pdfmake-0.1.18,dt-1.10.9,b-1.0.3,b-colvis-1.0.3,b-flash-1.0.3,b-html5-1.0.3,b-print-1.0.3,r-1.0.7/datatables.min.css"/>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.standalone.min.css" rel="stylesheet"/>
+        {{ encore_entry_link_tags('app') }}
+        {{ encore_entry_link_tags('newUser') }}
+        {% block stylesheets %}{% endblock %}
+    </head>
+    <body class="{% block body_class %}caert-app{% endblock %}" data-pays-by-region-url="{{ path('api_pays_by_region') }}">
+        {% block body %}{% endblock %}
+    <div id="loader"></div>
+        <!-- =============== APP SCRIPTS ===============-->
+        <script src="{{ asset('vendor/jquery/dist/jquery.js') }}"></script>
+        <script src="{{ asset('vendor/popper.js/dist/umd/popper.js') }}"></script>
+        <script src="{{ asset('vendor/bootstrap/dist/js/bootstrap.js') }}"></script>
+        <script src="{{ asset('bundles/fosjsrouting/js/router.min.js') }}"></script>
+        <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+        <script src="{{ asset('vendor/modernizr/modernizr.custom.js') }}"></script>
+        <script src="{{ asset('vendor/js-storage/js.storage.js') }}"></script>
+        <script src="{{ asset('js/app.js') }}"></script>
+        {{ encore_entry_script_tags('app') }}
+        {{ encore_entry_script_tags('newUser') }}
+        <!-- SCREENFULL-->
+        <script src="{{asset('vendor/screenfull/dist/screenfull.js')}}"></script>
+        <!-- i18next-->
+        <script src="{{asset('vendor/i18next/i18next.js')}}"></script>
+        <script src="{{asset('vendor/i18next-xhr-backend/i18nextXHRBackend.js')}}"></script>
+        <!-- =============== PAGE VENDOR SCRIPTS ===============-->
+        <!-- Datatables-->
+        <script type="text/javascript" src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.2.1/dt-1.10.16/datatables.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.colVis.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/keytable/2.7.0/js/dataTables.keyTable.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/r/bs/jszip-2.5.0,pdfmake-0.1.18,dt-1.10.9,b-1.0.3,b-colvis-1.0.3,b-flash-1.0.3,b-html5-1.0.3,b-print-1.0.3,r-1.0.7/datatables.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/vfs_fonts.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
+        <!-- SWEET ALERT-->
+   {# <script src="{{asset('vendor/sweetalert/dist/sweetalert.min.js')}}"></script> #}
+   <!-- =============== APP SCRIPTS ===============-->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.fr.min.js"></script>
+    <script src="{{ asset('js/caert-datepicker.js') }}"></script>
+        <script src="{{ asset('js/caert-select2-init.js') }}?v=2"></script>
+    <script src="{{ asset('js/caert-form-submit.js') }}?v=1"></script>
+    <script src="{{ asset('js/caert-region-pays.js') }}?v=4"></script>
+    <script src="{{ asset('js/caert-row-actions.js') }}"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(function () {
+            $(document).on('show.bs.modal', '.caert-modal', function () {
+                if (this.parentElement !== document.body) {
+                    $(this).appendTo('body');
+                }
+            });
+        });
+    </script>
+        {% block javascripts %}
+        {% endblock %}
+    </body>
+</html>

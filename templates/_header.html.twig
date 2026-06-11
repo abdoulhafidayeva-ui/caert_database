@@ -1,0 +1,33 @@
+<header class="topnavbar-wrapper">
+    <nav class="navbar topnavbar">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{{ path('app_home') }}">
+                <div class="brand-logo">{{ paramData.object ? paramData.object.name : 'CAERT' }}</div>
+                <div class="brand-logo-collapsed">C</div>
+            </a>
+        </div>
+        <ul class="navbar-nav mr-auto flex-row align-items-center">
+            <li class="nav-item">
+                <a class="nav-link d-none d-md-block d-lg-block d-xl-block" href="javascript:void(0)" data-trigger-resize="" data-toggle-state="aside-collapsed" title="Réduire le menu">
+                    <em class="fas fa-bars"></em>
+                </a>
+                <a class="nav-link sidebar-toggle d-md-none" href="#" data-toggle-state="aside-toggled" data-no-persist="true" title="Menu">
+                    <em class="fas fa-bars"></em>
+                </a>
+            </li>
+            <li class="nav-item d-none d-md-block">
+                <span class="caert-user-pill">
+                    <span class="caert-user-avatar">{{ app.user.prenoms|slice(0, 1)|upper }}{{ app.user.name|slice(0, 1)|upper }}</span>
+                    {{ app.user.prenoms }} {{ app.user.name }}
+                </span>
+            </li>
+        </ul>
+        <ul class="navbar-nav flex-row align-items-center">
+            <li class="nav-item">
+                <a class="nav-link btn-logout" href="{{ path('app_logout') }}">
+                    <em class="fas fa-sign-out-alt"></em> Déconnexion
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>

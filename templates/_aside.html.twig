@@ -1,0 +1,81 @@
+<aside class="aside-container">
+    <div class="aside-inner">
+        <nav class="sidebar" data-sidebar-anyclick-close="">
+            <!-- <div class="caert-sidebar-brand">
+                <img src="{{ asset('img/LOGO_UA.svg') }}" alt="CAERT" width="72" height="72">
+            </div> -->
+            {% if app.user %}
+            <div class="caert-sidebar-user">
+                <div class="name">{{ app.user.prenoms }} {{ app.user.name }}</div>
+                <div class="role">{{ app.user.fonction|default(app.user.profil) }}</div>
+            </div>
+            {% endif %}
+
+            <p class="caert-nav-label">Principal</p>
+            <ul class="sidebar-nav">
+                <li class="{% if menu in 'dashboard' %}active{% endif %}">
+                    <a href="{{ path('app_home') }}" title="Tableau de bord">
+                        <em class="fas fa-th-large"></em><span>Tableau de bord</span>
+                    </a>
+                </li>
+                {% if is_granted('ROLE_ADMIN') %}
+                <li class="{% if menu == 'workflow' %}active{% endif %}">
+                    <a href="{{ path('workflow_inbox') }}" title="Validation">
+                        <em class="fas fa-inbox"></em><span>File de validation</span>
+                    </a>
+                </li>
+                <li class="{% if menu == 'executive' %}active{% endif %}">
+                    <a href="{{ path('executive_dashboard') }}" title="Synthèse opérationnelle">
+                        <em class="fas fa-chart-bar"></em><span>Synthèse</span>
+                    </a>
+                </li>
+                {% endif %}
+                <li class="{% if menu in 'graphique' %}active{% endif %}">
+                    <a href="{{ path('graphique') }}" title="Analyses">
+                        <em class="fas fa-chart-area"></em><span>Analyses</span>
+                    </a>
+                </li>
+                <li class="{% if menu == 'map' %}active{% endif %}">
+                    <a href="{{ path('app_map') }}" title="Carte">
+                        <em class="fas fa-map-marked-alt"></em><span>Carte SIG</span>
+                    </a>
+                </li>
+            </ul>
+
+            {% if is_granted('ROLE_SUPER_ADMIN') %}
+            <p class="caert-nav-label">Administration</p>
+            <ul class="sidebar-nav">
+                <li class="{% if menu in 'userRegister, userList' %}active{% endif %}">
+                    <a href="#elements" data-toggle="collapse" class="{% if menu not in 'userRegister, userList' %}collapsed{% endif %}" aria-expanded="{% if menu in 'userRegister, userList' %}true{% else %}false{% endif %}">
+                        <em class="fas fa-users"></em><span>Utilisateurs</span>
+                    </a>
+                    <ul class="sidebar-nav sidebar-subnav collapse {% if menu in 'userRegister, userList' %}show{% endif %}" id="elements">
+                        <li class="sidebar-subnav-header">Comptes</li>
+                        <li class="{% if menu == 'userList' %}active{% endif %}">
+                            <a href="{{ path('app_user_list') }}"><span>Liste</span></a>
+                        </li>
+                        <li class="{% if menu == 'userRegister' %}active{% endif %}">
+                            <a href="{{ path('app_register') }}"><span>Ajouter</span></a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="{% if menu in 'attaque, materiel, perpetrateur, materielAttaque, moyenAttaque, cible, espace' %}active{% endif %}">
+                    <a href="#attaques" data-toggle="collapse" class="{% if menu not in 'attaque, materiel, perpetrateur, materielAttaque, moyenAttaque, cible, espace' %}collapsed{% endif %}" aria-expanded="{% if menu in 'attaque, materiel, perpetrateur, materielAttaque, moyenAttaque, cible, espace' %}true{% else %}false{% endif %}">
+                        <em class="fas fa-cog"></em><span>Paramètres</span>
+                    </a>
+                    <ul class="sidebar-nav sidebar-subnav collapse {% if menu in 'attaque, materiel, perpetrateur, materielAttaque, moyenAttaque, cible, espace' %}show{% endif %}" id="attaques">
+                        <li class="sidebar-subnav-header">Référentiels</li>
+                        <li class="{% if menu == 'attaque' %}active{% endif %}"><a href="{{ path('attaque') }}"><span>Types d'attaques</span></a></li>
+                        <li class="{% if menu == 'cible' %}active{% endif %}"><a href="{{ path('cible') }}"><span>Cibles</span></a></li>
+                        <li class="{% if menu == 'materiel' %}active{% endif %}"><a href="{{ path('materiel') }}"><span>Matériaux récupérés</span></a></li>
+                        <li class="{% if menu == 'materielAttaque' %}active{% endif %}"><a href="{{ path('materielAttaque') }}"><span>Matériaux d'attaque</span></a></li>
+                        <li class="{% if menu == 'moyenAttaque' %}active{% endif %}"><a href="{{ path('moyenAttaque') }}"><span>Moyens d'attaque</span></a></li>
+                        <li class="{% if menu == 'perpetrateur' %}active{% endif %}"><a href="{{ path('perpetrateur') }}"><span>Groupes</span></a></li>
+                        <li class="{% if menu == 'espace' %}active{% endif %}"><a href="{{ path('espace') }}"><span>Espace</span></a></li>
+                    </ul>
+                </li>
+            </ul>
+            {% endif %}
+        </nav>
+    </div>
+</aside>

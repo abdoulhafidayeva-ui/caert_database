@@ -1,0 +1,94 @@
+{{ form_start(form, { attr: { class: 'caert-incident-form', novalidate: 'novalidate' } }) }}
+
+<div class="caert-form-section">
+    <h3 class="caert-form-section-title"><em class="fas fa-map-marked-alt"></em> Localisation &amp; contexte</h3>
+    <div class="row">
+        {% if form.dateAttaque is defined %}
+            <div class="col-md-4">{{ form_row(form.dateAttaque) }}</div>
+        {% endif %}
+        {% if form.regions is defined %}
+            <div class="col-md-4">{{ form_row(form.regions) }}</div>
+        {% endif %}
+        {% if form.pays is defined %}
+            <div class="col-md-4">{{ form_row(form.pays) }}</div>
+        {% endif %}
+        {% if form.localite is defined %}
+            <div class="col-md-4">{{ form_row(form.localite) }}</div>
+        {% endif %}
+        {% if form.espace is defined %}
+            <div class="col-md-4">{{ form_row(form.espace) }}</div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="caert-form-section">
+    <h3 class="caert-form-section-title"><em class="fas fa-crosshairs"></em> Nature de l'incident</h3>
+    <div class="row">
+        <div class="col-md-4">{{ form_row(form.attaque) }}</div>
+        <div class="col-md-4">{{ form_row(form.moyenAttaque) }}</div>
+        <div class="col-md-4">{{ form_row(form.perpetrateur) }}</div>
+        <div class="col-md-4">{{ form_row(form.cible) }}</div>
+        <div class="col-md-4">{{ form_row(form.materieaux) }}</div>
+        <div class="col-md-4">{{ form_row(form.materielAttaque) }}</div>
+        <div class="col-12">{{ form_row(form.details) }}</div>
+    </div>
+</div>
+
+<div class="caert-form-section">
+    <h3 class="caert-form-section-title"><em class="fas fa-heart-broken"></em> Victimes — décès</h3>
+    <div class="row">
+        <div class="col-md-4">{{ form_row(form.mortCivil) }}</div>
+        <div class="col-md-4">{{ form_row(form.mortSecuriteMilitaire) }}</div>
+        <div class="col-md-4">{{ form_row(form.mortTerroriste) }}</div>
+    </div>
+</div>
+
+{% if form.disparuCivil is defined or form.disparuSecuriteMilitaire is defined or form.disparuTerroriste is defined %}
+<div class="caert-form-section">
+    <h3 class="caert-form-section-title"><em class="fas fa-user-slash"></em> Victimes — disparus</h3>
+    <div class="row">
+        {% if form.disparuCivil is defined %}
+            <div class="col-md-4">{{ form_row(form.disparuCivil) }}</div>
+        {% endif %}
+        {% if form.disparuSecuriteMilitaire is defined %}
+            <div class="col-md-4">{{ form_row(form.disparuSecuriteMilitaire) }}</div>
+        {% endif %}
+        {% if form.disparuTerroriste is defined %}
+            <div class="col-md-4">{{ form_row(form.disparuTerroriste) }}</div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<div class="caert-form-section">
+    <h3 class="caert-form-section-title"><em class="fas fa-procedures"></em> Victimes — blessés &amp; autres</h3>
+    <div class="row">
+        <div class="col-md-4">{{ form_row(form.blesseCivil) }}</div>
+        <div class="col-md-4">{{ form_row(form.blesseSecuriteMilitaire) }}</div>
+        <div class="col-md-4">{{ form_row(form.blesseTerroriste) }}</div>
+        <div class="col-md-4">{{ form_row(form.otages) }}</div>
+        <div class="col-md-4">{{ form_row(form.liberes) }}</div>
+        <div class="col-md-4">{{ form_row(form.terroristeArretes) }}</div>
+        <div class="col-12">{{ form_row(form.autres) }}</div>
+    </div>
+</div>
+
+<div class="caert-form-section">
+    <h3 class="caert-form-section-title"><em class="fas fa-sticky-note"></em> Suivi</h3>
+    <div class="row">
+        <div class="col-md-8">{{ form_row(form.remarque) }}</div>
+    </div>
+</div>
+
+<div class="caert-form-actions">
+    {% if form.save is defined %}
+        {{ form_widget(form.save, { attr: { class: 'btn btn-primary' } }) }}
+    {% else %}
+        <button type="submit" class="btn btn-primary">
+            <em class="fas fa-save"></em> {{ submitLabel|default('Enregistrer') }}
+        </button>
+    {% endif %}
+    <a href="{{ cancelUrl|default(path('app_home')) }}" class="btn btn-outline-secondary">Annuler</a>
+</div>
+
+{{ form_end(form) }}
