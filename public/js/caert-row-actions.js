@@ -5,17 +5,54 @@
     'use strict';
 
     var MENU_CLASS = 'caert-row-actions-menu';
+    var OPEN_CLASS = 'is-open';
+    var TOGGLE_SELECTOR = '[data-caert-actions-toggle]';
+
+    function getOpenMenu() {
+        return $('body > .' + MENU_CLASS);
+    }
+
+    function isOpenForToggle($toggle) {
+        var $open = getOpenMenu();
+
+        if (!$open.length) {
+            return false;
+        }
+
+        var $linkedToggle = $open.data('caertToggle');
+
+        return $linkedToggle && $linkedToggle[0] === $toggle[0];
+    }
+
+    function closeMenu($menu) {
+        if (!$menu || !$menu.length) {
+            return;
+        }
+
+        var $group = $menu.data('caertGroup');
+        var $toggle = $menu.data('caertToggle');
+
+        $menu.removeClass(MENU_CLASS + ' ' + OPEN_CLASS + ' show').removeAttr('style');
+
+        if ($group && $group.length) {
+            $group.append($menu);
+        }
+
+        if ($toggle && $toggle.length) {
+            $toggle.attr('aria-expanded', 'false');
+        }
+
+        $menu.removeData('caertGroup');
+        $menu.removeData('caertToggle');
+    }
 
     function closeAllMenus() {
-        $('.' + MENU_CLASS).each(function () {
-            var $menu = $(this);
-            var $group = $menu.data('caertGroup');
+        getOpenMenu().each(function () {
+            closeMenu($(this));
+        });
 
-            $menu.removeClass('show is-open').removeAttr('style');
-            if ($group && $group.length) {
-                $group.append($menu);
-            }
-            $menu.removeData('caertGroup');
+        $('.caert-row-actions .' + MENU_CLASS).each(function () {
+            closeMenu($(this));
         });
     }
 
@@ -33,36 +70,41 @@
         });
     }
 
-    $(document).on('click', '[data-caert-actions-toggle]', function (e) {
+    $(document).on('click', TOGGLE_SELECTOR, function (e) {
         e.preventDefault();
         e.stopPropagation();
 
         var $toggle = $(this);
+
+        if (isOpenForToggle($toggle)) {
+            closeAllMenus();
+            return;
+        }
+
+        closeAllMenus();
+
         var $group = $toggle.closest('.caert-row-actions');
-        var $menu = $group.find('.dropdown-menu').first();
+        var $menu = $group.children('.dropdown-menu').first();
 
         if (!$menu.length) {
             return;
         }
 
-        var wasOpen = $menu.hasClass('is-open');
+        $menu.data('caertGroup', $group);
+        $menu.data('caertToggle', $toggle);
+        $('body').append($menu.addClass(MENU_CLASS + ' ' + OPEN_CLASS + ' show'));
+        positionMenu($toggle, $menu);
+        $toggle.attr('aria-expanded', 'true');
+    });
 
-        closeAllMenus();
-
-        if (!wasOpen) {
-            $menu.data('caertGroup', $group);
-            $('body').append($menu.addClass(MENU_CLASS + ' is-open show'));
-            positionMenu($toggle, $menu);
+    $(document).on('click', function (e) {
+        if ($(e.target).closest(TOGGLE_SELECTOR).length || $(e.target).closest('.' + MENU_CLASS).length) {
+            return;
         }
-    });
 
-    $(document).on('click', function () {
         closeAllMenus();
-    });
-
-    $(document).on('click', '.' + MENU_CLASS, function (e) {
-        e.stopPropagation();
     });
 
     $(window).on('resize scroll', closeAllMenus);
+    $(document).on('draw.dt', closeAllMenus);
 })(window.jQuery);

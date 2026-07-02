@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Moyens d'attaque{% endblock %}
+{% block title %}{{ 'referential.attack_mean.title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="wrapper">
@@ -9,11 +9,8 @@
     <section class="section-container">
         <div class="content-wrapper">
             {% include '_partials/referential_list_content.html.twig' with {
-                title: 'Moyens d\'attaque',
-                subtitle: 'Référentiel',
+                title: 'referential.attack_mean.title'|trans,
                 backUrl: path('moyenAttaque'),
-                formPanelTitle: 'Ajouter un moyen d\'attaque',
-                listPanelTitle: 'Liste des moyens d\'attaque',
                 tableWrapperId: 'moyenAttaqueTable-wrapper',
                 form: form
             } %}

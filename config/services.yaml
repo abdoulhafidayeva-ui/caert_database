@@ -44,5 +44,18 @@ services:
         arguments:
             $defaultUri: '%app.default_uri%'
 
+    App\Service\Locale\LocaleResolver:
+        arguments:
+            $countryLocales: '%app.country_locales%'
+            $regionLocales: '%app.region_locales%'
+
+    App\Service\Config\EditableEnvRegistry:
+        arguments:
+            $editableEnvVars: '%app.editable_env_vars%'
+
+    App\Service\Config\EnvFileManager:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

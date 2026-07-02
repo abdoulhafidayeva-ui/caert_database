@@ -60,7 +60,7 @@
 
         $select.select2(options || {
 
-            placeholder: 'Séléctionner',
+            placeholder: (window.caertI18n && window.caertI18n.select) || 'Select',
 
             allowClear: true,
 
@@ -148,7 +148,7 @@
 
         var valueKey = options.valueKey || 'id';
 
-        var placeholder = options.placeholder || 'Choisir';
+        var placeholder = options.placeholder || (window.caertI18n && window.caertI18n.choose) || 'Choose';
 
         var previous = select.value;
 
@@ -202,7 +202,7 @@
 
         return {
 
-            placeholder: 'Séléctionner',
+            placeholder: (window.caertI18n && window.caertI18n.select) || 'Select',
 
             allowClear: true,
 
@@ -344,7 +344,7 @@
 
                 if (!libelle) {
 
-                    rebuildNativeSelect(paysEl, [], { placeholder: 'Choisir' });
+                    rebuildNativeSelect(paysEl, [], { placeholder: (window.caertI18n && window.caertI18n.choose) || 'Choose' });
 
                     return;
 
@@ -362,7 +362,7 @@
 
                             valueKey: 'id',
 
-                            placeholder: 'Choisir',
+                            placeholder: (window.caertI18n && window.caertI18n.choose) || 'Choose',
 
                         });
 

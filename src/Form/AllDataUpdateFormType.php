@@ -13,29 +13,24 @@ use App\Entity\Pays;
 use App\Entity\Perpetrateurs;
 use App\Entity\Region;
 use App\Entity\User;
-use App\Repository\CibleRepository;
-use App\Repository\MateriauxRepository;
-use App\Repository\MaterielAttaqueRepository;
-use App\Repository\MoyenAttaqueRepository;
 use App\Repository\PaysRepository;
-use App\Repository\PerpetrateursRepository;
 use App\Repository\RegionRepository;
+use App\Service\Security\IncidentCountryGuard;
+use App\Service\UserManager;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use App\Service\UserManager;
-use App\Service\Security\IncidentCountryGuard;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AllDataUpdateFormType extends AbstractType
 {
@@ -47,20 +42,16 @@ class AllDataUpdateFormType extends AbstractType
         private readonly IncidentCountryGuard $countryGuard,
         private readonly RegionRepository $regionRepository,
         private readonly PaysRepository $paysRepository,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $roles = $this->userManager->getRoles();
-        $rolesChoices = [];
-        if(count($roles)){
-            asort($roles);
-            $rolesChoices = $this->normalizeRoles($roles);
-        }
+        $ph = fn (string $key): string => $this->translator->trans($key);
 
         $regionFieldOptions = [
-            'label' => 'Région',
+            'label' => 'incident.field.region',
             'class' => Region::class,
             'mapped' => false,
             'choices' => $this->regionRepository->findAllUniqueByLibelle(),
@@ -68,7 +59,7 @@ class AllDataUpdateFormType extends AbstractType
             'multiple' => false,
             'expanded' => false,
             'required' => false,
-            'placeholder' => 'Choisir',
+            'placeholder' => 'common.choose',
         ];
 
         $formModifier = function (FormInterface $form, ?Region $region = null, ?Pays $selectedPays = null) {
@@ -82,111 +73,158 @@ class AllDataUpdateFormType extends AbstractType
                 'data' => $selectedPays,
                 'required' => true,
                 'choice_label' => 'libelle',
-                'placeholder' => 'Choisir',
+                'placeholder' => 'common.choose',
                 'attr' => ['class' => 'custom-select'],
-                'label' => 'Pays',
+                'label' => 'incident.field.country',
             ]);
         };
 
         $builder
             ->add('dateAttaque', DateType::class, [
-                'label' => 'Date d\'attaque',
+                'label' => 'incident.field.attack_date',
                 'required' => true,
                 'widget' => 'single_text',
                 'html5' => false,
                 'format' => 'dd/MM/yyyy',
-                'attr' => ['class' => 'js-datepicker', 'autocomplete' => 'off', 'placeholder' => 'jj/mm/aaaa'],
+                'attr' => [
+                    'class' => 'js-datepicker',
+                    'autocomplete' => 'off',
+                    'placeholder' => $ph('incident.field.date_placeholder'),
+                ],
             ])
             ->add('regions', EntityType::class, $regionFieldOptions)
             ->add('pays', ChoiceType::class, [
-                'placeholder' => 'Pays (choisir une région)',
+                'placeholder' => 'incident.field.country_region_first',
                 'required' => true,
             ])
             ->add('localite', TextType::class, [
                 'required' => true,
-                'label' => 'Localité',
-                'attr' => ['placeholder' => 'Localité'],
+                'label' => 'incident.field.locality',
+                'attr' => ['placeholder' => $ph('incident.field.locality')],
             ])
             ->add('espace', EntityType::class, [
-                'label' => 'Espace',
+                'label' => 'incident.field.space',
                 'class' => Espace::class,
                 'required' => true,
-                'placeholder' => 'Choisir',
+                'placeholder' => 'common.choose',
             ])
             ->add('perpetrateur', EntityType::class, [
-                'label' => 'Groupe terroriste',
+                'label' => 'incident.field.terrorist_group',
                 'class' => Perpetrateurs::class,
                 'multiple' => false,
-                'required'    => true,
-                'placeholder' => 'Choisir'
+                'required' => true,
+                'placeholder' => 'common.choose',
             ])
-            ->add('details', TextareaType::class,
-                ['required' => true, 'label' => 'Détail', 'attr' => ['placeholder' => 'Détails']])
-                
+            ->add('details', TextareaType::class, [
+                'required' => true,
+                'label' => 'incident.field.details',
+                'attr' => ['placeholder' => $ph('incident.field.details_placeholder')],
+            ])
             ->add('moyenAttaque', EntityType::class, [
-                'label' => 'Moyens d\'attaque',
+                'label' => 'incident.field.attack_means',
                 'class' => MoyenAttaque::class,
                 'multiple' => false,
-                'required'    => true,
-                'placeholder' => 'Choisir'
+                'required' => true,
+                'placeholder' => 'common.choose',
             ])
             ->add('attaque', EntityType::class, [
-                'label' => 'Type d\'Attaque',
+                'label' => 'incident.field.attack_type',
                 'class' => Attaque::class,
                 'multiple' => false,
-                'required'    => true,
-                'placeholder' => 'Choisir'
+                'required' => true,
+                'placeholder' => 'common.choose',
             ])
             ->add('materieaux', EntityType::class, [
-                'label' => 'Matériaux d\'attaque',
+                'label' => 'incident.field.attack_materials',
                 'class' => Materiaux::class,
                 'multiple' => false,
-                'required'    => true,
-                'placeholder' => 'Choisir'
+                'required' => true,
+                'placeholder' => 'common.choose',
             ])
             ->add('cible', EntityType::class, [
-                'label' => 'Cible principale',
+                'label' => 'incident.field.main_target',
                 'class' => Cible::class,
                 'multiple' => false,
-                'required'    => true,
-                'placeholder' => 'Choisir'
+                'required' => true,
+                'placeholder' => 'common.choose',
             ])
-            ->add('mortSecuriteMilitaire', IntegerType::class,
-                ['required' => true, 'label' => 'Mort sécurité militaire', 'attr' => ['placeholder' => 'Mort Sécurité militaire']])
-            ->add('mortCivil', IntegerType::class,
-                    ['required' => true, 'label' => 'Mort civils', 'attr' => ['placeholder' => 'mort civil']])
-            ->add('mortTerroriste', IntegerType::class,
-                    ['required' => true, 'label' => 'Mort terroriste', 'attr' => ['placeholder' => 'mort terroriste']])
-            ->add('disparuSecuriteMilitaire', IntegerType::class,
-                    ['required' => true, 'label' => 'disparu securité militaire', 'attr' => ['placeholder' => 'disparu militaire']])
-            ->add('disparuCivil', IntegerType::class,
-                    ['required' => true, 'label' => 'disparu civil', 'attr' => ['placeholder' => 'disparu civil']])
-            ->add('disparuTerroriste', IntegerType::class,
-                    ['required' => true, 'label' => 'disparu terroriste', 'attr' => ['placeholder' => 'disparu térroriste']])
-            ->add('blesseSecuriteMilitaire', IntegerType::class,
-                    ['required' => true, 'label' => 'blessés securité militaire', 'attr' => ['placeholder' => 'blessé militaire']])
-            ->add('blesseCivil', IntegerType::class,
-                    ['required' => true, 'label' => 'blessés civil', 'attr' => ['placeholder' => 'blessés civil']])
-            ->add('blesseTerroriste', IntegerType::class,
-                    ['required' => true, 'label' => 'blessés terroriste', 'attr' => ['placeholder' => 'blessés térroriste']])
-            ->add('otages', IntegerType::class,
-                    ['required' => true, 'label' => 'Otages', 'attr' => ['placeholder' => 'otages']])
-            ->add('liberes', IntegerType::class,
-                    ['required' => true, 'label' => 'Libérés', 'attr' => ['placeholder' => 'libérés']])
-            ->add('terroristeArretes', IntegerType::class,
-                    ['required' => true, 'label' => 'Terroristes arrêtés', 'attr' => ['placeholder' => 'Terroristes arrêtés']])
+            ->add('mortSecuriteMilitaire', IntegerType::class, [
+                'required' => true,
+                'label' => 'incident.field.deaths_military',
+                'attr' => ['placeholder' => $ph('incident.field.deaths_military')],
+            ])
+            ->add('mortCivil', IntegerType::class, [
+                'required' => true,
+                'label' => 'incident.field.deaths_civilian',
+                'attr' => ['placeholder' => $ph('incident.field.deaths_civilian')],
+            ])
+            ->add('mortTerroriste', IntegerType::class, [
+                'required' => true,
+                'label' => 'incident.field.deaths_terrorist',
+                'attr' => ['placeholder' => $ph('incident.field.deaths_terrorist')],
+            ])
+            ->add('disparuSecuriteMilitaire', IntegerType::class, [
+                'required' => true,
+                'label' => 'incident.field.missing_military',
+                'attr' => ['placeholder' => $ph('incident.field.missing_military')],
+            ])
+            ->add('disparuCivil', IntegerType::class, [
+                'required' => true,
+                'label' => 'incident.field.missing_civilian',
+                'attr' => ['placeholder' => $ph('incident.field.missing_civilian')],
+            ])
+            ->add('disparuTerroriste', IntegerType::class, [
+                'required' => true,
+                'label' => 'incident.field.missing_terrorist',
+                'attr' => ['placeholder' => $ph('incident.field.missing_terrorist')],
+            ])
+            ->add('blesseSecuriteMilitaire', IntegerType::class, [
+                'required' => true,
+                'label' => 'incident.field.injured_military',
+                'attr' => ['placeholder' => $ph('incident.field.injured_military')],
+            ])
+            ->add('blesseCivil', IntegerType::class, [
+                'required' => true,
+                'label' => 'incident.field.injured_civilian',
+                'attr' => ['placeholder' => $ph('incident.field.injured_civilian')],
+            ])
+            ->add('blesseTerroriste', IntegerType::class, [
+                'required' => true,
+                'label' => 'incident.field.injured_terrorist',
+                'attr' => ['placeholder' => $ph('incident.field.injured_terrorist')],
+            ])
+            ->add('otages', IntegerType::class, [
+                'required' => true,
+                'label' => 'incident.field.hostages',
+                'attr' => ['placeholder' => $ph('incident.field.hostages')],
+            ])
+            ->add('liberes', IntegerType::class, [
+                'required' => true,
+                'label' => 'incident.field.released',
+                'attr' => ['placeholder' => $ph('incident.field.released')],
+            ])
+            ->add('terroristeArretes', IntegerType::class, [
+                'required' => true,
+                'label' => 'incident.field.arrested',
+                'attr' => ['placeholder' => $ph('incident.field.arrested')],
+            ])
             ->add('materielAttaque', EntityType::class, [
-                        'label' => 'Matériaux récupérés',
-                        'class' => MaterielAttaque::class,
-                        'multiple' => false,
-                        'required'    => true,
-                        'placeholder' => 'Choisir'
-                    ])
-            ->add('autres', TextareaType::class,
-                    ['required' => true, 'label' => 'Autres victime', 'attr' => ['placeholder' => 'Autres victime']])
-            ->add('remarque', TextType::class,
-                    ['required' => true, 'label' => 'Remarque', 'attr' => ['placeholder' => 'Remarque']])
-                    
+                'label' => 'incident.field.recovered_materials',
+                'class' => MaterielAttaque::class,
+                'multiple' => false,
+                'required' => true,
+                'placeholder' => 'common.choose',
+            ])
+            ->add('autres', TextareaType::class, [
+                'required' => true,
+                'label' => 'incident.field.other_victims',
+                'attr' => ['placeholder' => $ph('incident.field.other_victims')],
+            ])
+            ->add('remarque', TextType::class, [
+                'required' => true,
+                'label' => 'incident.field.remark',
+                'attr' => ['placeholder' => $ph('incident.field.remark')],
+            ])
         ;
 
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($formModifier, $regionFieldOptions) {
@@ -255,36 +293,7 @@ class AllDataUpdateFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => AllData::class,
+            'translation_domain' => 'messages',
         ]);
-    }
-
-
-    private function normalizeRoles($roles)
-    {
-        $rolesNormalized = [];
-        foreach ($roles as $key => $role) {
-            $rolesNormalized[$role] = $role;
-        }
-        return $rolesNormalized;
-    }
-
-    private function getChoices()
-    {
-        $choices = User::NOTIFYBY;
-        $output = [];
-        foreach ($choices as $key => $value) {
-            $output[$value] = $key;
-        }
-        return $output;
-    }
-
-    private function getProfils()
-    {
-        $choices = User::PROFILS;
-        $output = [];
-        foreach ($choices as $key => $value) {
-            $output[$value] = $key;
-        }
-        return $output;
     }
 }

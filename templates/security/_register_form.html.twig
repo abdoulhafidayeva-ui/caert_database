@@ -1,5 +1,4 @@
 {{ form_start(form) }}
-        {# {{ form_row(form.name) }} #}
     {{ form_rest(form) }}
-    <button class="btn btn-block btn-primary mt-3 col-lg-4 float-right" type="submit" formnovalidate data-loading-label="{% if button|default('') == "M'inscrire" %}Inscription…{% elseif button|default('') == "Créer" %}Création…{% else %}Enregistrement…{% endif %}">{{ button|default('Enrégistrer') }}</button>
+    <button class="btn btn-block btn-primary mt-3 col-lg-4 float-right" type="submit" formnovalidate data-loading-label="{{ loading|default('user.save_loading'|trans) }}">{{ button|default('user.save_btn'|trans) }}</button>
 {{ form_end(form) }}

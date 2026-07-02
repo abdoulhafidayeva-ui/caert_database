@@ -47,4 +47,5 @@ security:
         - { path: ^/users, roles: ROLE_SUPER_ADMIN }
         - { path: ^/user/, roles: ROLE_SUPER_ADMIN }
         - { path: ^/register, roles: ROLE_SUPER_ADMIN }
+        - { path: ^/admin/env-config, roles: ROLE_SUPER_ADMIN }
         - { path: ^/, roles: ROLE_USER }

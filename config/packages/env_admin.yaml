@@ -1,0 +1,26 @@
+parameters:
+    app.editable_env_vars:
+        MAILER_DSN:
+            label: env_config.field.mailer_dsn
+            group: env_config.group.mail
+            type: text
+            required: true
+            help: env_config.help.mailer_dsn
+        DEFAULT_URI:
+            label: env_config.field.default_uri
+            group: env_config.group.application
+            type: url
+            required: true
+            help: env_config.help.default_uri
+        APP_URL:
+            label: env_config.field.app_url
+            group: env_config.group.application
+            type: url
+            required: false
+            help: env_config.help.app_url
+        DATABASE_URL:
+            label: env_config.field.database_url
+            group: env_config.group.database
+            type: password
+            required: true
+            help: env_config.help.database_url

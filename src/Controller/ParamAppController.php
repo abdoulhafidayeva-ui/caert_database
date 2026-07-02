@@ -72,7 +72,7 @@ class ParamAppController extends AbstractController
 
             $this->em->persist($user);
             $this->em->flush();
-            $this->addFlash('success', 'Configuration terminée!! Connectez vous à votre application');
+            $this->addFlash('success', 'flash.install_complete');
         }
         return $this->render('parametrage/app_first_user.html.twig',['form' => $form->createView()]);
     }

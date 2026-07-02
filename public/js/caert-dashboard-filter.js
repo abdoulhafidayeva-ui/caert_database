@@ -4,7 +4,7 @@
 (function ($) {
     'use strict';
 
-    var FILTER_COLUMNS = ['attaque', 'cible', 'pays', 'perpetrateurs', 'espace', 'region', 'dateAttaque'];
+    var FILTER_COLUMNS = ['isPublished', 'attaque', 'cible', 'pays', 'perpetrateurs', 'espace', 'region', 'dateAttaque'];
 
     function hasValues(values) {
         return Array.isArray(values) && values.length > 0;
@@ -80,7 +80,7 @@
                 $btn.data('original-html', $btn.html());
             }
             $btn.prop('disabled', true).addClass('is-loading');
-            $btn.html('<span class="caert-btn-spinner" aria-hidden="true"></span> Recherche…');
+            $btn.html('<span class="caert-btn-spinner" aria-hidden="true"></span> ' + ((window.caertI18n && window.caertI18n.searching) || 'Searching…'));
             $panel.addClass('is-processing');
         } else {
             $btn.prop('disabled', false).removeClass('is-loading');
@@ -172,7 +172,7 @@
         }
 
         $el.select2({
-            placeholder: 'Séléctionner',
+            placeholder: (window.caertI18n && window.caertI18n.select) || 'Select',
             allowClear: true,
             theme: 'bootstrap4',
             width: '100%',
@@ -238,6 +238,7 @@
             e.preventDefault();
             setSearchLoading(true);
 
+            setMultiSearch(dt, columnMap, 'isPublished', $('#filterStatus').val());
             setMultiSearch(dt, columnMap, 'attaque', $('#attaque').val());
             setMultiSearch(dt, columnMap, 'cible', $('#cible').val());
             setMultiSearch(dt, columnMap, 'pays', $('#pays').val());

@@ -1,6 +1,7 @@
 <?php
 namespace App\DataTable;
 
+use App\DataTable\Trait\RowNumberColumnTrait;
 use App\Entity\AllData;
 use App\Entity\Attaque;
 use App\Entity\Cible;
@@ -20,10 +21,12 @@ use Omines\DataTablesBundle\Column\DateTimeColumn;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AllDataDataTableType implements DataTableTypeInterface
 {
-    private $index;
+    use RowNumberColumnTrait;
+
     private $em;
     private $router;
     private $security;
@@ -31,9 +34,9 @@ class AllDataDataTableType implements DataTableTypeInterface
 
     
     public function __construct(EntityManagerInterface $em,
-    UrlGeneratorInterface $router, Security $security, AuthorizationCheckerInterface $authorizationChecker)
+    UrlGeneratorInterface $router, Security $security, AuthorizationCheckerInterface $authorizationChecker,
+    private readonly TranslatorInterface $translator)
     {
-        $this->index = 0;
         $this->em = $em;
         $this->router = $router;
         $this->security = $security;
@@ -43,46 +46,42 @@ class AllDataDataTableType implements DataTableTypeInterface
     
     public function configure(DataTable $dataTable, array $options): void
     {
+        $l = fn (string $key): string => $this->translator->trans($key);
+        $this->resetRowNumber();
+
         $dataTable->setName($options['dataTableName'])
-            ->add('num', TextColumn::class, [
-                'data' =>  function(){
-                 return ++$this->index;
-                },
-                'label' => '#',
-                'orderable' => false,
-                'searchable' => false,
-                'globalSearchable' => false
-            ])
+            ->add('num', TextColumn::class, $this->rowNumberColumnOptions())
             ->add('actions', TwigColumn::class, [
-                'label' => 'Actions',
+                'label' => $l('user.actions'),
                 'orderable' => false,
                 'template' => 'home/_actions.html.twig'
             ])
             ->add("id", TextColumn::class, [
-                "label" => "#",
+                "label" => "id",
                 "orderable" => true,
                 "searchable" => false,
                 "visible" => false,
-                "globalSearchable" => false
+                "globalSearchable" => false,
+                "field" => "a.id",
             ])
             ->add("isPublished", TextColumn::class, [
-                "label" => "Statut",
+                "label" => $l('incident.status.label'),
                 "orderable" => true,
                 "searchable" => true,
                 "globalSearchable" => true,
                 'className' => 'states',
-                "render" => function($value, AllData $data) {
+                "render" => function($value, AllData $data) use ($l) {
                     if($data->getIsPublished() == 1) {
-                        return "<span class='badge badge-success'>Publié</span>";
+                        return "<span class='badge badge-success'>".$l('incident.status.published')."</span>";
                     }else if ($data->getObjetRejet()){
-                        return "<span class='badge badge-danger'>Rejeté</span>";
+                        return "<span class='badge badge-danger'>".$l('incident.status.rejected')."</span>";
                     }else{
-                        return "<span class='badge badge-warning'>En attente</span>";
+                        return "<span class='badge badge-warning'>".$l('incident.status.pending')."</span>";
                     }
                 }
             ])
             ->add('dateAttaque', DateTimeColumn::class, [
-                'label' => 'Date d\'attaque',
+                'label' => $l('incident.field.attack_date'),
                 'orderable' => true,
                 'searchable' => true,
                 'format' => 'd/m/Y H:i',
@@ -91,7 +90,7 @@ class AllDataDataTableType implements DataTableTypeInterface
             ])
             
             ->add("region", TextColumn::class, [
-                "label" => "Région",
+                "label" => $l('incident.field.region'),
                 "orderable" => true,
                 "visible" => true,
                 "searchable" => true,
@@ -100,7 +99,7 @@ class AllDataDataTableType implements DataTableTypeInterface
                 "field" => "region.libelle"
             ])
             ->add("espace", TextColumn::class, [
-                "label" => "Espace",
+                "label" => $l('incident.field.space'),
                 "orderable" => true,
                 "visible" => true,
                 "searchable" => true,
@@ -109,7 +108,7 @@ class AllDataDataTableType implements DataTableTypeInterface
                 "field" =>"espace.libelle"
             ])
             ->add("pays", TextColumn::class, [
-                "label" => "Pays",
+                "label" => $l('incident.field.country'),
                 "orderable" => true,
                 "visible" => true,
                 "searchable" => true,
@@ -118,7 +117,7 @@ class AllDataDataTableType implements DataTableTypeInterface
                 "field" =>"pays.libelle"
             ])
             ->add("capitale", TextColumn::class, [
-                "label" => "Capitale",
+                "label" => $l('incident.field.capital'),
                 "orderable" => true,
                 "visible" => true,
                 "searchable" => true,
@@ -127,14 +126,14 @@ class AllDataDataTableType implements DataTableTypeInterface
                 "field" =>"pays.capitale"
             ])
             ->add('localite', TextColumn::class, [
-                'label' => 'localite',
+                'label' => $l('incident.field.locality'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             
             ->add("perpetrateurs", TextColumn::class, [
-                "label" => "Groupe terroriste",
+                "label" => $l('incident.field.terrorist_group'),
                 "orderable" => true,
                 "visible" => true,
                 "searchable" => true,
@@ -143,13 +142,13 @@ class AllDataDataTableType implements DataTableTypeInterface
                 "field" =>"perpetrateurs.libelle"
             ])
             ->add('details', TextColumn::class, [
-                'label' => 'details',
+                'label' => $l('incident.field.details'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             ->add("moyenAttaque", TextColumn::class, [
-                "label" => "Moyen",
+                "label" => $l('incident.field.means'),
                 "orderable" => true,
                 "visible" => true,
                 "searchable" => true,
@@ -158,7 +157,7 @@ class AllDataDataTableType implements DataTableTypeInterface
                 "field" =>"moyenAttaque.libelle"
             ])
             ->add("cible", TextColumn::class, [
-                "label" => "Cible",
+                "label" => $l('incident.field.target'),
                 "orderable" => true,
                 "visible" => true,
                 "searchable" => true,
@@ -167,86 +166,86 @@ class AllDataDataTableType implements DataTableTypeInterface
                 "field" =>"cible.libelle"
             ])
             ->add('mortCivil', TextColumn::class, [
-                'label' => 'Mort civil',
+                'label' => $l('incident.field.deaths_civilian'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             ->add('mortSecuriteMilitaire', TextColumn::class, [
-                'label' => 'Mort securité militaire',
+                'label' => $l('incident.field.deaths_military'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             ->add('mortTerroriste', TextColumn::class, [
-                'label' => 'Mort terroriste',
+                'label' => $l('incident.field.deaths_terrorist'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             ->add('disparuCivil', TextColumn::class, [
-                'label' => 'Disparu civil',
+                'label' => $l('incident.field.missing_civilian'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             ->add('disparuSecuriteMilitaire', TextColumn::class, [
-                'label' => 'Disparu securité militaire',
+                'label' => $l('incident.field.missing_military'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             ->add('disparuTerroriste', TextColumn::class, [
-                'label' => 'Disparu terroriste',
+                'label' => $l('incident.field.missing_terrorist'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             ->add('blesseCivil', TextColumn::class, [
-                'label' => 'Blessé civil',
+                'label' => $l('incident.field.injured_civilian'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             ->add('blesseSecuriteMilitaire', TextColumn::class, [
-                'label' => 'Blessé securité militaire',
+                'label' => $l('incident.field.injured_military'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             ->add('blesseTerroriste', TextColumn::class, [
-                'label' => 'Blessé terroriste',
+                'label' => $l('incident.field.injured_terrorist'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             ->add('totalDeces', TextColumn::class, [
-                'label' => 'Total dècès',
+                'label' => $l('incident.field.total_deaths'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             ->add('totalDisparus', TextColumn::class, [
-                'label' => 'Total disparus',
+                'label' => $l('incident.field.total_missing'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             ->add('totalBlesses', TextColumn::class, [
-                'label' => 'Total blessés',
+                'label' => $l('incident.field.total_injured'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             ->add('liberes', TextColumn::class, [
-                'label' => 'Libérés',
+                'label' => $l('incident.field.released'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             
             ->add("attaque", TextColumn::class, [
-                "label" => "Attaque",
+                "label" => $l('incident.field.attack'),
                 "orderable" => true,
                 "visible" => true,
                 "searchable" => true,
@@ -255,7 +254,7 @@ class AllDataDataTableType implements DataTableTypeInterface
                 "field" =>"attaque.libelle"
             ])
             ->add("materielAttaque", TextColumn::class, [
-                "label" => "Materiel attaque",
+                "label" => $l('incident.field.recovered_materials'),
                 "orderable" => true,
                 "visible" => true,
                 "searchable" => true,
@@ -264,19 +263,19 @@ class AllDataDataTableType implements DataTableTypeInterface
                 "field" =>"materielAttaque.libelle"
             ])
             ->add('otages', TextColumn::class, [
-                'label' => 'Otages',
+                'label' => $l('incident.field.hostages'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             ->add('terroristeArretes', TextColumn::class, [
-                'label' => 'Terroristes arrêtés',
+                'label' => $l('incident.field.arrested'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             ->add("materieaux", TextColumn::class, [
-                "label" => "Materieaux récupérés",
+                "label" => $l('incident.field.attack_materials'),
                 "orderable" => true,
                 "visible" => true,
                 "searchable" => true,
@@ -285,36 +284,36 @@ class AllDataDataTableType implements DataTableTypeInterface
                 "field" =>"materieaux.libelle"
             ])
             ->add('autres', TextColumn::class, [
-                'label' => 'Autres',
+                'label' => $l('incident.field.other'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             ->add('remarque', TextColumn::class, [
-                'label' => 'Remarques',
+                'label' => $l('incident.field.remarks'),
                 'orderable' => true,
                 'searchable' => true,
                 'globalSearchable' => true
             ])
             ->add("user", TextColumn::class, [
-                "label" => "Saisie",
+                "label" => $l('incident.field.entry'),
                 "orderable" => true,
                 "visible" => true,
                 "searchable" => true,
                 "globalSearchable" => true,
                 'className' => 'agent',
                 "field" =>"user.id",
-                "render" => function($value, AllData $allData){
+                "render" => function($value, AllData $allData) use ($l){
                     if ($allData->getUser()) {
                         $to_return = $allData->getUser()->getName()." ".$allData->getUser()->getPrenoms();
                     }else{
-                        $to_return = "<span style='color:silver'>Personne</span>";
+                        $to_return = "<span style='color:silver'>".$l('incident.field.nobody')."</span>";
                     }
                     return $to_return;
                 }
             ])
             ->add('createdAt', DateTimeColumn::class, [
-                'label' => 'Date',
+                'label' => $l('incident.field.entry_date'),
                 'orderable' => true,
                 'format' => 'd/m/Y H:i:s',
                 'globalSearchable' => false,
@@ -351,6 +350,11 @@ class AllDataDataTableType implements DataTableTypeInterface
 
                         if ($columnName === 'dateAttaque' || $columnName === 'createdAt') {
                             $this->applyDateAttaqueFilter($qb, $value);
+                            continue;
+                        }
+
+                        if ($columnName === 'isPublished') {
+                            $this->applyStatusFilter($qb, $value);
                             continue;
                         }
 
@@ -398,6 +402,33 @@ class AllDataDataTableType implements DataTableTypeInterface
         }
 
         return [$trimmed];
+    }
+
+    private function applyStatusFilter(QueryBuilder $qb, mixed $value): void
+    {
+        $statuses = $this->normalizeColumnSearchValue($value);
+        if ($statuses === null) {
+            return;
+        }
+
+        $parts = [];
+        foreach ($statuses as $status) {
+            switch ($status) {
+                case 'pending':
+                    $parts[] = '(a.isPublished IS NULL AND (a.objetRejet IS NULL OR a.objetRejet = \'\'))';
+                    break;
+                case 'published':
+                    $parts[] = 'a.isPublished = true';
+                    break;
+                case 'rejected':
+                    $parts[] = '(a.isPublished = false OR (a.objetRejet IS NOT NULL AND a.objetRejet <> \'\'))';
+                    break;
+            }
+        }
+
+        if ($parts !== []) {
+            $qb->andWhere('('.implode(' OR ', $parts).')');
+        }
     }
 
     private function applyDateAttaqueFilter(QueryBuilder $qb, mixed $value): void

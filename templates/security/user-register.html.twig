@@ -1,22 +1,23 @@
 {% extends 'base.html.twig' %}
 
 {% block body_class %}caert-app caert-auth{% endblock %}
-{% block title %}Inscription{% endblock %}
+{% block title %}{{ 'auth.register_title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="wrapper">
     <div class="caert-auth-shell" style="max-width: 560px;">
         <div class="caert-auth-card">
             <div class="caert-auth-brand">
-                <h1>Inscription</h1>
-                <p>Demande d'accès à la plateforme CAERT</p>
+                {% include '_brand_logo.html.twig' with { brand_logo_class: 'caert-brand-logo--auth' } %}
+                <h1>{{ 'brand.name'|trans }}</h1>
+                <p>{{ 'auth.register_platform'|trans }}</p>
             </div>
             <div class="caert-auth-body">
                 {% include "_flash_message.html.twig" %}
-                {{ include('security/_register_form.html.twig', {form: form, button: "M'inscrire"}) }}
+                {{ include('security/_register_form.html.twig', {form: form, button: 'auth.register_btn'|trans}) }}
             </div>
             <div class="caert-auth-footer">
-                <a href="{{ path('app_login') }}">Déjà un compte ? Se connecter</a>
+                <a href="{{ path('app_login') }}">{{ 'auth.already_account'|trans }}</a>
             </div>
         </div>
     </div>

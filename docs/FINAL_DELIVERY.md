@@ -33,6 +33,7 @@ Cette livraison finalise l'architecture, la performance, la sécurité, les pipe
 | **CI** | Lint, migrations, PHPUnit, Docker build | `.github/workflows/ci.yml` |
 | **UX** | Couche enterprise CSS, KPIs dashboard | `public/css/caert-enterprise.css` |
 | **Docs** | Architecture, déploiement, ops | `docs/` |
+| **Documentation & formation** | Corpus institutionnel complet | `docs/README.md`, `docs/TRAINING_DOCUMENTATION_PHASE.md` |
 
 ---
 

@@ -1,0 +1,20 @@
+{% use "bootstrap_4_layout.html.twig" %}
+
+{% block choice_widget_collapsed %}
+    {%- if placeholder is not none -%}
+        {% set attr = attr|merge({'data-placeholder': placeholder|trans({}, translation_domain)}) %}
+    {%- elseif attr['data-placeholder'] is defined -%}
+        {% set attr = attr|merge({'data-placeholder': attr['data-placeholder']|trans({}, translation_domain)}) %}
+    {%- endif -%}
+    {{- parent() -}}
+{% endblock %}
+
+{% block form_widget_simple %}
+    {%- if attr.placeholder is defined -%}
+        {%- set ph = attr.placeholder -%}
+        {%- if ph is not empty and '.' in ph and ph|length < 80 -%}
+            {% set attr = attr|merge({placeholder: ph|trans({}, translation_domain|default('messages'))}) %}
+        {%- endif -%}
+    {%- endif -%}
+    {{- parent() -}}
+{% endblock %}

@@ -6,14 +6,13 @@ use App\Entity\AllData;
 use App\Entity\Region;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_USER')]
-class GraphiqueController extends AbstractController
+class GraphiqueController extends AbstractAppController
 {
     private string $menu = 'graphique';
 
@@ -24,9 +23,9 @@ class GraphiqueController extends AbstractController
             'menu' => $this->menu,
             'regions' => $em->getRepository(Region::class)->findAllUniqueByLibelle(),
             'types' => [
-                'attaque' => 'Nombre d\'attaques',
-                'perpetrateurs' => 'Morts terroristes',
-                'civil' => 'Morts civils',
+                'attaque' => $this->trans('analytics.indicator.attaque'),
+                'perpetrateurs' => $this->trans('analytics.indicator.perpetrateurs'),
+                'civil' => $this->trans('analytics.indicator.civil'),
             ],
         ]);
     }
@@ -64,11 +63,11 @@ class GraphiqueController extends AbstractController
         $regionIds = $this->normalizeRegionIds($request);
 
         if ($start === '' || $type === '' || $regionIds === []) {
-            return $this->json(['error' => 'Période, indicateur et régions sont obligatoires.'], 400);
+            return $this->json(['error' => $this->trans('analytics.error.period_required')], 400);
         }
 
         if (!in_array($type, ['attaque', 'perpetrateurs', 'civil'], true)) {
-            return $this->json(['error' => 'Indicateur invalide.'], 400);
+            return $this->json(['error' => $this->trans('analytics.error.invalid_indicator')], 400);
         }
 
         if ($end === '') {
@@ -106,28 +105,43 @@ class GraphiqueController extends AbstractController
         }
 
         if ($regionLabels === []) {
-            return $this->json(['error' => 'Aucune région valide sélectionnée.'], 400);
+            return $this->json(['error' => $this->trans('analytics.error.no_valid_region')], 400);
         }
+
+        $locale = $request->getLocale();
 
         $countMonth = [
             [
-                'label' => $this->formatMonthLabel($start),
+                'label' => $this->formatMonthLabel($start, $locale),
                 'donnees' => $periodOne,
             ],
         ];
 
         if ($end !== $start) {
             $countMonth[] = [
-                'label' => $this->formatMonthLabel($end),
+                'label' => $this->formatMonthLabel($end, $locale),
                 'donnees' => $periodTwo,
             ];
         }
 
+        $hasPublishedData = false;
+        foreach ($countMonth as $period) {
+            foreach ($period['donnees'] as $value) {
+                if ((float) $value > 0) {
+                    $hasPublishedData = true;
+                    break 2;
+                }
+            }
+        }
+
         return $this->json([
             'type' => strtoupper($type),
+            'typeLabel' => $this->trans('analytics.indicator.'.$type),
             'sameMois' => $end === $start ? 'oui' : 'no',
             'regions' => $regionLabels,
             'countMonth' => $countMonth,
+            'noPublishedData' => !$hasPublishedData,
+            'info' => !$hasPublishedData ? $this->trans('analytics.error.no_published_data') : null,
         ]);
     }
 
@@ -151,20 +165,28 @@ class GraphiqueController extends AbstractController
         return array_values(array_filter($regionIds, static fn ($id) => $id !== null && $id !== ''));
     }
 
-    private function formatMonthLabel(string $yearMonth): string
+    private function formatMonthLabel(string $yearMonth, string $locale): string
     {
         $date = DateTimeImmutable::createFromFormat('Y-m-d', $yearMonth . '-01');
         if (!$date) {
             return $yearMonth;
         }
 
-        $months = [
-            1 => 'janvier', 2 => 'février', 3 => 'mars', 4 => 'avril',
-            5 => 'mai', 6 => 'juin', 7 => 'juillet', 8 => 'août',
-            9 => 'septembre', 10 => 'octobre', 11 => 'novembre', 12 => 'décembre',
-        ];
+        if (!class_exists(\IntlDateFormatter::class)) {
+            return $yearMonth;
+        }
 
-        return $months[(int) $date->format('n')] . ' ' . $date->format('Y');
+        $formatter = new \IntlDateFormatter(
+            $locale,
+            \IntlDateFormatter::NONE,
+            \IntlDateFormatter::NONE,
+            null,
+            null,
+            'MMMM yyyy'
+        );
+        $formatted = $formatter->format($date);
+
+        return is_string($formatted) ? ucfirst($formatted) : $yearMonth;
     }
 
     private function getLimitDay(string $month): int

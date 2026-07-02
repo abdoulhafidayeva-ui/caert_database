@@ -1,0 +1,60 @@
+parameters:
+    app.country_locales:
+        # Codes ISO / libellés pays — langue la plus parlée parmi fr/en/ar
+        ML: fr
+        MALI: fr
+        NE: fr
+        NIGER: fr
+        BF: fr
+        'BURKINA FASO': fr
+        SN: fr
+        SENEGAL: fr
+        CI: fr
+        "COTE D'IVOIRE": fr
+        "CÔTE D'IVOIRE": fr
+        GN: fr
+        GUINEE: fr
+        GUINÉE: fr
+        BJ: fr
+        BENIN: fr
+        BÉNIN: fr
+        TG: fr
+        TOGO: fr
+        MR: ar
+        MAURITANIE: ar
+        DZ: ar
+        ALGERIE: ar
+        ALGÉRIE: ar
+        MA: ar
+        MAROC: ar
+        TN: ar
+        TUNISIE: ar
+        EG: ar
+        EGYPTE: ar
+        ÉGYPTE: ar
+        LY: ar
+        LIBYE: ar
+        NG: en
+        NIGERIA: en
+        GH: en
+        GHANA: en
+        SL: en
+        'SIERRA LEONE': en
+        LR: en
+        LIBERIA: en
+        GM: en
+        GAMBIE: en
+        CM: en
+        CAMEROUN: en
+        KE: en
+        KENYA: en
+        UG: en
+        OUGANDA: en
+        ZA: en
+        'AFRIQUE DU SUD': en
+
+    app.region_locales:
+        'AFRIQUE DE L''OUEST': fr
+        'AFRIQUE DU NORD': ar
+        'AFRIQUE CENTRALE': fr
+        'AFRIQUE DE L''EST': en

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Espaces{% endblock %}
+{% block title %}{{ 'referential.spaces_title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="wrapper">
@@ -9,11 +9,8 @@
     <section class="section-container">
         <div class="content-wrapper">
             {% include '_partials/referential_list_content.html.twig' with {
-                title: 'Espaces',
-                subtitle: 'Référentiel',
+                title: 'referential.spaces_title'|trans,
                 backUrl: path('espace'),
-                formPanelTitle: 'Ajouter un espace',
-                listPanelTitle: 'Liste des espaces',
                 tableWrapperId: 'espaceTable-wrapper',
                 form: form
             } %}

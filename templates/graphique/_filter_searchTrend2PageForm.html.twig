@@ -9,30 +9,30 @@
     <div class="row">
         <div class="col-md-4 col-sm-6">
             <div class="form-group">
-                <label for="start">Période 1 (mois)</label>
+                <label for="start">{{ 'analytics.filter.period1_month'|trans }}</label>
                 <input class="form-control" id="start" name="start" type="month" required>
             </div>
         </div>
         <div class="col-md-4 col-sm-6">
             <div class="form-group">
-                <label for="end">Période 2 (mois, optionnel)</label>
+                <label for="end">{{ 'analytics.filter.period2_month'|trans }}</label>
                 <input class="form-control" id="end" name="end" type="month">
             </div>
         </div>
         <div class="col-md-4 col-sm-6">
             <div class="form-group">
-                <label for="type">Indicateur</label>
+                <label for="type">{{ 'analytics.filter.indicator'|trans }}</label>
                 <select id="type" name="type" class="form-control select2" required>
                     {% for value, label in types %}
-                        <option value="{{ value }}">{{ label }}</option>
+                        <option value="{{ value }}"{% if loop.first %} selected{% endif %}>{{ label }}</option>
                     {% endfor %}
                 </select>
             </div>
         </div>
         <div class="col-md-8 col-sm-12">
             <div class="form-group">
-                <label for="region">Régions</label>
-                <select id="region" name="region[]" class="form-control select2" multiple required>
+                <label for="region">{{ 'analytics.filter.regions'|trans }}</label>
+                <select id="region" name="region[]" class="form-control select2" multiple required data-placeholder="{{ 'common.select'|trans }}">
                     {% for region in regions %}
                         <option value="{{ region.id }}">{{ region.libelle }}</option>
                     {% endfor %}
@@ -42,10 +42,10 @@
     </div>
     <div class="caert-filter-actions">
         <button id="generateGraphBtn" class="btn btn-primary" type="button">
-            <em class="fas fa-chart-line"></em> Générer les graphiques
+            <em class="fas fa-chart-line"></em> {{ 'analytics.filter.generate'|trans }}
         </button>
         <button class="btn btn-outline-secondary stopSearchTrend2PageForm" type="button">
-            <em class="fas fa-times"></em> Réinitialiser
+            <em class="fas fa-times"></em> {{ 'common.reset'|trans }}
         </button>
     </div>
     <div class="caert-chart-result mt-4" aria-live="polite"></div>

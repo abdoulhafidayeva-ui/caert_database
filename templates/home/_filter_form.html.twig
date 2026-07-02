@@ -2,8 +2,18 @@
     <div class="row">
         <div class="col-md-3 col-sm-6">
             <div class="form-group">
-                <label for="espace">Espace</label>
-                <select id="espace" name="espace" class="form-control select2" multiple="">
+                <label for="filterStatus">{{ 'incident.filter.status'|trans }}</label>
+                <select id="filterStatus" name="status" class="form-control select2" multiple="" data-placeholder="{{ 'common.select'|trans }}">
+                    <option value="pending">{{ 'incident.status.pending'|trans }}</option>
+                    <option value="published">{{ 'incident.status.published'|trans }}</option>
+                    <option value="rejected">{{ 'incident.status.rejected'|trans }}</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="form-group">
+                <label for="espace">{{ 'incident.filter.space'|trans }}</label>
+                <select id="espace" name="espace" class="form-control select2" multiple="" data-placeholder="{{ 'common.select'|trans }}">
                     {% for espace in espaces %}
                         <option value="{{ espace.libelle }}">{{ espace.libelle }}</option>
                     {% endfor %}
@@ -12,8 +22,8 @@
         </div>
         <div class="col-md-3 col-sm-6">
             <div class="form-group">
-                <label for="region">Région</label>
-                <select id="region" name="region" class="form-control select2" multiple="">
+                <label for="region">{{ 'incident.filter.region'|trans }}</label>
+                <select id="region" name="region" class="form-control select2" multiple="" data-placeholder="{{ 'common.select'|trans }}">
                     {% for region in regions %}
                         <option value="{{ region.libelle }}">{{ region.libelle }}</option>
                     {% endfor %}
@@ -22,8 +32,8 @@
         </div>
         <div class="col-md-3 col-sm-6">
             <div class="form-group">
-                <label for="pays">Pays</label>
-                <select id="pays" name="pays" class="form-control select2" multiple="">
+                <label for="pays">{{ 'incident.filter.country'|trans }}</label>
+                <select id="pays" name="pays" class="form-control select2" multiple="" data-placeholder="{{ 'common.select'|trans }}">
                     {% for pays in lespays %}
                         <option value="{{ pays.libelle }}">{{ pays.libelle }}</option>
                     {% endfor %}
@@ -32,8 +42,8 @@
         </div>
         <div class="col-md-3 col-sm-6">
             <div class="form-group">
-                <label for="cible">Cibles</label>
-                <select id="cible" name="cible" class="form-control select2" multiple="">
+                <label for="cible">{{ 'incident.filter.target'|trans }}</label>
+                <select id="cible" name="cible" class="form-control select2" multiple="" data-placeholder="{{ 'common.select'|trans }}">
                     {% for cible in cibles %}
                         <option value="{{ cible.libelle }}">{{ cible.libelle }}</option>
                     {% endfor %}
@@ -42,8 +52,8 @@
         </div>
         <div class="col-md-3 col-sm-6">
             <div class="form-group">
-                <label for="attaque">Type d'attaque</label>
-                <select id="attaque" name="attaque" class="form-control select2" multiple="">
+                <label for="attaque">{{ 'incident.filter.attack_type'|trans }}</label>
+                <select id="attaque" name="attaque" class="form-control select2" multiple="" data-placeholder="{{ 'common.select'|trans }}">
                     {% for attaque in attaques %}
                         <option value="{{ attaque.libelle }}">{{ attaque.libelle }}</option>
                     {% endfor %}
@@ -52,8 +62,8 @@
         </div>
         <div class="col-md-3 col-sm-6">
             <div class="form-group">
-                <label for="perpetrateur">Groupe terroriste</label>
-                <select id="perpetrateur" name="perpetrateur" class="form-control select2" multiple="">
+                <label for="perpetrateur">{{ 'incident.filter.terrorist_group'|trans }}</label>
+                <select id="perpetrateur" name="perpetrateur" class="form-control select2" multiple="" data-placeholder="{{ 'common.select'|trans }}">
                     {% for perpetrateur in perpetrateurs %}
                         <option value="{{ perpetrateur.libelle }}">{{ perpetrateur.libelle }}</option>
                     {% endfor %}
@@ -62,18 +72,18 @@
         </div>
         <div class="col-md-3 col-sm-6">
             <div class="form-group">
-                <label for="createdAt_start">Date d'attaque (du)</label>
+                <label for="createdAt_start">{{ 'incident.filter.date_attack_from'|trans }}</label>
                 <div class="input-group date">
-                    <input class="form-control js-datepicker" id="createdAt_start" name="createdAt_start" placeholder="jj/mm/aaaa" type="text" autocomplete="off">
+                    <input class="form-control js-datepicker" id="createdAt_start" name="createdAt_start" placeholder="{{ 'incident.field.date_placeholder'|trans }}" type="text" autocomplete="off">
                     <div class="input-group-append"><span class="input-group-text"><em class="fas fa-calendar-alt"></em></span></div>
                 </div>
             </div>
         </div>
         <div class="col-md-3 col-sm-6">
             <div class="form-group">
-                <label for="createdAt_end">Date d'attaque (au)</label>
+                <label for="createdAt_end">{{ 'incident.filter.date_attack_to'|trans }}</label>
                 <div class="input-group date">
-                    <input class="form-control js-datepicker" id="createdAt_end" name="createdAt_end" placeholder="jj/mm/aaaa" type="text" autocomplete="off">
+                    <input class="form-control js-datepicker" id="createdAt_end" name="createdAt_end" placeholder="{{ 'incident.field.date_placeholder'|trans }}" type="text" autocomplete="off">
                     <div class="input-group-append"><span class="input-group-text"><em class="fas fa-calendar-alt"></em></span></div>
                 </div>
             </div>
@@ -81,10 +91,10 @@
     </div>
     <div class="caert-filter-actions">
         <button class="btn btn-primary" type="submit">
-            <em class="fas fa-search"></em> Rechercher
+            <em class="fas fa-search"></em> {{ 'common.search'|trans }}
         </button>
         <button id="resetSearchForm" class="btn btn-outline-secondary" type="button">
-            <em class="fas fa-times"></em> Réinitialiser
+            <em class="fas fa-times"></em> {{ 'common.reset'|trans }}
         </button>
     </div>
 </form>

@@ -1,0 +1,536 @@
+brand:
+    name: AUCTC
+
+locale:
+    fr: Français
+    en: English
+    label: Langue
+    switch: Changer la langue
+
+nav:
+    main: Principal
+    admin: Administration
+    dashboard: Tableau de bord
+    workflow: File de validation
+    executive: Synthèse
+    analytics: Analyses
+    map: Carte SIG
+    users: Utilisateurs
+    accounts: Comptes
+    user_list: Liste
+    user_add: Ajouter
+    settings: Paramètres
+    referentials: Référentiels
+    attack_types: "Types d'attaques"
+    targets: Cibles
+    recovered_materials: Matériaux récupérés
+    attack_materials: "Matériaux d'attaque"
+    attack_means: "Moyens d'attaque"
+    groups: Groupes
+    space: Espace
+    env_config: Variables d'environnement
+    collapse_menu: Réduire le menu
+    menu: Menu
+
+header:
+    logout: Déconnexion
+
+auth:
+    login_title: Connexion
+    platform: "Plateforme de reporting d'incidents — AUCTC"
+    email: Adresse e-mail
+    email_placeholder: vous@exemple.com
+    password: Mot de passe
+    remember_me: Rester connecté
+    forgot_password: "Mot de passe oublié ?"
+    sign_in: Se connecter
+    sign_in_loading: Connexion…
+    create_account: Créer un compte
+    invalid_credentials: Identifiants incorrects.
+    register_title: Inscription
+    register_subtitle: Demande d'accès à la plateforme
+    register_btn: M'inscrire
+    register_loading: Inscription…
+    already_account: "Déjà un compte ? Se connecter"
+    set_password_title: BIENVENUE
+    set_password_subtitle: Configurez votre mot de passe
+    set_password_save: Enregistrer
+    forgot_title: MON MOT DE PASSE
+    link_expired_title: Lien expiré !
+    link_expired_text: Ce lien n'est plus valide. Contactez un administrateur.
+    link_invalid_title: Lien invalide !
+    link_invalid_text: Ce lien est incorrect ou a déjà été utilisé.
+    verification_title: Vérification
+    verification_sent: Un e-mail de vérification vous a été envoyé.
+    verification_resend: Renvoyer
+    password_mismatch: Les mots de passe doivent correspondre.
+    register_platform: "Demande d'accès à la plateforme AUCTC"
+    welcome_user: "BIENVENUE %name%"
+    forgot:
+        mode: Mode
+        mode_hint: Mail ou Telephone
+        by_mail: PAR MAIL
+        by_phone: PAR TELEPHONE
+        email_prompt: Remplissez votre e-mail pour la réinitialisation de votre mot de passe
+        phone_prompt: Remplissez votre numéro pour la réinitialisation de votre mot de passe
+        phone: Téléphone
+        phone_placeholder: "Ex. : 93432250"
+        code_hint: code envoyé
+        code_sent_before: Un code vous a été envoyé sur votre
+        code_sent_after: ", renseignez le"
+        code_label: Le code
+        step3: Step 3
+        mail: mail
+
+user:
+    title: Utilisateurs
+    subtitle: Gestion des comptes
+    add: Ajouter un utilisateur
+    list_title: Liste des utilisateurs
+    create_title: "Création d'un utilisateur"
+    create_subtitle: Formulaire
+    edit: Modifier
+    delete: Supprimer
+    reset_password: Réinitialiser le mot de passe
+    back: Retour
+    create_btn: Créer
+    save_btn: Enregistrer
+    name: Nom
+    firstname: Prénom
+    email: Email
+    created_at: Créé le
+    verified: Vérification
+    active: Actif
+    actions: Actions
+    verified_badge: Vérifié
+    unverified_badge: Non vérifié
+    you_badge: Vous
+    empty: Aucun utilisateur.
+    field:
+        name: Nom
+        firstnames: Prénoms
+        function: Fonction
+        email: Email
+        roles: Rôles
+        roles_placeholder: Sélectionner un ou plusieurs rôles
+        region: Région
+        country: Pays
+        country_region_first: Pays (choisir une région)
+        profile: Profil
+        organisation: Organisation
+        locale: Langue
+        password: Mot de passe
+        password_confirm: Confirmer le mot de passe
+    profile:
+        focal: Point focal Pays
+        staff: Staff AUCTC
+        admin: Administrateur
+    password_modal:
+        title: Nouveau mot de passe
+        intro: "Définir un nouveau mot de passe pour %name% (%email%)."
+        intro_prefix: "Définir un nouveau mot de passe pour"
+        generate: Générer un mot de passe
+        show: Afficher
+        hide: Masquer
+        copy: Copier
+        copied: "Copié !"
+        copy_failed: Échec
+        placeholder: "Au moins 6 caractères"
+        send_email: "Envoyer le mot de passe par e-mail à l'utilisateur"
+        cancel: Annuler
+        save: Enregistrer
+        save_loading: Enregistrement…
+    delete_confirm_title: Supprimer cet utilisateur ?
+    suspend_confirm_title: Suspendre ce compte ?
+    suspend_confirm_text: "L'utilisateur ne pourra plus se connecter."
+    suspend_btn: Suspendre
+    copy_nothing_title: Rien à copier
+    copy_nothing_text: "Saisissez ou générez un mot de passe d'abord."
+    password_short_title: Mot de passe trop court
+    password_short_text: "Au moins 6 caractères requis."
+    activate_account: Activer le compte
+    suspend_account: Suspendre le compte
+    activate: Activer
+    suspend: Suspendre
+    unverified_account: Compte non vérifié
+    delete_confirm_btn: Supprimer
+    edit_title: "Modification de %name%"
+    form_subtitle: Formulaire
+    create_loading: Création…
+    save_loading: Enregistrement…
+    show_password: Afficher le mot de passe
+    hide_password: Masquer le mot de passe
+
+common:
+    cancel: Annuler
+    confirm: Confirmer
+    save: Enregistrer
+    yes: Oui
+    no: Non
+    choose: Choisir
+    close: Fermer
+    back: Retour
+    search: Rechercher
+    reset: Réinitialiser
+    processing: Traitement en cours…
+    loading: Chargement…
+    searching: Recherche…
+    select: Sélectionner
+    edit: Modifier
+    delete: Supprimer
+    next: Suivant
+    finish: Terminer
+    confirm_delete: Confirmer la suppression ?
+
+incident:
+    title: Incidents
+    dashboard_title: Tableau de bord
+    new: Nouvel incident
+    import: Importer
+    pending_badge: "À valider (%count%)"
+    validate_badge: "Valider (%count%)"
+    import_errors_title: Erreurs d'import
+    import_error_line: "Ligne %row% : %message%"
+    import_errors_more: "… et %count% autre(s) erreur(s)."
+    list_title: Liste des incidents
+    filter_title: Filtres de recherche
+    no_reject_comment: Aucun commentaire !
+    form:
+        new_title: Enregistrement
+        new_subtitle: Formulaire incident
+        edit_title: "Modification de l'enregistrement"
+        data_panel: Données de l'incident
+        save: Enregistrer
+        save_edit: Modifier l'enregistrement
+    section:
+        location: "Localisation & contexte"
+        nature: Nature de l'incident
+        victims_deaths: Victimes — décès
+        victims_missing: Victimes — disparus
+        victims_injured: "Victimes — blessés & autres"
+        followup: Suivi
+    field:
+        space: Espace
+        region: Région
+        country: Pays
+        country_region_first: Pays (choisir une région)
+        locality: Localité
+        terrorist_group: Groupe terroriste
+        details: Détail
+        details_placeholder: Détails
+        attack_means: Moyens d'attaque
+        attack_type: Type d'attaque
+        attack_date: Date d'attaque
+        date_placeholder: jj/mm/aaaa
+        attack_materials: Matériaux d'attaque
+        main_target: Cible principale
+        recovered_materials: Matériaux récupérés
+        deaths_military: Mort sécurité militaire
+        deaths_civilian: Mort civils
+        deaths_terrorist: Mort terroriste
+        missing_military: Disparu sécurité militaire
+        missing_civilian: Disparu civil
+        missing_terrorist: Disparu terroriste
+        injured_military: Blessés sécurité militaire
+        injured_civilian: Blessés civil
+        injured_terrorist: Blessés terroriste
+        hostages: Otages
+        released: Libérés
+        arrested: Terroristes arrêtés
+        other_victims: Autres victimes
+        remark: Remarque
+        capital: Capitale
+        means: Moyen
+        target: Cible
+        attack: Attaque
+        other: Autres
+        remarks: Remarques
+        entry: Saisie
+        entry_date: Date
+        nobody: Personne
+        total_deaths: Total décès
+        total_missing: Total disparus
+        total_injured: Total blessés
+        group: Groupe
+        entry_by: Saisi par
+        entry_at: Saisi le
+    filter:
+        space: Espace
+        region: Région
+        country: Pays
+        target: Cibles
+        attack_type: Type d'attaque
+        terrorist_group: Groupe terroriste
+        attack_date: Date d'attaque
+        date_from: Du
+        date_to: Au
+        date_attack_from: "Date d'attaque (du)"
+        date_attack_to: "Date d'attaque (au)"
+        status: Statut
+    status:
+        code:
+            pending: pending
+            published: published
+            rejected: rejected
+        published: Publié
+        rejected: Rejeté
+        pending: En attente
+        pending_validation: En attente de validation
+        label: Statut
+    kpi:
+        published: Publiés
+        pending: En attente
+        rejected: Rejetés
+        deaths: Décès
+        injured: Blessés
+    action:
+        view: Voir le détail
+        other: Autres actions
+        edit: Modifier
+        publish: Publier
+        reject: Rejeter
+        reject_reason: Motif du rejet
+        view_reject_reason: Voir motif du rejet
+        delete: Supprimer
+        detail: Détail
+    reject:
+        title: Motif du rejet
+        placeholder: Décrivez la raison du rejet…
+        confirm: Confirmer le rejet
+    import_modal:
+        title: Importer des incidents
+        help: "Fichier Excel (.xlsx) conforme au modèle AUCTC. Les lignes invalides sont signalées après import."
+        file: Fichier Excel
+        submit: Lancer l'import
+    detail:
+        subtitle: Fiche détaillée
+        back: Retour
+        identification: Identification
+        victims: Victimes
+
+workflow:
+    pending_panel: Incidents en attente
+    title: File de validation
+    pending_count: "%count% en attente"
+    empty: Aucun incident en attente de validation.
+    table:
+        attack_date: Date attaque
+        entry_by: Saisie par
+        entry_at: Saisie le
+
+executive:
+    title: Synthèse opérationnelle
+    subtitle: Indicateurs consolidés
+    kpi:
+        total: Total incidents
+        published: Publiés
+        pending: En attente
+        rejected: Rejetés
+        deaths: Décès (publiés)
+        injured: Blessés (publiés)
+    top_countries: Top pays — incidents publiés
+    table:
+        country: Pays
+        count: Incidents
+
+referential:
+    subtitle: Référentiel
+    add: Ajouter
+    list: Liste
+    field:
+        label: Libellé
+        label_placeholder: libellé
+    attack_type:
+        title: Types d'attaques
+    target:
+        title: Cibles
+    material:
+        title: Matériaux d'attaque
+    recovered_material:
+        title: Matériel récupéré
+    attack_mean:
+        title: Moyens d'attaque
+    group:
+        title: Groupes terroristes
+    space:
+        title: Espace
+    spaces_title: Espaces
+
+analytics:
+    title: Analyses
+    subtitle: "Tendances & indicateurs"
+    filter_settings: "Paramètres d'analyse"
+    chart:
+        incidents_count: "Nombre d'incidents terroristes"
+        main_targets: Cibles principales des attaques
+        incidents_summary: Incidents terroristes (total publié)
+        attacks: Attaques
+        deaths: Décès
+        injured: Blessés
+        targets_title: Cibles des attaques
+        targets_civilian: Civils
+        targets_military: Sécurité / militaire
+        targets_terrorist: Terroristes
+        generating: Génération du graphique en cours…
+        region_comparison: "Comparaison par région — %type%"
+        display_error: "Impossible d'afficher le graphique."
+        chartjs_missing: "Chart.js n'est pas chargé. Rechargez la page."
+    indicator:
+        attaque: "Nombre d'attaques"
+        perpetrateurs: Morts terroristes
+        civil: Morts civils
+    filter:
+        period1: Période 1
+        period2: Période 2
+        period1_month: Période 1 (mois)
+        period2_month: "Période 2 (mois, optionnel)"
+        indicator: Indicateur
+        regions: Régions
+        generate: Générer les graphiques
+    error:
+        period_required: "Veuillez renseigner la période, l'indicateur et au moins une région."
+        api_missing: Configuration API manquante.
+        invalid_response: Réponse invalide du serveur.
+        insufficient_data: Données insuffisantes pour afficher le graphique.
+        generate_failed: "Impossible de générer le graphique."
+        session_expired: "Session expirée. Reconnectez-vous."
+        server_error: "Erreur serveur lors de la génération. Réessayez ou contactez l'administrateur."
+        invalid_indicator: Indicateur invalide.
+        no_valid_region: Aucune région valide sélectionnée.
+        no_published_data: "Aucun incident publié pour cette période et ces régions. Vérifiez le mois choisi (ex. mai 2026) et publiez l'incident depuis la file de validation si besoin."
+
+map:
+    title: Carte SIG
+    cartography: Cartographie
+    subtitle: incidents publiés par pays
+    incidents: Incidents
+    deaths: Décès
+    injured: Blessés
+    locality: Localité
+    attack_type: Type d'attaque
+    target: Cible
+    perpetrator: Groupe
+    view_incident: Voir la fiche
+    incidents_list: Incidents publiés
+    select_country: Sélectionnez un pays
+    select_country_hint: Cliquez sur un cercle de la carte pour afficher le détail des incidents publiés.
+    selected_country: Pays sélectionné
+    no_incidents: Aucun incident publié pour ce pays.
+    centroid_note: Les positions sont affichées au centroïde du pays, pas à la localité exacte.
+    incident_fallback: Incident
+    kpi:
+        countries: Pays concernés
+        published_incidents: Incidents publiés
+    info: Cliquez sur un pays pour afficher ses statistiques globales. Les points sont positionnés au centroïde national.
+    stats_scope: Totaux des incidents publiés agrégés au niveau national.
+    legend: "Taille du cercle = volume d'incidents par pays (agrégation au centroïde national)"
+
+install:
+    welcome_title: BIENVENUE !
+    welcome_subtitle: Configurez votre application
+    first_user_title: Dernière étape !
+    first_user_subtitle: Configurez votre compte utilisateur
+    field:
+        app_name: Nom
+        app_name_placeholder: Nom de l'application
+        app_email: Email
+        app_email_placeholder: Email de l'application
+
+footer:
+    database: Base de données
+    database_default: Base de données
+
+security:
+    access_users: "Vous n'avez pas accès à la gestion des utilisateurs."
+    access_app: "Vous n'avez pas accès à cette partie de l'application."
+    no_country: Aucun pays assigné à votre compte.
+    country_restricted: Vous ne pouvez enregistrer des incidents que pour votre pays.
+
+flash:
+    title:
+        success: Succès
+        warning: Attention
+        danger: Erreur
+        info: Information
+    close: Fermer
+    invalid_csrf: "Jeton de sécurité invalide. Réessayez."
+    user_created: "Le compte a été créé. Un e-mail a été envoyé à l'utilisateur pour définir son mot de passe."
+    user_created_no_mail: "Le compte a été créé, mais l'e-mail n'a pas pu être envoyé. Vérifiez la configuration du serveur mail."
+    user_updated: Modification réussie
+    user_deleted: Utilisateur supprimé.
+    user_password_reset: "Le mot de passe de %name% a été réinitialisé."
+    user_password_reset_mail: " Un e-mail a été envoyé à %email%."
+    user_password_reset_mail_failed: " L'e-mail n'a pas pu être envoyé. Vérifiez la configuration du serveur mail."
+    password_too_short: "Le mot de passe doit contenir au moins 6 caractères."
+    cannot_toggle_self: "Vous ne pouvez pas modifier votre propre statut."
+    cannot_delete_self: "Vous ne pouvez pas supprimer votre propre compte."
+    user_not_verified: "Compte non vérifié — activez-le d'abord par e-mail."
+    user_activated: "Compte de %name% activé."
+    user_suspended: "Compte de %name% suspendu."
+    account_unverified: "Votre compte n'est pas encore vérifié. Consultez votre e-mail ou contactez un administrateur."
+    account_disabled: "Votre compte est suspendu. Contactez un administrateur."
+    password_saved: "Votre mot de passe a été enregistré. Connectez-vous pour continuer."
+    account_created_verify: "Le compte a été créé. Consultez votre e-mail pour valider votre compte."
+    verification_resent: Un nouvel e-mail de vérification vous a été envoyé.
+    email_verified: "Votre e-mail a été vérifié. Contactez un administrateur pour activer votre compte."
+    incident_saved: Enregistrement effectué.
+    incident_updated: Modification enregistrée.
+    incident_deleted: Suppression effectuée.
+    incident_locked: "Cet enregistrement ne peut plus être modifié (déjà publié ou rejeté)."
+    incident_published: Données publiées.
+    incident_rejected: Données rejetées.
+    import_no_file: Aucun fichier sélectionné.
+    import_partial: "Import partiel : %success% ligne(s) OK, %errors% erreur(s)."
+    import_success: "%count% ligne(s) importée(s) avec succès."
+    import_failed: "Import échoué : %message%"
+    referential_saved: Enregistrement effectué.
+    referential_deleted: Suppression effectuée.
+    install_complete: Configuration terminée. Connectez-vous à votre application.
+
+role:
+    user: Utilisateur
+    admin: Administrateur
+    users_management: Gestion des utilisateurs
+    super_admin: Super administrateur
+
+env_config:
+    title: Configuration environnement
+    subtitle: Paramètres applicatifs (.env)
+    info_file: "Les modifications sont enregistrées dans %file% (prioritaire sur .env). Un redémarrage ou vidage du cache peut être nécessaire."
+    placeholder:
+        keep_current: Laisser vide pour conserver la valeur actuelle
+    group:
+        application: Application
+        mail: Courriel
+        database: Base de données
+        security: Sécurité
+        ops: Exploitation
+        other: Autres
+    field:
+        mailer_dsn: DSN messagerie (MAILER_DSN)
+        default_uri: URL publique de l'application (DEFAULT_URI)
+        app_url: URL de déploiement (APP_URL)
+        database_url: Connexion base de données (DATABASE_URL)
+        app_secret: Clé secrète Symfony (APP_SECRET)
+        backup_dir: Répertoire des sauvegardes (BACKUP_DIR)
+        run_smoke: Tests smoke au déploiement (RUN_SMOKE)
+    help:
+        mailer_dsn: "Ex. : smtp://user:pass@smtp.example.org:587 ou null://null"
+        default_uri: URL utilisée pour les liens dans les e-mails et notifications
+        app_url: URL utilisée par les scripts de déploiement et validation
+        database_url: "Chaîne Doctrine — ex. mysql://user:pass@host:3306/db"
+        app_secret: "32 caractères hexadécimaux recommandés — laisser vide pour ne pas modifier"
+        backup_dir: Chemin relatif ou absolu vers le dossier de sauvegarde
+        run_smoke: Lance les tests smoke après un déploiement automatisé
+    choice:
+        yes: Oui
+        no: Non
+    flash:
+        saved: Configuration environnement enregistrée.
+        no_changes: Aucune modification détectée.
+        restart_hint: "Redémarrez le serveur ou videz le cache (php bin/console cache:clear) pour appliquer certains changements."
+    error:
+        required: Ce champ est obligatoire.
+        mailer_dsn: Format DSN messagerie invalide.
+        database_url: Format de connexion base de données invalide.
+        app_secret_length: La clé secrète doit contenir au moins 16 caractères.

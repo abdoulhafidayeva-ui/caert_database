@@ -4,21 +4,26 @@
 (function ($) {
     'use strict';
 
-    var defaults = {
-        format: 'dd/mm/yyyy',
-        todayHighlight: true,
-        autoclose: true,
-        language: 'fr',
-        clearBtn: true,
-        container: 'body',
-        orientation: 'bottom auto',
-        enableOnReadonly: true,
-    };
+    function resolveDatepickerLanguage() {
+        var lang = (document.documentElement.lang || 'fr').toLowerCase().split('-')[0];
+        return lang === 'en' ? 'en' : 'fr';
+    }
 
     function initCaertDatepicker($input, extra) {
         if (!$input.length || $input.data('datepicker')) {
             return;
         }
+
+        var defaults = {
+            format: 'dd/mm/yyyy',
+            todayHighlight: true,
+            autoclose: true,
+            language: resolveDatepickerLanguage(),
+            clearBtn: true,
+            container: 'body',
+            orientation: 'bottom auto',
+            enableOnReadonly: true,
+        };
 
         $input.datepicker($.extend({}, defaults, extra || {}));
 

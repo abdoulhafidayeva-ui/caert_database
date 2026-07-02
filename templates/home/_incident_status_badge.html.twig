@@ -1,0 +1,8 @@
+{# Variables: isPending, isPublished, isRejected (bool), class (optional extra CSS classes) #}
+{% if isPending %}
+    <span class="badge badge-warning {{ class|default('') }}">{{ 'incident.status.pending'|trans }}</span>
+{% elseif isPublished %}
+    <span class="badge badge-success {{ class|default('') }}">{{ 'incident.status.published'|trans }}</span>
+{% elseif isRejected %}
+    <span class="badge badge-danger {{ class|default('') }}">{{ 'incident.status.rejected'|trans }}</span>
+{% endif %}

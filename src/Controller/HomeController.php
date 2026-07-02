@@ -21,7 +21,6 @@ use App\Service\Incident\AllDataTotalsCalculator;
 use App\Service\Security\IncidentCountryGuard;
 use Doctrine\ORM\EntityManagerInterface;
 use Omines\DataTablesBundle\DataTableFactory;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,7 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-class HomeController extends AbstractController
+class HomeController extends AbstractAppController
 {
     private string $menu = 'dashboard';
 
@@ -105,7 +104,7 @@ class HomeController extends AbstractController
 
         $file = $request->files->get('file');
         if ($file === null) {
-            $this->addFlash('error', 'Aucun fichier sélectionné.');
+            $this->addFlash('error', 'flash.import_no_file');
 
             return $this->redirectToRoute('app_home');
         }
@@ -118,17 +117,16 @@ class HomeController extends AbstractController
         try {
             $result = $this->excelImportService->import($file, $user);
             if ($result->errorCount > 0) {
-                $this->addFlash('warning', sprintf(
-                    'Import partiel : %d ligne(s) OK, %d erreur(s).',
-                    $result->successCount,
-                    $result->errorCount
-                ));
+                $this->addFlash('warning', $this->trans('flash.import_partial', [
+                    '%success%' => $result->successCount,
+                    '%errors%' => $result->errorCount,
+                ]));
                 $request->getSession()->set('import_errors', $result->errors);
             } else {
-                $this->addFlash('success', sprintf('%d ligne(s) importée(s) avec succès.', $result->successCount));
+                $this->addFlash('success', $this->trans('flash.import_success', ['%count%' => $result->successCount]));
             }
         } catch (\Throwable $e) {
-            $this->addFlash('error', 'Import échoué : ' . $e->getMessage());
+            $this->addFlash('error', $this->trans('flash.import_failed', ['%message%' => $e->getMessage()]));
         }
 
         return $this->redirectToRoute('app_home');
@@ -139,7 +137,7 @@ class HomeController extends AbstractController
     {
         $form = $this->createForm(AllDataFormType::class)
             ->add('save', SubmitType::class, [
-                'label' => 'Enregistrer',
+                'label' => 'incident.form.save',
                 'attr' => ['class' => 'btn btn-square btn-primary'],
             ]);
 
@@ -173,7 +171,7 @@ class HomeController extends AbstractController
 
             $this->auditLogger->log('INCIDENT_CREATE', 'all_data', $incident->getId());
 
-            $this->addFlash('success', 'Enregistrement effectué.');
+            $this->addFlash('success', 'flash.incident_saved');
 
             return $this->redirectToRoute('app_home');
         }
@@ -181,7 +179,7 @@ class HomeController extends AbstractController
         return $this->render('home/new.html.twig', [
             'form' => $form->createView(),
             'menu' => $this->menu,
-            'titreFormulaire' => 'Nouvel enregistrement',
+            'titreFormulaire' => 'incident.form.new_title',
         ]);
     }
 
@@ -207,7 +205,7 @@ class HomeController extends AbstractController
         $this->denyAccessUnlessGranted(AllDataVoter::EDIT, $allData);
 
         if ($allData->getIsPublished() !== null) {
-            $this->addFlash('warning', 'Cet enregistrement ne peut plus être modifié (déjà publié ou rejeté).');
+            $this->addFlash('warning', 'flash.incident_locked');
 
             return $this->redirectToRoute('view_all_data', ['allData' => $allData->getId()]);
         }
@@ -216,7 +214,7 @@ class HomeController extends AbstractController
             'method' => 'POST',
             'action' => $this->generateUrl('update_all_data', ['allData' => $allData->getId()]),
         ])->add('save', SubmitType::class, [
-            'label' => 'Modifier l\'enregistrement',
+            'label' => 'incident.form.save_edit',
             'attr' => ['class' => 'btn btn-square btn-primary'],
         ]);
 
@@ -248,7 +246,7 @@ class HomeController extends AbstractController
 
             $this->auditLogger->log('INCIDENT_UPDATE', 'all_data', $incident->getId());
 
-            $this->addFlash('success', 'Modification enregistrée.');
+            $this->addFlash('success', 'flash.incident_updated');
 
             return $this->redirectToRoute('view_all_data', ['allData' => $incident->getId()]);
         }
@@ -256,7 +254,7 @@ class HomeController extends AbstractController
         return $this->render('home/new.html.twig', [
             'form' => $form->createView(),
             'menu' => $this->menu,
-            'titreFormulaire' => 'Modification de l\'enregistrement',
+            'titreFormulaire' => 'incident.form.edit_title',
             'backUrl' => $this->generateUrl('view_all_data', ['allData' => $allData->getId()]),
         ]);
     }
@@ -276,7 +274,7 @@ class HomeController extends AbstractController
 
         $this->auditLogger->log('INCIDENT_DELETE', 'all_data', $id);
 
-        $this->addFlash('success', 'Suppression effectuée.');
+        $this->addFlash('success', 'flash.incident_deleted');
 
         return $this->redirectToRoute('app_home');
     }
@@ -291,12 +289,12 @@ class HomeController extends AbstractController
         if ($objetRejet !== '') {
             $allData->setObjetRejet($objetRejet);
             $allData->setIsPublished(false);
-            $msg = 'rejetées';
+            $this->addFlash('success', 'flash.incident_rejected');
             $action = 'INCIDENT_REJECT';
         } else {
             $allData->setObjetRejet(null);
             $allData->setIsPublished(true);
-            $msg = 'publiées';
+            $this->addFlash('success', 'flash.incident_published');
             $action = 'INCIDENT_PUBLISH';
         }
 
@@ -304,8 +302,6 @@ class HomeController extends AbstractController
         $this->auditLogger->log($action, 'all_data', $allData->getId(), [
             'objet_rejet' => $allData->getObjetRejet(),
         ]);
-
-        $this->addFlash('success', 'Données ' . $msg);
 
         if ($request->request->get('_return') === 'view') {
             return $this->redirectToRoute('view_all_data', ['allData' => $allData->getId()]);
@@ -331,7 +327,7 @@ class HomeController extends AbstractController
         $this->denyAccessUnlessGranted(AllDataVoter::VIEW, $data);
 
         return $this->json([
-            'msg' => $data->getObjetRejet() ?? 'aucun commentaire',
+            'msg' => $data->getObjetRejet() ?? $this->trans('incident.no_reject_comment'),
         ]);
     }
 }

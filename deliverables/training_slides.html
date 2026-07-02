@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAERT / AUCTC — Formation</title>
+  <style>
+    :root {
+      --au-blue: #00529B;
+      --au-gold: #C5A572;
+      --text: #1a1a1a;
+      --muted: #555;
+      --bg: #f4f7fa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", Calibri, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+    .deck { height: 100vh; position: relative; }
+    .slide {
+      display: none;
+      height: 100vh;
+      padding: 3rem 4rem;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .slide.active { display: flex; }
+    .slide h1 {
+      color: var(--au-blue);
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+      border-bottom: 4px solid var(--au-blue);
+      padding-bottom: 0.75rem;
+    }
+    .slide .subtitle { color: var(--muted); font-size: 1rem; margin-bottom: 2rem; }
+    .slide ul { list-style: none; max-width: 900px; }
+    .slide li {
+      font-size: 1.35rem;
+      line-height: 1.5;
+      margin-bottom: 0.85rem;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+    .slide li::before {
+      content: "▸";
+      color: var(--au-blue);
+      position: absolute;
+      left: 0;
+      font-weight: bold;
+    }
+    .slide .note {
+      margin-top: 2rem;
+      font-size: 0.95rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+    .title-slide {
+      text-align: center;
+      align-items: center;
+    }
+    .title-slide h1 { font-size: 2.8rem; border: none; }
+    .title-slide .org { color: var(--muted); letter-spacing: 0.05em; margin-bottom: 1rem; }
+    .title-slide .badge {
+      background: var(--au-blue);
+      color: #fff;
+      padding: 0.5rem 1.5rem;
+      margin: 1.5rem 0;
+      font-size: 1.1rem;
+    }
+    .nav {
+      position: fixed;
+      bottom: 1rem;
+      right: 1.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 10;
+    }
+    .nav button {
+      background: var(--au-blue);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      border-radius: 4px;
+    }
+    .nav button:hover { opacity: 0.9; }
+    .counter {
+      position: fixed;
+      bottom: 1.2rem;
+      left: 1.5rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .help {
+      position: fixed;
+      top: 1rem;
+      right: 1.5rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="help">← → naviguer · F plein écran</div>
+  <div class="counter"><span id="current">1</span> / <span id="total">1</span></div>
+  <div class="deck" id="deck">
+
+    <section class="slide title-slide active">
+      <p class="org">UNION AFRICAINE — AUCTC</p>
+      <h1>CAERT</h1>
+      <p class="badge">Formation utilisateurs &amp; administrateurs</p>
+      <p class="subtitle">Plateforme de reporting d'incidents sécuritaires · v2.0.0-prod</p>
+      <p class="note">Classification : interne — sensible</p>
+    </section>
+
+    <section class="slide">
+      <h1>Objectifs</h1>
+      <ul>
+        <li>Comprendre le rôle de CAERT dans la chaîne AUCTC</li>
+        <li>Connexion, navigation, langue FR/EN</li>
+        <li>Saisie et import Excel d'incidents</li>
+        <li>Workflow validation → publication</li>
+        <li>Analyses, synthèse direction, carte SIG</li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <h1>Profils utilisateurs</h1>
+      <ul>
+        <li><strong>Point focal</strong> — saisie périmètre pays</li>
+        <li><strong>Analyste</strong> — consultation et reporting</li>
+        <li><strong>Admin</strong> — validation et synthèse</li>
+        <li><strong>Super-admin</strong> — comptes et référentiels</li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <h1>Statuts incident</h1>
+      <ul>
+        <li><strong>En attente</strong> — soumis, non validé</li>
+        <li><strong>Publié</strong> — visible KPIs, carte, analyses</li>
+        <li><strong>Rejeté</strong> — motif obligatoire, correction possible</li>
+      </ul>
+      <p class="note">Seuls les incidents publiés alimentent les indicateurs officiels.</p>
+    </section>
+
+    <section class="slide">
+      <h1>Workflow contributeur</h1>
+      <ul>
+        <li>Saisir ou importer → statut En attente</li>
+        <li>Admin publie ou rejette</li>
+        <li>Rejet : lire motif → corriger → resoumettre</li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <h1>Import Excel</h1>
+      <ul>
+        <li>Format .xlsx — colonne A = date d'attaque</li>
+        <li>Libellés référentiels identiques à la base</li>
+        <li>Rapport succès / partiel / échec</li>
+        <li>Tous les imports restent En attente</li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <h1>Validation (admin)</h1>
+      <ul>
+        <li>File de validation — incidents en attente</li>
+        <li>Vérifier cohérence avant publication</li>
+        <li>Motif de rejet clair et actionnable</li>
+        <li>Audit automatique de chaque action</li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <h1>Synthèse direction</h1>
+      <ul>
+        <li>KPIs : publiés, en attente, rejetés, décès</li>
+        <li>Top 10 pays (pas exhaustive)</li>
+        <li>Accès ROLE_ADMIN</li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <h1>Analyses &amp; Carte</h1>
+      <ul>
+        <li>Graphiques tendances — données publiées</li>
+        <li>Comparatif période / région / indicateur</li>
+        <li>Carte SIG — agrégation au centroïde pays</li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <h1>Sécurité</h1>
+      <ul>
+        <li>Données sensibles — usage institutionnel</li>
+        <li>Pas de partage d'identifiants</li>
+        <li>Déconnexion sur poste partagé</li>
+        <li>« Rester connecté » — poste personnel seulement</li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <h1>Documentation</h1>
+      <ul>
+        <li>docs/README.md — index complet</li>
+        <li>Manuel utilisateur &amp; administrateur</li>
+        <li>Guide analyste &amp; dépannage</li>
+        <li>deliverables/ — exports Word &amp; slides</li>
+      </ul>
+    </section>
+
+    <section class="slide title-slide">
+      <h1>Merci</h1>
+      <p class="subtitle">Exercice pratique : 1 saisie test</p>
+      <p class="note">Questions → support AUCTC · docs/training/ONBOARDING.md</p>
+    </section>
+
+  </div>
+
+  <div class="nav">
+    <button type="button" id="prev">← Précédent</button>
+    <button type="button" id="next">Suivant →</button>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const total = slides.length;
+    let idx = 0;
+    document.getElementById('total').textContent = total;
+
+    function show(i) {
+      slides.forEach((s, n) => s.classList.toggle('active', n === i));
+      document.getElementById('current').textContent = i + 1;
+    }
+
+    document.getElementById('prev').onclick = () => { idx = (idx - 1 + total) % total; show(idx); };
+    document.getElementById('next').onclick = () => { idx = (idx + 1) % total; show(idx); };
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); idx = Math.min(idx + 1, total - 1); show(idx); }
+      if (e.key === 'ArrowLeft') { idx = Math.max(idx - 1, 0); show(idx); }
+      if (e.key === 'f' || e.key === 'F') {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+      }
+    });
+  </script>
+</body>
+</html>

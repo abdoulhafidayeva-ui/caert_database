@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Types d'attaque{% endblock %}
+{% block title %}{{ 'referential.attack_type.title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="wrapper">
@@ -9,11 +9,8 @@
     <section class="section-container">
         <div class="content-wrapper">
             {% include '_partials/referential_list_content.html.twig' with {
-                title: 'Types d\'attaque',
-                subtitle: 'Référentiel',
+                title: 'referential.attack_type.title'|trans,
                 backUrl: path('cible'),
-                formPanelTitle: 'Ajouter un type d\'attaque',
-                listPanelTitle: 'Liste des types d\'attaque',
                 tableWrapperId: 'attaqueTable-wrapper',
                 form: form
             } %}

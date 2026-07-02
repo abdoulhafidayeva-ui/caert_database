@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'env_config.title'|trans }}{% endblock %}
+
+{% block body %}
+<div class="wrapper">
+    {% include "_header.html.twig" %}
+    {% include "_aside.html.twig" %}
+
+    <section class="section-container">
+        <div class="content-wrapper">
+            <div class="content-heading">
+                <div>{{ 'env_config.title'|trans }}<small>{{ 'env_config.subtitle'|trans }}</small></div>
+            </div>
+
+            {% include "_flash_message.html.twig" %}
+
+            <div class="alert alert-info mb-4">
+                <em class="fas fa-info-circle"></em>
+                {{ 'env_config.info_file'|trans({'%file%': targetFile}) }}
+            </div>
+
+            {{ form_start(form) }}
+            <div class="row">
+                {% for group, definitions in groupedDefinitions %}
+                    <div class="col-lg-6 mb-4">
+                        <div class="caert-panel h-100">
+                            <div class="caert-panel-header">
+                                <em class="fas fa-sliders-h"></em> {{ group|trans }}
+                            </div>
+                            <div class="caert-panel-body">
+                                {% for definition in definitions %}
+                                    {{ form_row(form[definition.key]) }}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="d-flex justify-content-end mb-4">
+                {{ form_row(form.save) }}
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </section>
+
+    {% include "_footer.html.twig" %}
+</div>
+{% endblock %}

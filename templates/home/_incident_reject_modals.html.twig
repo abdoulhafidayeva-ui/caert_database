@@ -24,25 +24,25 @@
 
                 <div class="modal-header">
 
-                    <h5 class="modal-title" id="rejectModalDetailTitle">Motif du rejet</h5>
+                    <h5 class="modal-title" id="rejectModalDetailTitle">{{ 'incident.reject.title'|trans }}</h5>
 
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="{{ 'common.close'|trans }}"><span aria-hidden="true">&times;</span></button>
 
                 </div>
 
                 <div class="modal-body">
 
-                    <label for="rejectMotifDetail" class="text-muted small">Décrivez la raison du rejet (obligatoire)</label>
+                    <label for="rejectMotifDetail" class="text-muted small">{{ 'incident.reject.placeholder'|trans }}</label>
 
-                    <textarea id="rejectMotifDetail" name="objetRejet" class="form-control" rows="4" required placeholder="Précisez le motif du rejet…"></textarea>
+                    <textarea id="rejectMotifDetail" name="objetRejet" class="form-control" rows="4" required placeholder="{{ 'incident.reject.placeholder'|trans }}"></textarea>
 
                 </div>
 
                 <div class="modal-footer">
 
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'common.cancel'|trans }}</button>
 
-                    <button type="submit" class="btn btn-danger">Confirmer le rejet</button>
+                    <button type="submit" class="btn btn-danger">{{ 'incident.reject.confirm'|trans }}</button>
 
                 </div>
 
@@ -68,9 +68,9 @@
 
             <div class="modal-header">
 
-                <h5 class="modal-title" id="rejectReasonModalTitle">Motif du rejet</h5>
+                <h5 class="modal-title" id="rejectReasonModalTitle">{{ 'incident.reject.title'|trans }}</h5>
 
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ 'common.close'|trans }}"><span aria-hidden="true">&times;</span></button>
 
             </div>
 
@@ -82,7 +82,7 @@
 
             <div class="modal-footer">
 
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'common.close'|trans }}</button>
 
             </div>
 
@@ -93,5 +93,4 @@
 </div>
 
 {% endif %}
-
 

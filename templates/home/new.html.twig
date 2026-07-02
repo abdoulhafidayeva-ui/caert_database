@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ titreFormulaire|default('Enregistrement') }}{% endblock %}
+{% block title %}{{ titreFormulaire|default('incident.form.new_title')|trans }}{% endblock %}
 
 {% block body %}
 <div class="wrapper">
@@ -9,22 +9,22 @@
     <section class="section-container">
         <div class="content-wrapper">
             <div class="content-heading">
-                <div>{{ titreFormulaire|default('Enregistrement') }}<small>Formulaire incident</small></div>
+                <div>{{ titreFormulaire|default('incident.form.new_title')|trans }}<small>{{ 'incident.form.new_subtitle'|trans }}</small></div>
                 <div class="ml-auto">
                     <a class="btn btn-sm btn-outline-secondary" href="{{ backUrl|default(path('app_home')) }}">
-                        <em class="fas fa-arrow-left"></em> Retour
+                        <em class="fas fa-arrow-left"></em> {{ 'common.back'|trans }}
                     </a>
                 </div>
             </div>
             {% include "_flash_message.html.twig" %}
             <div class="caert-panel">
                 <div class="caert-panel-header">
-                    <em class="fas fa-file-alt"></em> Données de l'incident
+                    <em class="fas fa-file-alt"></em> {{ 'incident.form.data_panel'|trans }}
                 </div>
                 <div class="caert-panel-body">
                     {{ include('home/_form.html.twig', {
                         form: form,
-                        submitLabel: button|default('Enregistrer'),
+                        submitLabel: button|default('incident.form.save'|trans),
                         cancelUrl: backUrl|default(path('app_home'))
                     }) }}
                 </div>

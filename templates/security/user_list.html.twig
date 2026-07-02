@@ -1,10 +1,6 @@
 {% extends 'base.html.twig' %}
 
-
-
-{% block title %}Utilisateurs{% endblock %}
-
-
+{% block title %}{{ 'user.title'|trans }}{% endblock %}
 
 {% block body %}
 
@@ -20,7 +16,7 @@
 
             <div class="content-heading">
 
-                <div>Utilisateurs<small>Gestion des comptes</small></div>
+                <div>{{ 'user.title'|trans }}<small>{{ 'user.subtitle'|trans }}</small></div>
 
                 {% if is_granted('ROLE_SUPER_ADMIN') %}
 
@@ -28,7 +24,7 @@
 
                     <a class="btn btn-sm btn-primary" href="{{ path('app_register') }}">
 
-                        <em class="fas fa-user-plus"></em> Ajouter un utilisateur
+                        <em class="fas fa-user-plus"></em> {{ 'user.add'|trans }}
 
                     </a>
 
@@ -40,13 +36,11 @@
 
             {% include "_flash_message.html.twig" %}
 
-
-
             <div class="caert-panel">
 
                 <div class="caert-panel-header">
 
-                    <em class="fas fa-users"></em> Liste des utilisateurs
+                    <em class="fas fa-users"></em> {{ 'user.list_title'|trans }}
 
                 </div>
 
@@ -60,19 +54,19 @@
 
                                 <tr>
 
-                                    <th data-priority="1">Nom</th>
+                                    <th data-priority="1">{{ 'user.name'|trans }}</th>
 
-                                    <th>Prénom</th>
+                                    <th>{{ 'user.firstname'|trans }}</th>
 
-                                    <th>Email</th>
+                                    <th>{{ 'user.email'|trans }}</th>
 
-                                    <th class="sort-numeric">Créé le</th>
+                                    <th class="sort-numeric">{{ 'user.created_at'|trans }}</th>
 
-                                    <th class="sort-numeric">Vérification</th>
+                                    <th class="sort-numeric">{{ 'user.verified'|trans }}</th>
 
-                                    <th class="sort-numeric">Actif</th>
+                                    <th class="sort-numeric">{{ 'user.active'|trans }}</th>
 
-                                    <th class="sort-alpha" data-priority="2">Actions</th>
+                                    <th class="sort-alpha" data-priority="2">{{ 'user.actions'|trans }}</th>
 
                                 </tr>
 
@@ -98,11 +92,11 @@
 
                                             {% if user.isVerified %}
 
-                                                <span class="badge badge-success">Vérifié</span>
+                                                <span class="badge badge-success">{{ 'user.verified_badge'|trans }}</span>
 
                                             {% else %}
 
-                                                <span class="badge badge-secondary">Non vérifié</span>
+                                                <span class="badge badge-secondary">{{ 'user.unverified_badge'|trans }}</span>
 
                                             {% endif %}
 
@@ -126,9 +120,9 @@
 
                                                             class="caert-user-toggle {% if user.enable %}is-on{% endif %}"
 
-                                                            title="{{ user.enable ? 'Suspendre le compte' : 'Activer le compte' }}"
+                                                            title="{{ user.enable ? 'user.suspend_account'|trans : 'user.activate_account'|trans }}"
 
-                                                            aria-label="{{ user.enable ? 'Suspendre' : 'Activer' }}">
+                                                            aria-label="{{ user.enable ? 'user.suspend'|trans : 'user.activate'|trans }}">
 
                                                         <span class="caert-user-toggle-track">
 
@@ -142,11 +136,11 @@
 
                                             {% elseif isSelf %}
 
-                                                <span class="badge badge-info">Vous</span>
+                                                <span class="badge badge-info">{{ 'user.you_badge'|trans }}</span>
 
                                             {% else %}
 
-                                                <span class="caert-user-toggle is-disabled" title="Compte non vérifié">
+                                                <span class="caert-user-toggle is-disabled" title="{{ 'user.unverified_account'|trans }}">
 
                                                     <span class="caert-user-toggle-track">
 
@@ -174,7 +168,7 @@
 
                                                         aria-expanded="false">
 
-                                                    Actions
+                                                    {{ 'user.actions'|trans }}
 
                                                 </button>
 
@@ -182,7 +176,7 @@
 
                                                     <a class="dropdown-item" href="{{ path('app_user_edit', { id: user.id }) }}">
 
-                                                        <em class="fas fa-edit fa-fw"></em> Modifier
+                                                        <em class="fas fa-edit fa-fw"></em> {{ 'user.edit'|trans }}
 
                                                     </a>
 
@@ -198,7 +192,7 @@
 
                                                             data-user-email="{{ user.email }}">
 
-                                                        <em class="fas fa-key fa-fw"></em> Réinitialiser le mot de passe
+                                                        <em class="fas fa-key fa-fw"></em> {{ 'user.reset_password'|trans }}
 
                                                     </button>
 
@@ -218,7 +212,7 @@
 
                                                         <button type="submit" class="dropdown-item text-danger">
 
-                                                            <em class="fas fa-trash fa-fw"></em> Supprimer
+                                                            <em class="fas fa-trash fa-fw"></em> {{ 'user.delete'|trans }}
 
                                                         </button>
 
@@ -238,7 +232,7 @@
 
                                     <tr>
 
-                                        <td colspan="7" class="text-center text-muted py-4">Aucun utilisateur.</td>
+                                        <td colspan="7" class="text-center text-muted py-4">{{ 'user.empty'|trans }}</td>
 
                                     </tr>
 
@@ -270,16 +264,33 @@
 
 {% include 'security/_user_reset_password_modal.html.twig' %}
 
+<script type="application/json" id="caert-user-list-i18n">{{ {
+    show: 'user.password_modal.show'|trans,
+    hide: 'user.password_modal.hide'|trans,
+    showPassword: 'user.show_password'|trans,
+    hidePassword: 'user.hide_password'|trans,
+    copy: 'user.password_modal.copy'|trans,
+    copied: 'user.password_modal.copied'|trans,
+    copyFailed: 'user.password_modal.copy_failed'|trans,
+    copyNothingTitle: 'user.copy_nothing_title'|trans,
+    copyNothingText: 'user.copy_nothing_text'|trans,
+    passwordShortTitle: 'user.password_short_title'|trans,
+    passwordShortText: 'user.password_short_text'|trans,
+    deleteTitle: 'user.delete_confirm_title'|trans,
+    deleteConfirm: 'user.delete_confirm_btn'|trans,
+    cancel: 'common.cancel'|trans,
+    suspendTitle: 'user.suspend_confirm_title'|trans,
+    suspendText: 'user.suspend_confirm_text'|trans,
+    suspendBtn: 'user.suspend_btn'|trans,
+    passwordTooShort: 'flash.password_too_short'|trans
+}|json_encode|raw }}</script>
+
 {% endblock %}
-
-
 
 {% block javascripts %}
 
     {{ parent() }}
 
-    <script src="{{ asset('js/caert-user-list.js') }}?v=7"></script>
+    <script src="{{ asset('js/caert-user-list.js') }}?v=8"></script>
 
 {% endblock %}
-
-

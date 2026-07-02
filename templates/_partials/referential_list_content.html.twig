@@ -1,10 +1,10 @@
 {# Contenu référentiel : formulaire + liste DataTable #}
 <div class="content-heading">
-    <div>{{ title }}<small>{{ subtitle|default('Référentiel') }}</small></div>
+    <div>{{ title }}<small>{{ subtitle|default('referential.subtitle'|trans) }}</small></div>
     {% if backUrl is defined and backUrl %}
         <div class="ml-auto">
             <a class="btn btn-sm btn-outline-secondary" href="{{ backUrl }}">
-                <em class="fas fa-arrow-left"></em> Retour
+                <em class="fas fa-arrow-left"></em> {{ 'common.back'|trans }}
             </a>
         </div>
     {% endif %}
@@ -14,7 +14,7 @@
 
 <div class="caert-panel mb-4">
     <div class="caert-panel-header">
-        <em class="fas fa-plus-circle"></em> {{ formPanelTitle|default('Ajouter') }}
+        <em class="fas fa-plus-circle"></em> {{ formPanelTitle|default('referential.add'|trans) }}
     </div>
     <div class="caert-panel-body">
         {{ form_start(form, {'method': form.vars.method, 'action': form.vars.action}) }}
@@ -32,11 +32,11 @@
 
 <div class="caert-panel">
     <div class="caert-panel-header">
-        <em class="fas fa-list"></em> {{ listPanelTitle|default('Liste') }}
+        <em class="fas fa-list"></em> {{ listPanelTitle|default('referential.list'|trans) }}
     </div>
     <div class="caert-panel-body p-0 pt-3 px-3 pb-3">
         <div id="{{ tableWrapperId }}" class="table-responsive">
-            Traitement en cours...
+            {{ 'common.processing'|trans }}
         </div>
     </div>
 </div>

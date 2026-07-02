@@ -2,46 +2,41 @@
 
 namespace App\DataTable;
 
+use App\DataTable\Trait\RowNumberColumnTrait;
 use App\Entity\Attaque;
 use Omines\DataTablesBundle\{DataTableTypeInterface, DataTable};
 use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;
 use Omines\DataTablesBundle\Column\{TextColumn, TwigColumn};
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AttaqueDataTableType implements DataTableTypeInterface
 {
-    private $index;
-    public function __construct()
+    use RowNumberColumnTrait;
+
+    public function __construct(private readonly TranslatorInterface $translator)
     {
-        $this->index = 0;
     }
+
     public function configure(DataTable $dataTable, array $options): void
     {
+        $l = fn (string $key): string => $this->translator->trans($key);
+        $this->resetRowNumber();
+
         $dataTable->setName($options['dataTableName'])
-        ->add('id', TextColumn::class, [
-            'label' => 'id',
-            'orderable' => false,
-            'searchable' => false,
-            'globalSearchable' => false,
-            'visible' => true,
-            'data' =>  function(){
-            return ++$this->index;
-            },
-        ])
+        ->add('num', TextColumn::class, $this->rowNumberColumnOptions())
         ->add('libelle', TextColumn::class, [
-            'label' => 'Libelle',
+            'label' => $l('referential.field.label'),
             'orderable' => true,
             'searchable' => true,
             'globalSearchable' => true
         ])
         ->add('actions', TwigColumn::class, [
-            'label' => 'Actions',
+            'label' => $l('user.actions'),
             'orderable' => false,
             'template' => 'attaque/table_actions.html.twig'
         ])
         ->createAdapter(ORMAdapter::class, [
             'entity' => Attaque::class,
         ]);
-        
     }
 }
-

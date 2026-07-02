@@ -33,10 +33,10 @@ class UserManager
     public function getAssignableRoleChoices(): array
     {
         $labels = [
-            'ROLE_USER' => 'Utilisateur',
-            'ROLE_ADMIN' => 'Administrateur',
-            'ROLE_USERS_MANAGEMENT' => 'Gestion des utilisateurs',
-            'ROLE_SUPER_ADMIN' => 'Super administrateur',
+            'ROLE_USER' => 'role.user',
+            'ROLE_ADMIN' => 'role.admin',
+            'ROLE_USERS_MANAGEMENT' => 'role.users_management',
+            'ROLE_SUPER_ADMIN' => 'role.super_admin',
         ];
 
         $choices = [];

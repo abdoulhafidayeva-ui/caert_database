@@ -8,7 +8,6 @@ use App\Form\UserRegistrationFormType;
 use App\Form\UserPasswordFormType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,13 +15,14 @@ use Symfony\Component\Routing\Attribute\Route;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Notification\EmailNotification;
 use App\Repository\AppParamRepository;
+use App\Service\Locale\LocaleResolver;
 use App\Service\TokenGenerator;
 use App\Service\UserManager;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
-class SecurityController extends AbstractController
+class SecurityController extends AbstractAppController
 {
     public const  LAST_EMAIL = 'app_login_form_old_email';
 
@@ -32,17 +32,19 @@ class SecurityController extends AbstractController
     private $userRepository;
     private $userManager;
     private $notification;
+    private $localeResolver;
 
-    public function __construct(EntityManagerInterface $em, TokenGenerator $tokenGenerator, UserRepository $userRepository, UserManager $userManager , EmailNotification $notification)
+    public function __construct(EntityManagerInterface $em, TokenGenerator $tokenGenerator, UserRepository $userRepository, UserManager $userManager , EmailNotification $notification, LocaleResolver $localeResolver)
     {
         $this->em = $em;
         $this->tokenGenerator = $tokenGenerator;
         $this->userRepository = $userRepository;
         $this->userManager = $userManager;
         $this->notification = $notification;
+        $this->localeResolver = $localeResolver;
     }
 
-    #[IsGranted('ROLE_SUPER_ADMIN', message: "Vous n'avez pas accès à la gestion des utilisateurs.")]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_users")]
     #[Route(path: '/users', name: 'app_user_list', methods: ['GET'])]
     public function list(PaginatorInterface $paginator, Request $request): Response
     {
@@ -59,7 +61,7 @@ class SecurityController extends AbstractController
 
 
 
-    #[IsGranted('ROLE_SUPER_ADMIN', message: "Vous n'avez pas accès à cette partie de l'application!")]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_app")]
     #[Route(path: '/register', name: 'app_register', methods: ['GET', 'POST'])]
     public function register(Request $request): Response
     {
@@ -73,20 +75,23 @@ class SecurityController extends AbstractController
             $user->setTokenCreatedAt(new \DateTime());
             $user->setToken($token);
             $user->setNotifyBy(0);
+            if (!$user->getLocale()) {
+                $user->setLocale($this->localeResolver->resolveFromCountry($user->getPays()));
+            }
             $this->em->persist($user);
             $this->em->flush();
 
             try {
                 $this->notification->notify($user);
-                $this->addFlash('success', 'Le compte a été créé. Un e-mail a été envoyé à l\'utilisateur pour définir son mot de passe.');
+                $this->addFlash('success', 'flash.user_created');
             } catch (TransportExceptionInterface) {
-                $this->addFlash('warning', 'Le compte a été créé, mais l\'e-mail n\'a pas pu être envoyé. Vérifiez la configuration du serveur mail.');
+                $this->addFlash('warning', 'flash.user_created_no_mail');
             }
         }
         return $this->render('security/register.html.twig',['form' => $form->createView(), 'menu' => $menu]);
     }
 
-    #[IsGranted('ROLE_SUPER_ADMIN', message: "Vous n'avez pas accès à cette partie de l'application!")]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_app")]
     #[Route(path: '/register/{id}', name: 'app_user_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, User $user): Response
     {
@@ -99,7 +104,7 @@ class SecurityController extends AbstractController
             $this->em->persist($user);
             $this->em->flush();
 
-            $this->addFlash('success', 'Modification réussie');
+            $this->addFlash('success', 'flash.user_updated');
         }
         return $this->render('security/user_edit.html.twig',['user' => $user, 'form' => $form->createView(), 'menu' => $this->menu]);
     }
@@ -139,7 +144,7 @@ class SecurityController extends AbstractController
             $this->em->persist($user);
             $this->em->flush();
 
-            $this->addFlash('success', 'Votre mot de passe a été bien enrégistré, connectez vous pour continuer');
+            $this->addFlash('success', 'flash.password_saved');
             return $this->redirectToRoute('app_login');
         }
         return $this->render('security/set_password.html.twig',['user' => $user,'form' => $form->createView()]);
@@ -167,7 +172,7 @@ class SecurityController extends AbstractController
             $this->em->flush();
 
             $this->notification->verify($user);
-            $this->addFlash('success', 'Le compte a été bien créé, Veillez vous connecter à votre mail pour valider votre compte');
+            $this->addFlash('success', 'flash.account_created_verify');
             return $this->render('security/attente_validation.html.twig',['user' => $user]);
         }
         return $this->render('security/user-register.html.twig',['form' => $form->createView()]);
@@ -183,7 +188,7 @@ class SecurityController extends AbstractController
             $this->em->flush();
 
             $this->notification->verify($user);
-            $this->addFlash('success', 'Un nouveau mail vous a été envoyé');
+            $this->addFlash('success', 'flash.verification_resent');
             return $this->render('security/attente_validation.html.twig',['user' => $user]);
     }
 
@@ -209,7 +214,7 @@ class SecurityController extends AbstractController
         $this->em->persist($user);
         $this->em->flush();
 
-        $this->addFlash('success', 'Votre mail a été vérifié, contactez Paul ou Idriss pour activer votre compte.');
+        $this->addFlash('success', 'flash.email_verified');
         return $this->redirectToRoute('app_login');
     }
 
@@ -232,25 +237,25 @@ class SecurityController extends AbstractController
         throw new \LogicException("This method can't be blank - it will be intercepted by the logout key on your firewall.");
     }
 
-    #[IsGranted('ROLE_SUPER_ADMIN', message: "Vous n'avez pas accès à la gestion des utilisateurs.")]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_users")]
     #[Route(path: '/user/{id}/toggle-active', name: 'app_user_toggle_active', methods: ['POST'])]
     public function toggleActive(User $user, Request $request): Response
     {
         if (!$this->isCsrfTokenValid('toggle'.$user->getId(), (string) $request->request->get('_token'))) {
-            $this->addFlash('danger', 'Jeton de sécurité invalide. Réessayez.');
+            $this->addFlash('danger', 'flash.invalid_csrf');
 
             return $this->redirectToRoute('app_user_list');
         }
 
         $currentUser = $this->getUser();
         if ($currentUser instanceof User && $currentUser->getId() === $user->getId()) {
-            $this->addFlash('warning', 'Vous ne pouvez pas modifier votre propre statut.');
+            $this->addFlash('warning', 'flash.cannot_toggle_self');
 
             return $this->redirectToRoute('app_user_list');
         }
 
         if ($user->getIsVerified() !== true) {
-            $this->addFlash('warning', 'Compte non vérifié — activez-le d\'abord par e-mail.');
+            $this->addFlash('warning', 'flash.user_not_verified');
 
             return $this->redirectToRoute('app_user_list');
         }
@@ -259,22 +264,23 @@ class SecurityController extends AbstractController
         $user->setEnable($activating);
         $this->em->flush();
 
+        $fullName = $user->getPrenoms().' '.$user->getName();
         $this->addFlash(
             'success',
             $activating
-                ? sprintf('Compte de %s activé.', $user->getPrenoms().' '.$user->getName())
-                : sprintf('Compte de %s suspendu.', $user->getPrenoms().' '.$user->getName())
+                ? $this->trans('flash.user_activated', ['%name%' => $fullName])
+                : $this->trans('flash.user_suspended', ['%name%' => $fullName])
         );
 
         return $this->redirectToRoute('app_user_list');
     }
 
-    #[IsGranted('ROLE_SUPER_ADMIN', message: "Vous n'avez pas accès à la gestion des utilisateurs.")]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_users")]
     #[Route(path: '/user/{id}/reset-password', name: 'app_user_reset_password', methods: ['POST'])]
     public function resetUserPassword(User $user, Request $request, UserPasswordHasherInterface $passwordHasher): Response
     {
         if (!$this->isCsrfTokenValid('reset_password'.$user->getId(), (string) $request->request->get('_token'))) {
-            $this->addFlash('danger', 'Jeton de sécurité invalide. Réessayez.');
+            $this->addFlash('danger', 'flash.invalid_csrf');
 
             return $this->redirectToRoute('app_user_list');
         }
@@ -282,7 +288,7 @@ class SecurityController extends AbstractController
         $plainPassword = (string) $request->request->get('plainPassword', '');
 
         if ($plainPassword === '' || strlen($plainPassword) < 6) {
-            $this->addFlash('danger', 'Le mot de passe doit contenir au moins 6 caractères.');
+            $this->addFlash('danger', 'flash.password_too_short');
 
             return $this->redirectToRoute('app_user_list');
         }
@@ -294,16 +300,17 @@ class SecurityController extends AbstractController
         $user->setEnable(true);
         $this->em->flush();
 
-        $message = sprintf('Le mot de passe de %s a été réinitialisé.', $user->getPrenoms().' '.$user->getName());
+        $fullName = $user->getPrenoms().' '.$user->getName();
+        $message = $this->trans('flash.user_password_reset', ['%name%' => $fullName]);
 
         if ($request->request->getBoolean('send_email')) {
             try {
                 $this->notification->sendNewPassword($user, $plainPassword);
-                $message .= sprintf(' Un e-mail a été envoyé à %s.', $user->getEmail());
+                $message .= $this->trans('flash.user_password_reset_mail', ['%email%' => $user->getEmail()]);
             } catch (TransportExceptionInterface) {
                 $this->addFlash(
                     'warning',
-                    $message.' L\'e-mail n\'a pas pu être envoyé. Vérifiez la configuration du serveur mail.'
+                    $message.$this->trans('flash.user_password_reset_mail_failed')
                 );
 
                 return $this->redirectToRoute('app_user_list');
@@ -315,26 +322,26 @@ class SecurityController extends AbstractController
         return $this->redirectToRoute('app_user_list');
     }
 
-    #[IsGranted('ROLE_SUPER_ADMIN', message: "Vous n'avez pas accès à la gestion des utilisateurs.")]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_users")]
     #[Route(path: '/user/delete/{id}', name: 'app_user_delete', methods: ['POST'])]
     public function delete(User $user, Request $request): Response
     {
         if (!$this->isCsrfTokenValid('delete'.$user->getId(), (string) $request->request->get('_token'))) {
-            $this->addFlash('danger', 'Jeton de sécurité invalide. Réessayez.');
+            $this->addFlash('danger', 'flash.invalid_csrf');
 
             return $this->redirectToRoute('app_user_list');
         }
 
         $currentUser = $this->getUser();
         if ($currentUser instanceof User && $currentUser->getId() === $user->getId()) {
-            $this->addFlash('warning', 'Vous ne pouvez pas supprimer votre propre compte.');
+            $this->addFlash('warning', 'flash.cannot_delete_self');
 
             return $this->redirectToRoute('app_user_list');
         }
 
         $this->em->remove($user);
         $this->em->flush();
-        $this->addFlash('success', 'Utilisateur supprimé.');
+        $this->addFlash('success', 'flash.user_deleted');
 
         return $this->redirectToRoute('app_user_list');
     }

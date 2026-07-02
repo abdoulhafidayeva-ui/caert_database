@@ -24,7 +24,7 @@ class EmailNotification
         $this->send(
             $user,
             'notification/email.html.twig',
-            'Création de votre compte CAERT',
+            'Création de votre compte AUCTC',
             $this->buildUrl('app_add_password', ['token' => $user->getToken()]),
         );
     }
@@ -34,7 +34,7 @@ class EmailNotification
         $this->send(
             $user,
             'notification/verify.html.twig',
-            'Vérification de votre compte CAERT',
+            'Vérification de votre compte AUCTC',
             $this->buildUrl('app_account_verif', ['token' => $user->getToken()]),
         );
     }
@@ -44,7 +44,7 @@ class EmailNotification
         $this->send(
             $user,
             'notification/code.html.twig',
-            'Réinitialisation de votre mot de passe CAERT',
+            'Réinitialisation de votre mot de passe AUCTC',
             null,
         );
     }
@@ -54,7 +54,7 @@ class EmailNotification
         $this->send(
             $user,
             'notification/new_password.html.twig',
-            'Votre nouveau mot de passe CAERT',
+            'Votre nouveau mot de passe AUCTC',
             null,
             [
                 'plainPassword' => $plainPassword,
@@ -66,7 +66,7 @@ class EmailNotification
     private function send(User $user, string $template, string $subject, ?string $actionUrl, array $extraContext = []): void
     {
         $appParam = $this->parametrage->object();
-        $appName = $appParam?->getName() ?? 'CAERT';
+        $appName = $appParam?->getName() ?? 'AUCTC';
         $fromEmail = $appParam?->getEmail() ?? 'noreply@caert.local';
 
         $email = (new TemplatedEmail())

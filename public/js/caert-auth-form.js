@@ -14,7 +14,7 @@
             btn.dataset.originalHtml = btn.innerHTML;
         }
 
-        var label = btn.dataset.loadingLabel || 'Chargement…';
+        var label = btn.dataset.loadingLabel || (window.caertI18n && window.caertI18n.loading) || 'Loading…';
         btn.disabled = true;
         btn.classList.add('is-loading');
         btn.innerHTML = '<span class="caert-btn-spinner" aria-hidden="true"></span> ' + label;

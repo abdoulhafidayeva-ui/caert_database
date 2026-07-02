@@ -71,18 +71,29 @@ class AllDataRepository extends ServiceEntityRepository
 
     public function getCountTotalForSearch(string $type, Region $region, string $month, int $limitDay): int|float|null
     {
-        $monthNum = date('m', strtotime($month));
-        $year = date('Y', strtotime($month));
-        $dateStart = new DateTime(sprintf('%s-%s-01 00:00:00', $year, str_pad($monthNum, 2, '0', STR_PAD_LEFT)));
-        $dateEnd = new DateTime(sprintf('%s-%s-%02d 23:59:59', $year, str_pad($monthNum, 2, '0', STR_PAD_LEFT), $limitDay));
+        $monthStart = \DateTimeImmutable::createFromFormat('Y-m-d', $month.'-01');
+        if ($monthStart === false) {
+            return 0;
+        }
+
+        $dateStart = DateTime::createFromImmutable($monthStart->setTime(0, 0, 0));
+        $dateEnd = DateTime::createFromImmutable(
+            $monthStart->modify('last day of this month')->setTime(23, 59, 59)
+        );
+
+        $regionLibelle = $region->getLibelle();
+        if ($regionLibelle === null || $regionLibelle === '') {
+            return 0;
+        }
 
         $qb = $this->createQueryBuilder('a');
         $qb->innerJoin('a.pays', 'p')
-            ->where('p.region = :region')
+            ->innerJoin('p.region', 'r')
+            ->where('r.libelle = :regionLibelle')
             ->andWhere('a.dateAttaque >= :start')
             ->andWhere('a.dateAttaque <= :end')
             ->andWhere('a.isPublished = :published')
-            ->setParameter('region', $region)
+            ->setParameter('regionLibelle', $regionLibelle)
             ->setParameter('start', $dateStart)
             ->setParameter('end', $dateEnd)
             ->setParameter('published', true);
@@ -108,13 +119,18 @@ class AllDataRepository extends ServiceEntityRepository
      */
     public function findPendingReview(int $limit = 50): array
     {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.isPublished IS NULL')
-            ->andWhere('a.objetRejet IS NULL OR a.objetRejet = \'\'')
-            ->orderBy('a.createdAt', 'DESC')
+        return $this->createPendingReviewQueryBuilder()
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
+    }
+
+    public function createPendingReviewQueryBuilder(): \Doctrine\ORM\QueryBuilder
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.isPublished IS NULL')
+            ->andWhere('a.objetRejet IS NULL OR a.objetRejet = \'\'')
+            ->orderBy('a.createdAt', 'DESC');
     }
 
     public function countPendingReview(): int
@@ -179,23 +195,49 @@ class AllDataRepository extends ServiceEntityRepository
     }
 
     /**
-     * Published incidents with country for map (country-level aggregation).
+     * Published incidents for map detail panels (optional filter by country label).
      *
-     * @return list<array{id: int, lat: float, lng: float, label: string, deaths: int}>
+     * @return list<array<string, mixed>>
+     */
+    public function findMapIncidentDetails(?string $country = null): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select(
+                'a.id',
+                'a.dateAttaque',
+                'a.totalDeces',
+                'a.totalBlesses',
+                'a.localite',
+                'p.libelle AS country',
+                'atk.libelle AS attackType',
+                'cib.libelle AS target',
+                'per.libelle AS perpetrator'
+            )
+            ->innerJoin('a.pays', 'p')
+            ->leftJoin('a.attaque', 'atk')
+            ->leftJoin('a.cible', 'cib')
+            ->leftJoin('a.perpetrateur', 'per')
+            ->andWhere('a.isPublished = true')
+            ->andWhere('a.dateAttaque IS NOT NULL')
+            ->orderBy('a.dateAttaque', 'DESC');
+
+        if ($country !== null && $country !== '') {
+            $qb->andWhere('p.libelle = :country')
+                ->setParameter('country', $country);
+        }
+
+        return $qb->getQuery()->getArrayResult();
+    }
+
+    /**
+     * @return list<array{id: int, lat: float, lng: float, label: string, deaths: int, localite: string, country: string}>
      */
     public function findMapPointsByCountry(): array
     {
-        $rows = $this->createQueryBuilder('a')
-            ->select('a.id, a.totalDeces, a.localite, p.libelle AS country')
-            ->innerJoin('a.pays', 'p')
-            ->andWhere('a.isPublished = true')
-            ->andWhere('a.dateAttaque IS NOT NULL')
-            ->getQuery()
-            ->getArrayResult();
-
         $points = [];
-        foreach ($rows as $row) {
-            $coords = $this->countryCentroidProvider->resolve((string) ($row['country'] ?? ''));
+        foreach ($this->findMapIncidentDetails() as $row) {
+            $country = (string) ($row['country'] ?? '');
+            $coords = $this->countryCentroidProvider->resolve($country);
             if ($coords === null) {
                 continue;
             }
@@ -203,9 +245,10 @@ class AllDataRepository extends ServiceEntityRepository
                 'id' => (int) $row['id'],
                 'lat' => $coords[0],
                 'lng' => $coords[1],
-                'label' => sprintf('%s — %s', $row['country'], $row['localite'] ?? ''),
+                'label' => sprintf('%s — %s', $country, $row['localite'] ?? ''),
                 'deaths' => (int) $row['totalDeces'],
                 'localite' => (string) ($row['localite'] ?? ''),
+                'country' => $country,
             ];
         }
 
@@ -213,12 +256,17 @@ class AllDataRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return list<array{country: string, count: int, deaths: int, lat: float, lng: float}>
+     * @return list<array{country: string, count: int, deaths: int, injured: int, lat: float, lng: float}>
      */
     public function findMapAggregatesByCountry(): array
     {
         $rows = $this->createQueryBuilder('a')
-            ->select('p.libelle AS country, COUNT(a.id) AS incidentCount, SUM(a.totalDeces) AS deathCount')
+            ->select(
+                'p.libelle AS country',
+                'COUNT(a.id) AS incidentCount',
+                'SUM(a.totalDeces) AS deathCount',
+                'SUM(a.totalBlesses) AS injuredCount'
+            )
             ->innerJoin('a.pays', 'p')
             ->andWhere('a.isPublished = true')
             ->andWhere('a.dateAttaque IS NOT NULL')
@@ -236,6 +284,7 @@ class AllDataRepository extends ServiceEntityRepository
                 'country' => (string) $row['country'],
                 'count' => (int) $row['incidentCount'],
                 'deaths' => (int) $row['deathCount'],
+                'injured' => (int) ($row['injuredCount'] ?? 0),
                 'lat' => $coords[0],
                 'lng' => $coords[1],
             ];

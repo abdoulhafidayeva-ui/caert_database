@@ -45,7 +45,7 @@ class LoginFormAuthenticator extends AbstractAuthenticator
             new UserBadge($email, function (string $userIdentifier): User {
                 $user = $this->userRepository->findOneByEmail($userIdentifier);
                 if (!$user) {
-                    throw new CustomUserMessageAuthenticationException('Identifiants incorrects.');
+                    throw new CustomUserMessageAuthenticationException('auth.invalid_credentials');
                 }
 
                 return $user;
@@ -65,13 +65,13 @@ class LoginFormAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        $message = 'Identifiants incorrects.';
+        $messageKey = 'auth.invalid_credentials';
         if ($exception instanceof CustomUserMessageAuthenticationException
             || $exception instanceof CustomUserMessageAccountStatusException) {
-            $message = $exception->getMessage();
+            $messageKey = $exception->getMessage();
         }
 
-        $request->getSession()->getFlashBag()->add('warning', $message);
+        $request->getSession()->getFlashBag()->add('warning', $messageKey);
 
         return new RedirectResponse($this->urlGenerator->generate('app_login'));
     }

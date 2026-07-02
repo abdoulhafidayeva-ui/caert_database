@@ -1,0 +1,330 @@
+<mxfile host="app.diagrams.net" agent="CAERT" version="22.1.0">
+  <diagram id="seq-create" name="1. Create Incident">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t1" value="Sequence — Create Incident (Web Form)&lt;br&gt;POST /new/data · Actor: Country Focal (ROLE_USER)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=13;fontStyle=1;fontColor=#00529B;" vertex="1" parent="1">
+          <mxGeometry x="400" y="10" width="400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="actor" value="Country Focal&#xa;(ROLE_USER)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="60" y="80" width="40" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="lane-home" value="HomeController" style="swimlane;startSize=24;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="180" y="70" width="120" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="lane-form" value="AllDataFormType" style="swimlane;startSize=24;fillColor=#e1d5e7;" vertex="1" parent="1">
+          <mxGeometry x="320" y="70" width="120" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="lane-guard" value="IncidentCountryGuard" style="swimlane;startSize=24;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="460" y="70" width="140" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="lane-calc" value="AllDataTotalsCalculator" style="swimlane;startSize=24;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="620" y="70" width="150" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="lane-em" value="EntityManager" style="swimlane;startSize=24;fillColor=#f5f5f5;" vertex="1" parent="1">
+          <mxGeometry x="790" y="70" width="110" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="lane-audit" value="AuditLogger" style="swimlane;startSize=24;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="920" y="70" width="110" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="lane-voter" value="AllDataVoter" style="swimlane;startSize=24;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="70" width="110" height="520" as="geometry" />
+        </mxCell>
+        <!-- messages -->
+        <mxCell id="m1" value="1: submit incident form" style="endArrow=block;html=1;strokeWidth=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="120" as="sourcePoint" /><mxPoint x="220" y="120" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m2" value="2: isGranted(VIEW) on Pays" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="150" as="sourcePoint" /><mxPoint x="1090" y="150" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m3" value="3: createForm(AllDataFormType)" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="180" as="sourcePoint" /><mxPoint x="360" y="180" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m4" value="4: handleRequest()" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="210" as="sourcePoint" /><mxPoint x="360" y="210" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m5" value="5: assertCountryAllowed(user, pays)" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="250" as="sourcePoint" /><mxPoint x="500" y="250" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m6" value="6: applyTotals(allData)" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="290" as="sourcePoint" /><mxPoint x="670" y="290" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m7" value="7: persist + flush" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="330" as="sourcePoint" /><mxPoint x="830" y="330" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m8" value="8: log(CREATE, AllData, id)" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="370" as="sourcePoint" /><mxPoint x="960" y="370" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="m9" value="9: redirect + flash success" style="endArrow=open;dashed=1;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="220" y="410" as="sourcePoint" /><mxPoint x="100" y="410" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="note1" value="isPublished defaults to null (pending review)" style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fff2cc;align=left;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="620" y="420" width="200" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="seq-publish" name="2. Publish / Reject">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t2" value="Sequence — Publish or Reject Incident&lt;br&gt;ROLE_ADMIN+ (Super Admin inherits) · isPublished: null → true/false" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=13;fontStyle=1;fontColor=#00529B;" vertex="1" parent="1">
+          <mxGeometry x="250" y="10" width="520" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="actor2" value="Administrator&#xa;(ROLE_ADMIN+)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="60" y="80" width="40" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="l-home2" value="HomeController" style="swimlane;startSize=24;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="180" y="70" width="120" height="480" as="geometry" />
+        </mxCell>
+        <mxCell id="l-voter2" value="AllDataVoter" style="swimlane;startSize=24;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="330" y="70" width="120" height="480" as="geometry" />
+        </mxCell>
+        <mxCell id="l-em2" value="EntityManager" style="swimlane;startSize=24;fillColor=#f5f5f5;" vertex="1" parent="1">
+          <mxGeometry x="480" y="70" width="110" height="480" as="geometry" />
+        </mxCell>
+        <mxCell id="l-audit2" value="AuditLogger" style="swimlane;startSize=24;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="620" y="70" width="110" height="480" as="geometry" />
+        </mxCell>
+        <mxCell id="l-wf2" value="WorkflowController" style="swimlane;startSize=24;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="760" y="70" width="130" height="480" as="geometry" />
+        </mxCell>
+        <mxCell id="l-repo2" value="AllDataRepository" style="swimlane;startSize=24;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="920" y="70" width="130" height="480" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" value="1: GET /workflow/inbox" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="120" as="sourcePoint" /><mxPoint x="810" y="120" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="p2" value="2: findPendingReview()" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="830" y="150" as="sourcePoint" /><mxPoint x="970" y="150" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="p3" value="3: POST publish/{id}" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="200" as="sourcePoint" /><mxPoint x="220" y="200" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="p4" value="4: isGranted(PUBLISH, AllData)" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="230" as="sourcePoint" /><mxPoint x="360" y="230" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="p5" value="5: setIsPublished(true)" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="270" as="sourcePoint" /><mxPoint x="520" y="270" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="p6" value="6: log(PUBLISH, AllData, id)" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="310" as="sourcePoint" /><mxPoint x="660" y="310" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="p7" value="alt: reject → setIsPublished(false) + objetRejet" style="endArrow=block;html=1;strokeColor=#b85450;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="360" as="sourcePoint" /><mxPoint x="520" y="360" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="p7b" value="6b: log(REJECT, AllData, id)" style="endArrow=block;html=1;strokeColor=#b85450;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="390" as="sourcePoint" /><mxPoint x="660" y="390" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="p8" value="Published records → Map &amp;amp; Analytics · Rejected → contributor views motif via /objet_rejet_msg" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=left;spacingLeft=8;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="480" y="440" width="380" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="seq-import" name="3. Excel Import">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1300" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t3" value="Sequence — Bulk Excel Import&lt;br&gt;POST /import/data" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=13;fontStyle=1;fontColor=#00529B;" vertex="1" parent="1">
+          <mxGeometry x="350" y="10" width="400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="actor3" value="Country Focal&#xa;(ROLE_USER)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="60" y="80" width="40" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="l-h3" value="HomeController" style="swimlane;startSize=24;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="160" y="70" width="120" height="500" as="geometry" />
+        </mxCell>
+        <mxCell id="l-i3" value="ExcelImportService" style="swimlane;startSize=24;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="310" y="70" width="140" height="500" as="geometry" />
+        </mxCell>
+        <mxCell id="l-g3" value="IncidentCountryGuard" style="swimlane;startSize=24;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="480" y="70" width="140" height="500" as="geometry" />
+        </mxCell>
+        <mxCell id="l-t3" value="AllDataTotalsCalculator" style="swimlane;startSize=24;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="650" y="70" width="150" height="500" as="geometry" />
+        </mxCell>
+        <mxCell id="l-em3" value="EntityManager" style="swimlane;startSize=24;fillColor=#f5f5f5;" vertex="1" parent="1">
+          <mxGeometry x="830" y="70" width="110" height="500" as="geometry" />
+        </mxCell>
+        <mxCell id="l-a3" value="AuditLogger" style="swimlane;startSize=24;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="970" y="70" width="110" height="500" as="geometry" />
+        </mxCell>
+        <mxCell id="i1" value="1: upload .xlsx file" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="120" as="sourcePoint" /><mxPoint x="200" y="120" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="i2" value="2: import(file, user): ImportResult" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="220" y="160" as="sourcePoint" /><mxPoint x="350" y="160" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="i3" value="3: parse rows, resolve referentials" style="endArrow=block;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="370" y="200" as="sourcePoint" /><mxPoint x="370" y="230" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="i4" value="4: assertCountryAllowed per row" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="370" y="260" as="sourcePoint" /><mxPoint x="520" y="260" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="i5" value="5: applyTotals each AllData" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="370" y="300" as="sourcePoint" /><mxPoint x="700" y="300" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="i6" value="6: batch persist + flush" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="370" y="340" as="sourcePoint" /><mxPoint x="870" y="340" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="i7" value="7: log(IMPORT, AllData, summary)" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="220" y="380" as="sourcePoint" /><mxPoint x="1000" y="380" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="i8" value="8: ImportResult (created, skipped, errors)" style="endArrow=open;dashed=1;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="350" y="420" as="sourcePoint" /><mxPoint x="220" y="420" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="i9" value="9: flash summary to user" style="endArrow=open;dashed=1;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="200" y="460" as="sourcePoint" /><mxPoint x="100" y="460" as="targetPoint" /></mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="seq-login" name="4. Login">
+    <mxGraphModel dx="1000" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t4" value="Sequence — User Authentication&lt;br&gt;POST /login · all roles (USER / ADMIN / SUPER_ADMIN)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=13;fontStyle=1;fontColor=#00529B;" vertex="1" parent="1">
+          <mxGeometry x="300" y="10" width="480" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="actor4" value="Authenticated&#xa;User" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="60" y="80" width="40" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="l-sec4" value="SecurityController" style="swimlane;startSize=24;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="160" y="70" width="130" height="420" as="geometry" />
+        </mxCell>
+        <mxCell id="l-auth4" value="LoginFormAuthenticator" style="swimlane;startSize=24;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="320" y="70" width="150" height="420" as="geometry" />
+        </mxCell>
+        <mxCell id="l-chk4" value="UserChecker" style="swimlane;startSize=24;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="500" y="70" width="110" height="420" as="geometry" />
+        </mxCell>
+        <mxCell id="l-loc4" value="LocaleResolver" style="swimlane;startSize=24;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="640" y="70" width="110" height="420" as="geometry" />
+        </mxCell>
+        <mxCell id="l-sess4" value="Session" style="swimlane;startSize=24;fillColor=#f5f5f5;" vertex="1" parent="1">
+          <mxGeometry x="780" y="70" width="100" height="420" as="geometry" />
+        </mxCell>
+        <mxCell id="a1" value="1: credentials" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="120" as="sourcePoint" /><mxPoint x="210" y="120" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="a2" value="2: authenticate(request)" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="230" y="160" as="sourcePoint" /><mxPoint x="370" y="160" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="a3" value="3: checkPreAuth / checkPostAuth" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="390" y="200" as="sourcePoint" /><mxPoint x="530" y="200" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="a4" value="4: resolveForUser → _locale" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="390" y="250" as="sourcePoint" /><mxPoint x="670" y="250" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="a5" value="5: store security token" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="390" y="290" as="sourcePoint" /><mxPoint x="810" y="290" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="a6" value="6: redirect to dashboard (role-based menu)" style="endArrow=open;dashed=1;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="210" y="340" as="sourcePoint" /><mxPoint x="100" y="340" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="note-login" value="UserChecker rejects enable=false or isVerified=false" style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#f8cecc;align=left;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="500" y="360" width="220" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="seq-user-mgmt" name="5. User Management">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1300" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t5" value="Sequence — User Management&lt;br&gt;ROLE_SUPER_ADMIN only · inherits all ADMIN capabilities" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=13;fontStyle=1;fontColor=#00529B;" vertex="1" parent="1">
+          <mxGeometry x="300" y="10" width="500" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="actor5" value="Super Admin&#xa;(ROLE_SUPER_ADMIN)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="60" y="80" width="40" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="l-sec5" value="SecurityController" style="swimlane;startSize=24;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="160" y="70" width="140" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="l-um5" value="UserManager" style="swimlane;startSize=24;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="330" y="70" width="120" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="l-em5" value="EntityManager" style="swimlane;startSize=24;fillColor=#f5f5f5;" vertex="1" parent="1">
+          <mxGeometry x="480" y="70" width="110" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="l-mail5" value="Mailer" style="swimlane;startSize=24;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="620" y="70" width="100" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="l-audit5" value="AuditLogger" style="swimlane;startSize=24;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="750" y="70" width="110" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="u1" value="1: GET /register (create user form)" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="120" as="sourcePoint" /><mxPoint x="210" y="120" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="u2" value="2: getAssignableRoleChoices()" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="230" y="150" as="sourcePoint" /><mxPoint x="360" y="150" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="u3" value="3: POST /register → persist User + roles + pays" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="230" y="190" as="sourcePoint" /><mxPoint x="520" y="190" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="u4" value="4: send invitation e-mail (set-password link)" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="230" y="230" as="sourcePoint" /><mxPoint x="650" y="230" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="u5" value="5: log(USER_CREATE, User, id)" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="230" y="270" as="sourcePoint" /><mxPoint x="780" y="270" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="u6" value="alt: POST /user/{id}/toggle-active (suspend/activate)" style="endArrow=block;html=1;strokeColor=#b85450;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="230" y="320" as="sourcePoint" /><mxPoint x="520" y="320" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="u7" value="alt: POST /user/{id}/reset-password" style="endArrow=block;html=1;strokeColor=#b85450;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="230" y="360" as="sourcePoint" /><mxPoint x="650" y="360" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="u8" value="alt: POST /user/delete/{id}" style="endArrow=block;html=1;strokeColor=#b85450;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="230" y="400" as="sourcePoint" /><mxPoint x="520" y="400" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="note5" value="Super Admin also accesses validation, executive dashboard, incidents (via role hierarchy)" style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#dae8fc;align=left;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="480" y="440" width="320" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="seq-bootstrap" name="6. Bootstrap App">
+    <mxGraphModel dx="1000" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t6" value="Sequence — Application Bootstrap (first deployment)&lt;br&gt;Anonymous · /install then /first-user" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=13;fontStyle=1;fontColor=#00529B;" vertex="1" parent="1">
+          <mxGeometry x="250" y="10" width="500" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="actor6" value="Anonymous&#xa;(installer)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#eeeeee;" vertex="1" parent="1">
+          <mxGeometry x="60" y="80" width="40" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="l-pa6" value="ParamAppController" style="swimlane;startSize=24;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="160" y="70" width="140" height="420" as="geometry" />
+        </mxCell>
+        <mxCell id="l-em6" value="EntityManager" style="swimlane;startSize=24;fillColor=#f5f5f5;" vertex="1" parent="1">
+          <mxGeometry x="330" y="70" width="110" height="420" as="geometry" />
+        </mxCell>
+        <mxCell id="b1" value="1: GET/POST /install → AppParam (app name)" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="130" as="sourcePoint" /><mxPoint x="210" y="130" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="b2" value="2: persist AppParam" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="230" y="170" as="sourcePoint" /><mxPoint x="370" y="170" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="b3" value="3: GET/POST /first-user → create ROLE_SUPER_ADMIN" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="220" as="sourcePoint" /><mxPoint x="210" y="220" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="b4" value="4: persist User (roles=[SUPER_ADMIN])" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="230" y="260" as="sourcePoint" /><mxPoint x="370" y="260" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="b5" value="5: redirect to /login" style="endArrow=open;dashed=1;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="210" y="310" as="sourcePoint" /><mxPoint x="100" y="310" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="note6" value="Routes public (PUBLIC_ACCESS) · one-time setup before production use" style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fff2cc;align=left;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="330" y="340" width="280" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

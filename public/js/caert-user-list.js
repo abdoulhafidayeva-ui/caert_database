@@ -9,6 +9,25 @@
     var passwordVisible = false;
     var lastModalTrigger = null;
 
+    function readI18n() {
+        var el = document.getElementById('caert-user-list-i18n');
+        if (!el) {
+            return {};
+        }
+
+        try {
+            return JSON.parse(el.textContent);
+        } catch (err) {
+            return {};
+        }
+    }
+
+    var i18n = readI18n();
+
+    function t(key, fallback) {
+        return i18n[key] || fallback;
+    }
+
     function supportsInert() {
         return 'inert' in HTMLElement.prototype;
     }
@@ -88,11 +107,12 @@
             icon.className = visible ? 'fas fa-eye-slash fa-fw' : 'fas fa-eye fa-fw';
         }
         if (label) {
-            label.textContent = visible ? 'Masquer' : 'Afficher';
+            label.textContent = visible ? t('hide', 'Masquer') : t('show', 'Afficher');
         }
         if (toggleBtn) {
-            toggleBtn.setAttribute('aria-label', visible ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
-            toggleBtn.setAttribute('title', visible ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+            var ariaLabel = visible ? t('hidePassword', 'Masquer le mot de passe') : t('showPassword', 'Afficher le mot de passe');
+            toggleBtn.setAttribute('aria-label', ariaLabel);
+            toggleBtn.setAttribute('title', ariaLabel);
         }
     }
 
@@ -136,15 +156,17 @@
 
     function showCopyFeedback(success) {
         var label = document.getElementById('userResetPasswordCopyLabel');
-        if (!label) {
-            return;
+        var copiedLabel = t('copy', 'Copier');
+        if (label) {
+            copiedLabel = label.textContent;
         }
 
-        var original = label.textContent;
-        label.textContent = success ? 'Copié !' : 'Échec';
-        window.setTimeout(function () {
-            label.textContent = original;
-        }, 1500);
+        if (label) {
+            label.textContent = success ? t('copied', 'Copié !') : t('copyFailed', 'Échec');
+            window.setTimeout(function () {
+                label.textContent = copiedLabel;
+            }, 1500);
+        }
 
         if (typeof Swal !== 'undefined') {
             var modal = document.getElementById('userResetPasswordModal');
@@ -152,7 +174,7 @@
                 toast: true,
                 position: 'top-end',
                 icon: success ? 'success' : 'error',
-                title: success ? 'Copié !' : 'Échec',
+                title: success ? t('copied', 'Copié !') : t('copyFailed', 'Échec'),
                 showConfirmButton: false,
                 timer: 1800,
                 timerProgressBar: true,
@@ -184,9 +206,13 @@
         var password = plain.value || '';
         if (password.length < 6) {
             if (typeof Swal !== 'undefined') {
-                Swal.fire('Rien à copier', 'Saisissez ou générez un mot de passe d\'abord.', 'info');
+                Swal.fire(
+                    t('copyNothingTitle', 'Rien à copier'),
+                    t('copyNothingText', 'Saisissez ou générez un mot de passe d\'abord.'),
+                    'info'
+                );
             } else {
-                window.alert('Saisissez ou générez un mot de passe d\'abord.');
+                window.alert(t('copyNothingText', 'Saisissez ou générez un mot de passe d\'abord.'));
             }
             return;
         }
@@ -257,23 +283,23 @@
     $(document).on('submit', '.caert-delete-user-form', function (e) {
         e.preventDefault();
         var $form = $(this);
-        var name = $form.data('user-name') || 'cet utilisateur';
+        var name = $form.data('user-name') || '';
 
         if (typeof Swal === 'undefined') {
-            if (window.confirm('Supprimer ' + name + ' ?')) {
+            if (window.confirm(t('deleteTitle', 'Supprimer cet utilisateur ?') + ' ' + name)) {
                 $form.off('submit').submit();
             }
             return;
         }
 
         Swal.fire({
-            title: 'Supprimer cet utilisateur ?',
+            title: t('deleteTitle', 'Supprimer cet utilisateur ?'),
             text: name,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#dc2626',
-            cancelButtonText: 'Annuler',
-            confirmButtonText: 'Supprimer',
+            cancelButtonText: t('cancel', 'Annuler'),
+            confirmButtonText: t('deleteConfirm', 'Supprimer'),
         }).then(function (result) {
             if (result.isConfirmed) {
                 $form.off('submit').submit();
@@ -335,9 +361,13 @@
         if (plain.length < 6) {
             e.preventDefault();
             if (typeof Swal !== 'undefined') {
-                Swal.fire('Mot de passe trop court', 'Au moins 6 caractères requis.', 'warning');
+                Swal.fire(
+                    t('passwordShortTitle', 'Mot de passe trop court'),
+                    t('passwordShortText', 'Au moins 6 caractères requis.'),
+                    'warning'
+                );
             } else {
-                window.alert('Le mot de passe doit contenir au moins 6 caractères.');
+                window.alert(t('passwordTooShort', 'Le mot de passe doit contenir au moins 6 caractères.'));
             }
         }
     });
@@ -351,19 +381,19 @@
         e.preventDefault();
 
         if (typeof Swal === 'undefined') {
-            if (window.confirm('Suspendre ce compte ?')) {
+            if (window.confirm(t('suspendTitle', 'Suspendre ce compte ?'))) {
                 $form.off('submit').submit();
             }
             return;
         }
 
         Swal.fire({
-            title: 'Suspendre ce compte ?',
-            text: 'L\'utilisateur ne pourra plus se connecter.',
+            title: t('suspendTitle', 'Suspendre ce compte ?'),
+            text: t('suspendText', 'L\'utilisateur ne pourra plus se connecter.'),
             icon: 'question',
             showCancelButton: true,
-            cancelButtonText: 'Annuler',
-            confirmButtonText: 'Suspendre',
+            cancelButtonText: t('cancel', 'Annuler'),
+            confirmButtonText: t('suspendBtn', 'Suspendre'),
         }).then(function (result) {
             if (result.isConfirmed) {
                 $form.off('submit').submit();

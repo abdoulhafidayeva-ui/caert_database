@@ -13,6 +13,15 @@
         return window.Chart;
     }
 
+    function i18n(key, fallback) {
+        return (window.caertI18n && window.caertI18n[key]) || fallback;
+    }
+
+    function formatRegionComparisonTitle(typeLabel) {
+        var template = i18n('chartRegionComparison', 'Comparison by region — %type%');
+        return template.replace('%type%', typeLabel);
+    }
+
     function normalizeSeries(values) {
         if (Array.isArray(values)) {
             return values.map(function (v) { return Number(v) || 0; });
@@ -101,7 +110,7 @@
         }
 
         if (!Chart) {
-            showChartError($('.caert-chart-result'), 'Chart.js n\'est pas chargé. Rechargez la page.');
+            showChartError($('.caert-chart-result'), i18n('chartJsMissing', 'Chart.js is not loaded. Reload the page.'));
             console.error('[caert-graphique] Chart.js non chargé.');
             return;
         }
@@ -115,18 +124,8 @@
         let resultChart = null;
         let requestInFlight = false;
 
-        if ($.fn.select2) {
-            $form.find('.select2').each(function () {
-                const $el = $(this);
-                if (!$el.hasClass('select2-hidden-accessible')) {
-                    $el.select2({
-                        placeholder: 'Sélectionner',
-                        allowClear: true,
-                        theme: 'bootstrap4',
-                        width: '100%',
-                    });
-                }
-            });
+        if (typeof window.caertInitSelect2 === 'function') {
+            window.caertInitSelect2($form[0]);
         }
 
         function setLoading(isLoading) {
@@ -139,12 +138,12 @@
                     $btn.data('original-html', $btn.html());
                 }
                 $btn.prop('disabled', true).addClass('is-loading');
-                $btn.html('<span class="caert-btn-spinner" aria-hidden="true"></span> Traitement en cours…');
+                $btn.html('<span class="caert-btn-spinner" aria-hidden="true"></span> ' + i18n('processing', 'Processing…'));
                 $panel.addClass('is-processing');
                 $result.html(
                     '<div class="caert-chart-loading">' +
                     '<div class="caert-chart-loading-spinner"></div>' +
-                    '<p>Génération du graphique en cours…</p>' +
+                    '<p>' + i18n('chartGenerating', 'Generating chart…') + '</p>' +
                     '</div>'
                 );
             } else {
@@ -162,12 +161,12 @@
             const regions = $('#region').val();
 
             if (!start || !type || !regions || regions.length === 0) {
-                alert('Veuillez renseigner la période, l\'indicateur et au moins une région.');
+                alert((window.caertI18n && window.caertI18n.analyticsPeriodRequired) || 'Please fill in the period, indicator and at least one region.');
                 return false;
             }
 
             if (!urls.search) {
-                alert('Configuration API manquante.');
+                alert((window.caertI18n && window.caertI18n.analyticsApiMissing) || 'API configuration missing.');
                 return false;
             }
 
@@ -195,13 +194,13 @@
                 const $result = $('.caert-chart-result');
 
                 if (!response || response.error) {
-                    alert((response && response.error) ? response.error : 'Réponse invalide du serveur.');
+                    alert((response && response.error) ? response.error : ((window.caertI18n && window.caertI18n.analyticsInvalidResponse) || 'Invalid server response.'));
                     $result.empty();
                     return;
                 }
 
                 if (!response.countMonth || !response.regions) {
-                    alert('Données insuffisantes pour afficher le graphique.');
+                    alert((window.caertI18n && window.caertI18n.analyticsInsufficientData) || 'Not enough data to display the chart.');
                     $result.empty();
                     return;
                 }
@@ -230,7 +229,16 @@
                     ? response.regions
                     : normalizeSeries(response.regions);
 
-                $result.html('<canvas id="resultatGraph" height="120"></canvas>');
+                var infoHtml = '';
+                if (response.noPublishedData) {
+                    var infoMessage = response.info || i18n('analyticsNoPublishedData', 'No published incidents for this period.');
+                    infoHtml =
+                        '<div class="alert alert-info mb-3" role="status">' +
+                        '<em class="fas fa-info-circle mr-1"></em> ' + infoMessage +
+                        '</div>';
+                }
+
+                $result.html(infoHtml + '<canvas id="resultatGraph" height="120"></canvas>');
 
                 if (resultChart) {
                     resultChart.destroy();
@@ -239,9 +247,11 @@
 
                 const canvas = document.getElementById('resultatGraph');
                 if (!canvas) {
-                    showChartError($result, 'Impossible d\'afficher le graphique.');
+                    showChartError($result, i18n('chartDisplayError', 'Unable to display the chart.'));
                     return;
                 }
+
+                var typeLabel = response.typeLabel || response.type || String($('#type option:selected').text() || $('#type').val());
 
                 resultChart = new Chart(canvas, {
                     type: 'bar',
@@ -256,7 +266,7 @@
                             legend: { position: 'top' },
                             title: {
                                 display: true,
-                                text: 'Comparaison par région — ' + String(response.type || $('#type').val()).toUpperCase(),
+                                text: formatRegionComparisonTitle(typeLabel),
                             },
                         },
                         scales: {
@@ -268,13 +278,13 @@
                     },
                 });
             }).fail(function (xhr) {
-                let message = 'Impossible de générer le graphique.';
+                let message = i18n('analyticsGenerateFailed', 'Unable to generate the chart.');
                 if (xhr.responseJSON && xhr.responseJSON.error) {
                     message = xhr.responseJSON.error;
                 } else if (xhr.status === 401 || xhr.status === 403) {
-                    message = 'Session expirée. Reconnectez-vous.';
+                    message = i18n('analyticsSessionExpired', 'Session expired. Please sign in again.');
                 } else if (xhr.status === 500) {
-                    message = 'Erreur serveur lors de la génération. Réessayez ou contactez l\'administrateur.';
+                    message = i18n('analyticsServerError', 'Server error while generating the chart. Try again or contact an administrator.');
                 }
                 alert(message);
                 $('.caert-chart-result').empty();
@@ -313,9 +323,13 @@
             $.getJSON(urls.incidents).done(function (data) {
                 renderSummaryBarChart(
                     'nbTerroristIncidents',
-                    ['Attaques', 'Décès', 'Blessés'],
+                    [
+                        (window.caertI18n && window.caertI18n.chartAttacks) || 'Attacks',
+                        (window.caertI18n && window.caertI18n.chartDeaths) || 'Deaths',
+                        (window.caertI18n && window.caertI18n.chartInjured) || 'Injured',
+                    ],
                     [data.totalAttack, data.totalDeath, data.totalInjured],
-                    'Incidents terroristes (total publié)'
+                    (window.caertI18n && window.caertI18n.chartIncidentsSummary) || 'Terrorist incidents (published total)'
                 );
             }).fail(function () {
                 console.warn('[caert-graphique] Chargement incidents impossible.');
@@ -326,9 +340,13 @@
             $.getJSON(urls.targets).done(function (data) {
                 renderSummaryPieChart(
                     'prTargetsOfAttacks',
-                    ['Civils', 'Sécurité / militaire', 'Terroristes'],
+                    [
+                        (window.caertI18n && window.caertI18n.chartTargetsCivilian) || 'Civilians',
+                        (window.caertI18n && window.caertI18n.chartTargetsMilitary) || 'Security / military',
+                        (window.caertI18n && window.caertI18n.chartTargetsTerrorist) || 'Terrorists',
+                    ],
                     [data.totalCivil, data.totalSecuriteMilitaire, data.totalTerroriste],
-                    'Cibles des attaques'
+                    (window.caertI18n && window.caertI18n.chartTargetsTitle) || 'Attack targets'
                 );
             }).fail(function () {
                 console.warn('[caert-graphique] Chargement cibles impossible.');

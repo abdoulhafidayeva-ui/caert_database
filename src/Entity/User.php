@@ -108,6 +108,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $organisation;
 
+    #[ORM\Column(type: 'string', length: 5, nullable: true)]
+    private $locale;
+
     #[ORM\OneToMany(targetEntity: Espace::class, mappedBy: 'user')]
     private $espaces;
 
@@ -566,6 +569,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setOrganisation(?string $organisation): self
     {
         $this->organisation = $organisation;
+
+        return $this;
+    }
+
+    public function getLocale(): ?string
+    {
+        return $this->locale;
+    }
+
+    public function setLocale(?string $locale): self
+    {
+        $this->locale = $locale;
 
         return $this;
     }

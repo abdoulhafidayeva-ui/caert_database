@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title 'Register' %}
+{% block title %}{{ 'user.edit_title'|trans({'%name%': user.name}) }}{% endblock %}
 
 {% block body %}
 <div class="wrapper">
@@ -9,18 +9,17 @@
     {% include "_aside.html.twig" %}
 
     <section class="section-container">
-        <!-- Page content-->
         <div class="content-wrapper">
             <div class="content-heading">
-               <div>Modification de {{ user.name }}<small>Formulaire</small></div>
-               <div class="ml-auto"><a class="btn btn-sm btn-primary text-sm" href="{{path('app_user_list')}}">Retour</a></div>
-            </div>         
+               <div>{{ 'user.edit_title'|trans({'%name%': user.name}) }}<small>{{ 'user.form_subtitle'|trans }}</small></div>
+               <div class="ml-auto"><a class="btn btn-sm btn-primary text-sm" href="{{ path('app_user_list') }}">{{ 'user.back'|trans }}</a></div>
+            </div>
             {% include "_flash_message.html.twig" %}
             <div class="row">
                 <div class="col-12">
                     <div class="card card-default">
-                        <div class="card-body">  
-                            {{ include('security/_register_form.html.twig', {form: form, button: 'Editer'}) }}
+                        <div class="card-body">
+                            {{ include('security/_register_form.html.twig', {form: form, button: 'user.save_btn'|trans, loading: 'user.save_loading'|trans}) }}
                         </div>
                     </div>
                 </div>

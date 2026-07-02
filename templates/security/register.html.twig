@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title 'Register' %}
+{% block title %}{{ 'user.create_title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="wrapper">
@@ -9,18 +9,17 @@
     {% include "_aside.html.twig" %}
 
     <section class="section-container">
-        <!-- Page content-->
         <div class="content-wrapper">
             <div class="content-heading">
-               <div>Création d'un utilisateur<small>Formulaire</small></div>
-               <div class="ml-auto"><a class="btn btn-sm btn-secondary text-sm" href="{{path('app_user_list')}}">Retour</a></div>
-            </div>         
+               <div>{{ 'user.create_title'|trans }}<small>{{ 'user.form_subtitle'|trans }}</small></div>
+               <div class="ml-auto"><a class="btn btn-sm btn-secondary text-sm" href="{{ path('app_user_list') }}">{{ 'user.back'|trans }}</a></div>
+            </div>
             {% include "_flash_message.html.twig" %}
             <div class="row">
                 <div class="col-12">
                     <div class="card card-default">
-                        <div class="card-body">  
-                            {{ include('security/_register_form.html.twig', {form: form, button: 'Créer'}) }}
+                        <div class="card-body">
+                            {{ include('security/_register_form.html.twig', {form: form, button: 'user.create_btn'|trans, loading: 'user.create_loading'|trans}) }}
                         </div>
                     </div>
                 </div>

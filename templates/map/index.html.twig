@@ -1,153 +1,134 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Carte des incidents{% endblock %}
+{% block title %}{{ 'map.title'|trans }}{% endblock %}
 
 {% block stylesheets %}
-
     {{ parent() }}
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-    <style>#map { height: 65vh; min-height: 400px; border-radius: 4px; }</style>
-
+    <style>
+        #map {
+            height: 65vh;
+            min-height: 420px;
+            border-radius: 8px;
+            border: 1px solid var(--caert-border, #e2e8f0);
+        }
+        .caert-map-legend .dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #c0392b;
+            margin-right: 6px;
+        }
+        .leaflet-popup.caert-map-leaflet-popup .leaflet-popup-content-wrapper {
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14);
+            padding: 0;
+        }
+        .leaflet-popup.caert-map-leaflet-popup .leaflet-popup-content {
+            margin: 0;
+            min-width: 220px;
+        }
+        .leaflet-popup.caert-map-leaflet-popup .leaflet-popup-tip {
+            box-shadow: none;
+        }
+        .caert-map-popup {
+            padding: 0.9rem 1rem 0.85rem;
+        }
+        .caert-map-popup__title {
+            margin: 0 0 0.75rem;
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1.25;
+            color: #0f172a;
+        }
+        .caert-map-popup__stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.45rem;
+            margin-bottom: 0.65rem;
+        }
+        .caert-map-popup__stat {
+            text-align: center;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 0.55rem 0.35rem;
+            border: 1px solid #e2e8f0;
+        }
+        .caert-map-popup__value {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.1;
+            color: #0f172a;
+        }
+        .caert-map-popup__label {
+            display: block;
+            margin-top: 0.15rem;
+            font-size: 0.68rem;
+            color: #64748b;
+            line-height: 1.2;
+        }
+        .caert-map-popup__note {
+            margin: 0;
+            font-size: 0.72rem;
+            color: #64748b;
+            line-height: 1.35;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
-
 <div class="wrapper">
-
     {% include "_header.html.twig" %}
-
     {% include "_aside.html.twig" %}
-
     <section class="section-container">
-
         <div class="content-wrapper">
-
             <div class="content-heading">
-
-                <div>Cartographie <small>incidents publiés par pays</small></div>
-
+                <div>{{ 'map.cartography'|trans }} <small>{{ 'map.subtitle'|trans }}</small></div>
             </div>
-
             <div class="row mb-3">
-
                 <div class="col-md-4">
-
                     <div class="caert-kpi-card mb-0">
-
                         <div class="kpi-value">{{ countryCount }}</div>
-
-                        <div class="kpi-label">Pays concernés</div>
-
+                        <div class="kpi-label">{{ 'map.kpi.countries'|trans }}</div>
                     </div>
-
                 </div>
-
                 <div class="col-md-4">
-
                     <div class="caert-kpi-card mb-0">
-
                         <div class="kpi-value">{{ incidentCount }}</div>
-
-                        <div class="kpi-label">Incidents publiés</div>
-
+                        <div class="kpi-label">{{ 'map.kpi.published_incidents'|trans }}</div>
                     </div>
-
                 </div>
-
             </div>
-
-            <div class="alert alert-info">
-
-                Points positionnés au centroïde du pays. La localité est indiquée dans le détail de chaque incident.
-
+            <div class="alert alert-info py-2">
+                {{ 'map.info'|trans }}
             </div>
-
-            <div class="caert-map-legend">
-                <span class="dot"></span> Taille du cercle = volume d'incidents par pays (agrégation au centroïde national)
+            <div class="caert-map-legend mb-2">
+                <span class="dot"></span> {{ 'map.legend'|trans }}
             </div>
-
             <div id="map"></div>
-
         </div>
-
     </section>
-
     {% include "_footer.html.twig" %}
-
 </div>
-
 {% endblock %}
 
 {% block javascripts %}
-
     {{ parent() }}
-
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <script>
-
-        const map = L.map('map').setView([2, 20], 3);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-
-            maxZoom: 18,
-
-            attribution: '&copy; OpenStreetMap'
-
-        }).addTo(map);
-
-
-
-        fetch('{{ path('api_map_countries') }}')
-
-            .then(r => r.json())
-
-            .then(geojson => {
-
-                const layer = L.geoJSON(geojson, {
-
-                    pointToLayer: (feature, latlng) => L.circleMarker(latlng, {
-
-                        radius: Math.min(16, 6 + (feature.properties.count || 1) * 2),
-
-                        fillColor: '#c0392b',
-
-                        color: '#7b241c',
-
-                        weight: 1,
-
-                        fillOpacity: 0.75
-
-                    }),
-
-                    onEachFeature: (feature, layer) => {
-
-                        layer.bindPopup(
-
-                            '<strong>' + feature.properties.country + '</strong><br>' +
-
-                            'Incidents: ' + feature.properties.count + '<br>' +
-
-                            'Décès: ' + feature.properties.deaths
-
-                        );
-
-                    }
-
-                }).addTo(map);
-
-                if (layer.getBounds().isValid()) {
-
-                    map.fitBounds(layer.getBounds(), { padding: [30, 30], maxZoom: 5 });
-
-                }
-
-            });
-
+        window.caertMapI18n = {{ {
+            incidents: 'map.incidents'|trans,
+            deaths: 'map.deaths'|trans,
+            injured: 'map.injured'|trans,
+            statsScope: 'map.stats_scope'|trans,
+        }|json_encode|raw }};
     </script>
-
+    <script src="{{ asset('js/caert-map.js') }}?v=3"></script>
+    <script>
+        initCaertMap({
+            countriesUrl: {{ path('api_map_countries')|json_encode|raw }},
+        });
+    </script>
 {% endblock %}
-
-

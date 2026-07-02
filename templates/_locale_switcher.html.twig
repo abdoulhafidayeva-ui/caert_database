@@ -1,0 +1,17 @@
+{% set current = app.request.locale %}
+{% set locale_options = [
+    { code: 'fr', label: 'locale.fr' },
+    { code: 'en', label: 'locale.en' },
+] %}
+<div class="caert-locale-switcher btn-group btn-group-sm" role="group" aria-label="{{ 'locale.switch'|trans }}">
+    {% for option in locale_options %}
+        <form method="post" action="{{ path('app_locale_switch', { locale: option.code }) }}" class="d-inline m-0 p-0">
+            <input type="hidden" name="_token" value="{{ csrf_token('switch_locale') }}">
+            <button type="submit"
+                    class="btn btn-sm {{ current == option.code ? 'btn-primary' : 'btn-outline-secondary' }}"
+                    aria-pressed="{{ current == option.code ? 'true' : 'false' }}">
+                {{ option.label|trans }}
+            </button>
+        </form>
+    {% endfor %}
+</div>

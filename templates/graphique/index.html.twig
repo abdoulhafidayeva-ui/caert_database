@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Analyses{% endblock %}
+{% block title %}{{ 'analytics.title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="wrapper">
@@ -9,15 +9,15 @@
     <section class="section-container">
         <div class="content-wrapper">
             <div class="content-heading">
-                <div>Analyses <small>Tendances &amp; indicateurs</small></div>
+                <div>{{ 'analytics.title'|trans }} <small>{{ 'analytics.subtitle'|trans }}</small></div>
                 <div class="ml-auto">
                     {% if is_granted('ROLE_ADMIN') %}
                     <a class="btn btn-sm btn-outline-primary" href="{{ path('executive_dashboard') }}">
-                        <em class="fas fa-chart-bar"></em> Synthèse
+                        <em class="fas fa-chart-bar"></em> {{ 'nav.executive'|trans }}
                     </a>
                     {% endif %}
                     <a class="btn btn-sm btn-secondary" href="{{ path('app_map') }}">
-                        <em class="fas fa-map-marked-alt"></em> Carte SIG
+                        <em class="fas fa-map-marked-alt"></em> {{ 'nav.map'|trans }}
                     </a>
                 </div>
             </div>
@@ -25,7 +25,7 @@
 
             <div class="caert-panel mb-4">
                 <div class="caert-panel-header">
-                    <em class="fas fa-sliders-h"></em> Paramètres d'analyse
+                    <em class="fas fa-sliders-h"></em> {{ 'analytics.filter_settings'|trans }}
                 </div>
                 <div class="caert-panel-body">
                     {% include "graphique/_filter_searchTrend2PageForm.html.twig" %}
@@ -36,7 +36,7 @@
                 <div class="col-lg-6 mb-4">
                     <div class="caert-panel caert-chart-panel h-100 mb-0">
                         <div class="caert-panel-header">
-                            <em class="fas fa-chart-bar"></em> Nombre d'incidents terroristes
+                            <em class="fas fa-chart-bar"></em> {{ 'analytics.chart.incidents_count'|trans }}
                         </div>
                         <div class="caert-panel-body">
                             <canvas id="nbTerroristIncidents"></canvas>
@@ -46,7 +46,7 @@
                 <div class="col-lg-6 mb-4">
                     <div class="caert-panel caert-chart-panel h-100 mb-0">
                         <div class="caert-panel-header">
-                            <em class="fas fa-bullseye"></em> Cibles principales des attaques
+                            <em class="fas fa-bullseye"></em> {{ 'analytics.chart.main_targets'|trans }}
                         </div>
                         <div class="caert-panel-body">
                             <canvas id="prTargetsOfAttacks"></canvas>
@@ -62,5 +62,5 @@
 
 {% block javascripts %}
     <script src="{{ asset('vendor/chart.js/chart.min.js') }}"></script>
-    <script src="{{ asset('js/caert-graphique.js') }}?v=2"></script>
+    <script src="{{ asset('js/caert-graphique.js') }}?v=4"></script>
 {% endblock %}

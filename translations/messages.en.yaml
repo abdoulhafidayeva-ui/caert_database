@@ -1,0 +1,536 @@
+brand:
+    name: AUCTC
+
+locale:
+    fr: French
+    en: English
+    label: Language
+    switch: Change language
+
+nav:
+    main: Main
+    admin: Administration
+    dashboard: Dashboard
+    workflow: Validation inbox
+    executive: Executive summary
+    analytics: Analytics
+    map: GIS map
+    users: Users
+    accounts: Accounts
+    user_list: List
+    user_add: Add
+    settings: Settings
+    referentials: Reference data
+    attack_types: Attack types
+    targets: Targets
+    recovered_materials: Recovered materials
+    attack_materials: Attack materials
+    attack_means: Attack means
+    groups: Groups
+    space: Space
+    env_config: Environment variables
+    collapse_menu: Collapse menu
+    menu: Menu
+
+header:
+    logout: Log out
+
+auth:
+    login_title: Sign in
+    platform: Incident reporting platform — AUCTC
+    email: Email address
+    email_placeholder: you@example.com
+    password: Password
+    remember_me: Stay signed in
+    forgot_password: Forgot password?
+    sign_in: Sign in
+    sign_in_loading: Signing in…
+    create_account: Create an account
+    invalid_credentials: Invalid credentials.
+    register_title: Sign up
+    register_subtitle: Request access to the platform
+    register_btn: Sign up
+    register_loading: Signing up…
+    already_account: Already have an account? Sign in
+    set_password_title: WELCOME
+    set_password_subtitle: Set your password
+    set_password_save: Save
+    forgot_title: MY PASSWORD
+    link_expired_title: Link expired!
+    link_expired_text: This link is no longer valid. Contact an administrator.
+    link_invalid_title: Invalid link!
+    link_invalid_text: This link is incorrect or has already been used.
+    verification_title: Verification
+    verification_sent: A verification email has been sent to you.
+    verification_resend: Resend
+    password_mismatch: Passwords must match.
+    register_platform: Request access to the AUCTC platform
+    welcome_user: "WELCOME %name%"
+    forgot:
+        mode: Mode
+        mode_hint: Mail or phone
+        by_mail: By email
+        by_phone: By phone
+        email_prompt: Enter your email to reset your password
+        phone_prompt: Enter your phone number to reset your password
+        phone: Phone
+        phone_placeholder: "e.g. 93432850"
+        code_hint: code sent
+        code_sent_before: A code was sent to your
+        code_sent_after: ", enter it"
+        code_label: Code
+        step3: Step 3
+        mail: mail
+
+user:
+    title: Users
+    subtitle: Account management
+    add: Add user
+    list_title: User list
+    create_title: Create user
+    create_subtitle: Form
+    edit: Edit
+    delete: Delete
+    reset_password: Reset password
+    back: Back
+    create_btn: Create
+    save_btn: Save
+    name: Last name
+    firstname: First name
+    email: Email
+    created_at: Created on
+    verified: Verification
+    active: Active
+    actions: Actions
+    verified_badge: Verified
+    unverified_badge: Not verified
+    you_badge: You
+    empty: No users.
+    field:
+        name: Last name
+        firstnames: First name(s)
+        function: Job title
+        email: Email
+        roles: Roles
+        roles_placeholder: Select one or more roles
+        region: Region
+        country: Country
+        country_region_first: Country (select a region first)
+        profile: Profile
+        organisation: Organisation
+        locale: Language
+        password: Password
+        password_confirm: Confirm password
+    profile:
+        focal: Country focal point
+        staff: AUCTC staff
+        admin: Administrator
+    password_modal:
+        title: New password
+        intro: "Set a new password for %name% (%email%)."
+        intro_prefix: Set a new password for
+        generate: Generate password
+        show: Show
+        hide: Hide
+        copy: Copy
+        copied: Copied!
+        copy_failed: Failed
+        placeholder: At least 6 characters
+        send_email: Send password to user by email
+        cancel: Cancel
+        save: Save
+        save_loading: Saving…
+    delete_confirm_title: Delete this user?
+    suspend_confirm_title: Suspend this account?
+    suspend_confirm_text: The user will no longer be able to sign in.
+    suspend_btn: Suspend
+    copy_nothing_title: Nothing to copy
+    copy_nothing_text: Enter or generate a password first.
+    password_short_title: Password too short
+    password_short_text: At least 6 characters required.
+    activate_account: Activate account
+    suspend_account: Suspend account
+    activate: Activate
+    suspend: Suspend
+    unverified_account: Account not verified
+    delete_confirm_btn: Delete
+    edit_title: "Edit %name%"
+    form_subtitle: Form
+    create_loading: Creating…
+    save_loading: Saving…
+    show_password: Show password
+    hide_password: Hide password
+
+common:
+    cancel: Cancel
+    confirm: Confirm
+    save: Save
+    yes: Yes
+    no: No
+    choose: Choose
+    close: Close
+    back: Back
+    search: Search
+    reset: Reset
+    processing: Processing…
+    loading: Loading…
+    searching: Searching…
+    select: Select
+    edit: Edit
+    delete: Delete
+    next: Next
+    finish: Finish
+    confirm_delete: Confirm deletion?
+
+incident:
+    title: Incidents
+    dashboard_title: Dashboard
+    new: New incident
+    import: Import
+    pending_badge: "Pending validation (%count%)"
+    validate_badge: "Validate (%count%)"
+    import_errors_title: Import errors
+    import_error_line: "Row %row%: %message%"
+    import_errors_more: "… and %count% more error(s)."
+    list_title: Incident list
+    filter_title: Search filters
+    no_reject_comment: No comment!
+    form:
+        new_title: New entry
+        new_subtitle: Incident form
+        edit_title: Edit entry
+        data_panel: Incident data
+        save: Save
+        save_edit: Update entry
+    section:
+        location: Location & context
+        nature: Incident nature
+        victims_deaths: Victims — deaths
+        victims_missing: Victims — missing
+        victims_injured: Victims — injured & other
+        followup: Follow-up
+    field:
+        space: Space
+        region: Region
+        country: Country
+        country_region_first: Country (select a region first)
+        locality: Locality
+        terrorist_group: Terrorist group
+        details: Details
+        details_placeholder: Details
+        attack_means: Attack means
+        attack_type: Attack type
+        attack_date: Attack date
+        date_placeholder: dd/mm/yyyy
+        attack_materials: Attack materials
+        main_target: Main target
+        recovered_materials: Recovered materials
+        deaths_military: Military security deaths
+        deaths_civilian: Civilian deaths
+        deaths_terrorist: Terrorist deaths
+        missing_military: Missing military security
+        missing_civilian: Missing civilians
+        missing_terrorist: Missing terrorists
+        injured_military: Injured military security
+        injured_civilian: Injured civilians
+        injured_terrorist: Injured terrorists
+        hostages: Hostages
+        released: Released
+        arrested: Terrorists arrested
+        other_victims: Other victims
+        remark: Remark
+        capital: Capital
+        means: Means
+        target: Target
+        attack: Attack
+        other: Other
+        remarks: Remarks
+        entry: Entry
+        entry_date: Date
+        nobody: Nobody
+        total_deaths: Total deaths
+        total_missing: Total missing
+        total_injured: Total injured
+        group: Group
+        entry_by: Entered by
+        entry_at: Entered on
+    filter:
+        space: Space
+        region: Region
+        country: Country
+        target: Targets
+        attack_type: Attack type
+        terrorist_group: Terrorist group
+        attack_date: Attack date
+        date_from: From
+        date_to: To
+        date_attack_from: Attack date (from)
+        date_attack_to: Attack date (to)
+        status: Status
+    status:
+        code:
+            pending: pending
+            published: published
+            rejected: rejected
+        published: Published
+        rejected: Rejected
+        pending: Pending
+        pending_validation: Pending validation
+        label: Status
+    kpi:
+        published: Published
+        pending: Pending
+        rejected: Rejected
+        deaths: Deaths
+        injured: Injured
+    action:
+        view: View details
+        other: Other actions
+        edit: Edit
+        publish: Publish
+        reject: Reject
+        reject_reason: Rejection reason
+        view_reject_reason: View rejection reason
+        delete: Delete
+        detail: Details
+    reject:
+        title: Rejection reason
+        placeholder: Describe the reason for rejection…
+        confirm: Confirm rejection
+    import_modal:
+        title: Import incidents
+        help: AUCTC template Excel file (.xlsx). Invalid rows are reported after import.
+        file: Excel file
+        submit: Start import
+    detail:
+        subtitle: Detailed record
+        back: Back
+        identification: Identification
+        victims: Victims
+
+workflow:
+    pending_panel: Pending incidents
+    title: Validation inbox
+    pending_count: "%count% pending"
+    empty: No incidents awaiting validation.
+    table:
+        attack_date: Attack date
+        entry_by: Entered by
+        entry_at: Entered on
+
+executive:
+    title: Executive summary
+    subtitle: Consolidated indicators
+    kpi:
+        total: Total incidents
+        published: Published
+        pending: Pending
+        rejected: Rejected
+        deaths: Deaths (published)
+        injured: Injured (published)
+    top_countries: Top countries — published incidents
+    table:
+        country: Country
+        count: Incidents
+
+referential:
+    subtitle: Reference data
+    add: Add
+    list: List
+    field:
+        label: Label
+        label_placeholder: label
+    attack_type:
+        title: Attack types
+    target:
+        title: Targets
+    material:
+        title: Attack materials
+    recovered_material:
+        title: Recovered material
+    attack_mean:
+        title: Attack means
+    group:
+        title: Terrorist groups
+    space:
+        title: Space
+    spaces_title: Spaces
+
+analytics:
+    title: Analytics
+    subtitle: Trends & indicators
+    filter_settings: Analysis settings
+    chart:
+        incidents_count: Number of terrorist incidents
+        main_targets: Main attack targets
+        incidents_summary: Terrorist incidents (published total)
+        attacks: Attacks
+        deaths: Deaths
+        injured: Injured
+        targets_title: Attack targets
+        targets_civilian: Civilians
+        targets_military: Security / military
+        targets_terrorist: Terrorists
+        generating: Generating chart…
+        region_comparison: "Comparison by region — %type%"
+        display_error: Unable to display the chart.
+        chartjs_missing: Chart.js is not loaded. Reload the page.
+    indicator:
+        attaque: Number of attacks
+        perpetrateurs: Terrorist deaths
+        civil: Civilian deaths
+    filter:
+        period1: Period 1
+        period2: Period 2
+        period1_month: Period 1 (month)
+        period2_month: Period 2 (month, optional)
+        indicator: Indicator
+        regions: Regions
+        generate: Generate charts
+    error:
+        period_required: Please fill in the period, indicator and at least one region.
+        api_missing: API configuration missing.
+        invalid_response: Invalid server response.
+        insufficient_data: Not enough data to display the chart.
+        generate_failed: Unable to generate the chart.
+        session_expired: Session expired. Please sign in again.
+        server_error: Server error while generating the chart. Try again or contact an administrator.
+        invalid_indicator: Invalid indicator.
+        no_valid_region: No valid region selected.
+        no_published_data: No published incidents for this period and these regions. Check the selected month (e.g. May 2026) and publish the incident from the validation inbox if needed.
+
+map:
+    title: GIS map
+    cartography: Cartography
+    subtitle: published incidents by country
+    incidents: Incidents
+    deaths: Deaths
+    injured: Injured
+    locality: Locality
+    attack_type: Attack type
+    target: Target
+    perpetrator: Group
+    view_incident: View incident
+    incidents_list: Published incidents
+    select_country: Select a country
+    select_country_hint: Click a circle on the map to explore published incidents.
+    selected_country: Selected country
+    no_incidents: No published incidents for this country.
+    centroid_note: Positions are shown at country centroid, not exact locality.
+    incident_fallback: Incident
+    kpi:
+        countries: Countries affected
+        published_incidents: Published incidents
+    info: Click a country to view its global statistics. Points are placed at the national centroid.
+    stats_scope: Totals for published incidents aggregated at national level.
+    legend: Circle size = incident volume per country (aggregated at national centroid)
+
+install:
+    welcome_title: WELCOME!
+    welcome_subtitle: Configure your application
+    first_user_title: Final step!
+    first_user_subtitle: Set up your user account
+    field:
+        app_name: Name
+        app_name_placeholder: Application name
+        app_email: Email
+        app_email_placeholder: Application email
+
+footer:
+    database: Database
+    database_default: Database
+
+security:
+    access_users: You do not have access to user management.
+    access_app: You do not have access to this part of the application.
+    no_country: No country is assigned to your account.
+    country_restricted: You can only record incidents for your country.
+
+flash:
+    title:
+        success: Success
+        warning: Warning
+        danger: Error
+        info: Information
+    close: Close
+    invalid_csrf: Invalid security token. Please try again.
+    user_created: The account was created. An email was sent to the user to set their password.
+    user_created_no_mail: The account was created, but the email could not be sent. Check the mail server configuration.
+    user_updated: Changes saved successfully
+    user_deleted: User deleted.
+    user_password_reset: "Password for %name% has been reset."
+    user_password_reset_mail: " An email was sent to %email%."
+    user_password_reset_mail_failed: " The email could not be sent. Check the mail server configuration."
+    password_too_short: Password must be at least 6 characters.
+    cannot_toggle_self: You cannot change your own status.
+    cannot_delete_self: You cannot delete your own account.
+    user_not_verified: Account not verified — confirm by email first.
+    user_activated: "Account for %name% activated."
+    user_suspended: "Account for %name% suspended."
+    account_unverified: Your account is not verified yet. Check your email or contact an administrator.
+    account_disabled: Your account is suspended. Contact an administrator.
+    password_saved: Your password has been saved. Sign in to continue.
+    account_created_verify: Your account was created. Check your email to verify it.
+    verification_resent: A new verification email has been sent to you.
+    email_verified: Your email has been verified. Contact an administrator to activate your account.
+    incident_saved: Entry saved successfully.
+    incident_updated: Changes saved successfully.
+    incident_deleted: Entry deleted.
+    incident_locked: This entry can no longer be edited (already published or rejected).
+    incident_published: Data published.
+    incident_rejected: Data rejected.
+    import_no_file: No file selected.
+    import_partial: "Partial import: %success% row(s) OK, %errors% error(s)."
+    import_success: "%count% row(s) imported successfully."
+    import_failed: "Import failed: %message%"
+    referential_saved: Entry saved successfully.
+    referential_deleted: Entry deleted.
+    install_complete: Setup complete. Sign in to your application.
+
+role:
+    user: User
+    admin: Administrator
+    users_management: User management
+    super_admin: Super administrator
+
+env_config:
+    title: Environment configuration
+    subtitle: Application settings (.env)
+    info_file: "Changes are saved to %file% (overrides .env). A server restart or cache clear may be required."
+    placeholder:
+        keep_current: Leave empty to keep the current value
+    group:
+        application: Application
+        mail: Mail
+        database: Database
+        security: Security
+        ops: Operations
+        other: Other
+    field:
+        mailer_dsn: Mailer DSN (MAILER_DSN)
+        default_uri: Public application URL (DEFAULT_URI)
+        app_url: Deployment URL (APP_URL)
+        database_url: Database connection (DATABASE_URL)
+        app_secret: Symfony secret key (APP_SECRET)
+        backup_dir: Backup directory (BACKUP_DIR)
+        run_smoke: Smoke tests on deploy (RUN_SMOKE)
+    help:
+        mailer_dsn: "E.g. smtp://user:pass@smtp.example.org:587 or null://null"
+        default_uri: URL used in e-mail and notification links
+        app_url: URL used by deployment and validation scripts
+        database_url: "Doctrine DSN — e.g. mysql://user:pass@host:3306/db"
+        app_secret: "32 hex characters recommended — leave empty to keep current"
+        backup_dir: Relative or absolute path to the backup folder
+        run_smoke: Run smoke tests after automated deployment
+    choice:
+        yes: "Yes"
+        no: "No"
+    flash:
+        saved: Environment configuration saved.
+        no_changes: No changes detected.
+        restart_hint: "Restart the server or clear the cache (php bin/console cache:clear) to apply some changes."
+    error:
+        required: This field is required.
+        mailer_dsn: Invalid mailer DSN format.
+        database_url: Invalid database connection format.
+        app_secret_length: Secret key must be at least 16 characters.

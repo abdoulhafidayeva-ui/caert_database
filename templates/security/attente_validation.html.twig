@@ -1,19 +1,19 @@
 {% extends 'base.html.twig' %}
 
-{% block title 'invalid link' %}
+{% block title %}{{ 'auth.verification_title'|trans }}{% endblock %}
 
 {% block body %}
     <div class="wrapper">
       <div class="block-center mt-4 wd-xl">
          <!-- START card-->
          <div class="d-flex justify-content-center">
-            <div class="p-2">Vérification</div>
+            <div class="p-2">{{ 'auth.verification_title'|trans }}</div>
          </div>
          <div class="card b0">
             <div class="card-body">
-               <p class="text-center">Un mail de Vérification vous a été envoyé.</p>
+               <p class="text-center">{{ 'auth.verification_sent'|trans }}</p>
 
-               </div><a class="btn btn-block btn-primary mt-3" href="{{ path('app_user_verif_resend', { id:user.id }) }}">Renvoyer</a>
+               </div><a class="btn btn-block btn-primary mt-3" href="{{ path('app_user_verif_resend', { id:user.id }) }}">{{ 'auth.verification_resend'|trans }}</a>
             </div>
          </div><!-- END card-->
          {% include "_short_footer.html.twig" %}

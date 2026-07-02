@@ -40,7 +40,7 @@ class AllParamController extends AbstractController
     ) {
     }
 
-    #[IsGranted('ROLE_SUPER_ADMIN', message: "Vous n'avez pas accès à cette partie de l'application!")]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_app")]
     #[Route(path: '/attaque/list/{attaque}', name: 'attaque', methods: ['GET', 'POST'])]
     public function list(Request $request, DataTableFactory $dataTableFactory, Attaque $attaque = null)
     {
@@ -61,7 +61,7 @@ class AllParamController extends AbstractController
                 $attaque->setUser($this->getUser());
                 $this->em->persist($attaque);
                 $this->em->flush();
-                $this->addFlash('success', 'Enrégistrement bien éffectué');
+                $this->addFlash('success', 'flash.referential_saved');
                 return $this->redirectToRoute('attaque');
             }
         }
@@ -102,12 +102,12 @@ class AllParamController extends AbstractController
                 $this->addFlash('error', $e->getMessage());
                 throw $e;
             }
-            $this->addFlash('success', 'Suppression éffectuée');
+            $this->addFlash('success', 'flash.referential_deleted');
 
             return $this->redirectToRoute('attaque');
     }
 
-    #[IsGranted('ROLE_SUPER_ADMIN', message: "Vous n'avez pas accès à cette partie de l'application!")]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_app")]
     #[Route(path: '/cible/list/{cible}', name: 'cible', methods: ['GET', 'POST'])]
     public function cibleList(Request $request, DataTableFactory $dataTableFactory, Cible $cible = null)
     {
@@ -128,7 +128,7 @@ class AllParamController extends AbstractController
                 $cible->setUser($this->getUser());
                 $this->em->persist($cible);
                 $this->em->flush();
-                $this->addFlash('success', 'Enrégistrement bien éffectué');
+                $this->addFlash('success', 'flash.referential_saved');
 
                 return $this->redirectToRoute('cible');
             }
@@ -170,12 +170,12 @@ class AllParamController extends AbstractController
                 $this->addFlash('error', $e->getMessage());
                 throw $e;
             }
-            $this->addFlash('success', 'Suppression éffectuée');
+            $this->addFlash('success', 'flash.referential_deleted');
 
             return $this->redirectToRoute('cible');
     }
 
-    #[IsGranted('ROLE_SUPER_ADMIN', message: "Vous n'avez pas accès à cette partie de l'application!")]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_app")]
     #[Route(path: '/materiel/list/{materiel}', name: 'materiel', methods: ['GET', 'POST'])]
     public function materielList(Request $request, DataTableFactory $dataTableFactory, Materiaux $materiel = null)
     {
@@ -196,7 +196,7 @@ class AllParamController extends AbstractController
                 $materiel->setUser($this->getUser());
                 $this->em->persist($materiel);
                 $this->em->flush();
-                $this->addFlash('success', 'Enrégistrement bien éffectué');
+                $this->addFlash('success', 'flash.referential_saved');
                 return $this->redirectToRoute('materiel');
             }
         }
@@ -237,12 +237,12 @@ class AllParamController extends AbstractController
                 $this->addFlash('error', $e->getMessage());
                 throw $e;
             }
-            $this->addFlash('success', 'Suppression éffectuée');
+            $this->addFlash('success', 'flash.referential_deleted');
 
             return $this->redirectToRoute('materiel');
     }
 
-    #[IsGranted('ROLE_SUPER_ADMIN', message: "Vous n'avez pas accès à cette partie de l'application!")]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_app")]
     #[Route(path: '/materiel/attaque/list/{materielAttaque}', name: 'materielAttaque', methods: ['GET', 'POST'])]
     public function materielAttaqueList(Request $request, DataTableFactory $dataTableFactory, MaterielAttaque $materielAttaque = null)
     {
@@ -263,7 +263,7 @@ class AllParamController extends AbstractController
                 $materielAttaque->setUser($this->getUser());
                 $this->em->persist($materielAttaque);
                 $this->em->flush();
-                $this->addFlash('success', 'Enrégistrement bien éffectué');
+                $this->addFlash('success', 'flash.referential_saved');
                 return $this->redirectToRoute('materielAttaque');
             }
         }
@@ -304,12 +304,12 @@ class AllParamController extends AbstractController
                 $this->addFlash('error', $e->getMessage());
                 throw $e;
             }
-            $this->addFlash('success', 'Suppression éffectuée');
+            $this->addFlash('success', 'flash.referential_deleted');
 
             return $this->redirectToRoute('materielAttaque');
     }
 
-    #[IsGranted('ROLE_SUPER_ADMIN', message: "Vous n'avez pas accès à cette partie de l'application!")]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_app")]
     #[Route(path: '/moyen/attaque/list/{moyenAttaque}', name: 'moyenAttaque', methods: ['GET', 'POST'])]
     public function moyenAttaqueList(Request $request, DataTableFactory $dataTableFactory, MoyenAttaque $moyenAttaque = null)
     {
@@ -330,7 +330,7 @@ class AllParamController extends AbstractController
                 $moyenAttaque->setUser($this->getUser());
                 $this->em->persist($moyenAttaque);
                 $this->em->flush();
-                $this->addFlash('success', 'Enrégistrement bien éffectué');
+                $this->addFlash('success', 'flash.referential_saved');
 
                 return $this->redirectToRoute('moyenAttaque');
             }
@@ -372,12 +372,12 @@ class AllParamController extends AbstractController
                 $this->addFlash('error', $e->getMessage());
                 throw $e;
             }
-            $this->addFlash('success', 'Suppression éffectuée');
+            $this->addFlash('success', 'flash.referential_deleted');
 
             return $this->redirectToRoute('moyenAttaque');
     }
 
-    #[IsGranted('ROLE_SUPER_ADMIN', message: "Vous n'avez pas accès à cette partie de l'application!")]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_app")]
     #[Route(path: '/perpetrateur/list/{perpetrateur}', name: 'perpetrateur', methods: ['GET', 'POST'])]
     public function moyenPerpetrateurList(Request $request, DataTableFactory $dataTableFactory, Perpetrateurs $perpetrateur = null)
     {
@@ -398,7 +398,7 @@ class AllParamController extends AbstractController
                 $perpetrateur->setUser($this->getUser());
                 $this->em->persist($perpetrateur);
                 $this->em->flush();
-                $this->addFlash('success', 'Enrégistrement bien éffectué');
+                $this->addFlash('success', 'flash.referential_saved');
                 return $this->redirectToRoute('perpetrateur');
             }
         }
@@ -439,12 +439,12 @@ class AllParamController extends AbstractController
                 $this->addFlash('error', $e->getMessage());
                 throw $e;
             }
-            $this->addFlash('success', 'Suppression éffectuée');
+            $this->addFlash('success', 'flash.referential_deleted');
 
             return $this->redirectToRoute('perpetrateur');
     }
 
-    #[IsGranted('ROLE_SUPER_ADMIN', message: "Vous n'avez pas accès à cette partie de l'application!")]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_app")]
     #[Route(path: '/espace/list/{espace}', name: 'espace', methods: ['GET', 'POST'])]
     public function espaceList(Request $request, DataTableFactory $dataTableFactory, Espace $espace = null)
     {
@@ -465,7 +465,7 @@ class AllParamController extends AbstractController
                 $cible->setUser($this->getUser());
                 $this->em->persist($cible);
                 $this->em->flush();
-                $this->addFlash('success', 'Enrégistrement bien éffectué');
+                $this->addFlash('success', 'flash.referential_saved');
 
                 return $this->redirectToRoute('espace');
             }
@@ -507,7 +507,7 @@ class AllParamController extends AbstractController
                 $this->addFlash('error', $e->getMessage());
                 throw $e;
             }
-            $this->addFlash('success', 'Suppression éffectuée');
+            $this->addFlash('success', 'flash.referential_deleted');
 
             return $this->redirectToRoute('espace');
     }

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Matériaux d'attaque{% endblock %}
+{% block title %}{{ 'referential.material.title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="wrapper">
@@ -9,11 +9,8 @@
     <section class="section-container">
         <div class="content-wrapper">
             {% include '_partials/referential_list_content.html.twig' with {
-                title: 'Matériaux d\'attaque',
-                subtitle: 'Référentiel',
+                title: 'referential.material.title'|trans,
                 backUrl: path('materiel'),
-                formPanelTitle: 'Ajouter un matériau',
-                listPanelTitle: 'Liste des matériaux d\'attaque',
                 tableWrapperId: 'materielTable-wrapper',
                 form: form
             } %}

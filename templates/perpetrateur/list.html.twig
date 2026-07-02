@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Groupes terroristes{% endblock %}
+{% block title %}{{ 'referential.group.title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="wrapper">
@@ -9,11 +9,8 @@
     <section class="section-container">
         <div class="content-wrapper">
             {% include '_partials/referential_list_content.html.twig' with {
-                title: 'Groupes terroristes',
-                subtitle: 'Référentiel',
+                title: 'referential.group.title'|trans,
                 backUrl: path('perpetrateur'),
-                formPanelTitle: 'Ajouter un groupe',
-                listPanelTitle: 'Liste des groupes terroristes',
                 tableWrapperId: 'perpetrateurTable-wrapper',
                 form: form
             } %}

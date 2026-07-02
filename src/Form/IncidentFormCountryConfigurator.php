@@ -37,7 +37,7 @@ final class IncidentFormCountryConfigurator
 
             if ($form->has('regions')) {
                 $form->add('regions', EntityType::class, [
-                    'label' => 'Région',
+                    'label' => 'incident.field.region',
                     'class' => Region::class,
                     'mapped' => false,
                     'choices' => $region !== null ? [$region] : [],
@@ -53,7 +53,7 @@ final class IncidentFormCountryConfigurator
                 'choices' => [$userPays],
                 'data' => $userPays,
                 'choice_label' => 'libelle',
-                'label' => 'Pays',
+                'label' => 'incident.field.country',
                 'required' => true,
                 'attr' => ['class' => 'custom-select', 'readonly' => true],
             ]);

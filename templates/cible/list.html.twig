@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Cibles{% endblock %}
+{% block title %}{{ 'referential.target.title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="wrapper">
@@ -9,11 +9,8 @@
     <section class="section-container">
         <div class="content-wrapper">
             {% include '_partials/referential_list_content.html.twig' with {
-                title: 'Cibles',
-                subtitle: 'Référentiel',
+                title: 'referential.target.title'|trans,
                 backUrl: path('cible'),
-                formPanelTitle: 'Ajouter une cible',
-                listPanelTitle: 'Liste des types de cibles',
                 tableWrapperId: 'cibleTable-wrapper',
                 form: form
             } %}

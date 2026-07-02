@@ -2,16 +2,28 @@
     <nav class="navbar topnavbar">
         <div class="navbar-header">
             <a class="navbar-brand" href="{{ path('app_home') }}">
-                <div class="brand-logo">{{ paramData.object ? paramData.object.name : 'CAERT' }}</div>
-                <div class="brand-logo-collapsed">C</div>
+                <div class="brand-logo">
+                    {% include '_brand_logo.html.twig' with { brand_logo_class: 'caert-brand-logo--header' } %}
+                    <span class="caert-brand-text">{{ paramData.object ? paramData.object.name : 'brand.name'|trans }}</span>
+                </div>
+                <div class="brand-logo-collapsed">
+                    <img
+                        src="{{ asset('img/auctc-logo-square.png') }}"
+                        alt="{{ 'brand.name'|trans }}"
+                        class="caert-brand-logo caert-brand-logo--collapsed"
+                        width="28"
+                        height="28"
+                        decoding="async"
+                    >
+                </div>
             </a>
         </div>
         <ul class="navbar-nav mr-auto flex-row align-items-center">
             <li class="nav-item">
-                <a class="nav-link d-none d-md-block d-lg-block d-xl-block" href="javascript:void(0)" data-trigger-resize="" data-toggle-state="aside-collapsed" title="Réduire le menu">
+                <a class="nav-link d-none d-md-block d-lg-block d-xl-block" href="javascript:void(0)" data-trigger-resize="" data-toggle-state="aside-collapsed" title="{{ 'nav.collapse_menu'|trans }}">
                     <em class="fas fa-bars"></em>
                 </a>
-                <a class="nav-link sidebar-toggle d-md-none" href="#" data-toggle-state="aside-toggled" data-no-persist="true" title="Menu">
+                <a class="nav-link sidebar-toggle d-md-none" href="#" data-toggle-state="aside-toggled" data-no-persist="true" title="{{ 'nav.menu'|trans }}">
                     <em class="fas fa-bars"></em>
                 </a>
             </li>
@@ -23,9 +35,12 @@
             </li>
         </ul>
         <ul class="navbar-nav flex-row align-items-center">
+            <li class="nav-item mr-2">
+                {% include '_locale_switcher.html.twig' %}
+            </li>
             <li class="nav-item">
                 <a class="nav-link btn-logout" href="{{ path('app_logout') }}">
-                    <em class="fas fa-sign-out-alt"></em> Déconnexion
+                    <em class="fas fa-sign-out-alt"></em> {{ 'header.logout'|trans }}
                 </a>
             </li>
         </ul>

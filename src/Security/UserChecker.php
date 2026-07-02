@@ -17,15 +17,11 @@ class UserChecker implements UserCheckerInterface
         }
 
         if ($user->getIsVerified() !== true) {
-            throw new CustomUserMessageAccountStatusException(
-                'Votre compte n\'est pas encore vérifié. Consultez votre e-mail ou contactez un administrateur.'
-            );
+            throw new CustomUserMessageAccountStatusException('flash.account_unverified');
         }
 
         if ($user->getEnable() !== true) {
-            throw new CustomUserMessageAccountStatusException(
-                'Votre compte est suspendu. Contactez un administrateur.'
-            );
+            throw new CustomUserMessageAccountStatusException('flash.account_disabled');
         }
     }
 
