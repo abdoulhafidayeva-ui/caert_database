@@ -57,8 +57,8 @@
             radius: markerBaseRadius(marker) + 3,
             weight: 3,
             fillOpacity: 0.95,
-            color: '#0e7490',
-            fillColor: '#0ea5e9',
+            color: '#006B3F',
+            fillColor: '#C5A059',
         });
         marker.bringToFront();
     }
@@ -68,8 +68,8 @@
             radius: markerBaseRadius(marker),
             weight: 1,
             fillOpacity: 0.75,
-            color: '#7b241c',
-            fillColor: '#c0392b',
+            color: '#7A1515',
+            fillColor: '#A61C1C',
         });
     }
 
@@ -104,8 +104,8 @@
                     pointToLayer: function (feature, latlng) {
                         return window.L.circleMarker(latlng, {
                             radius: Math.min(16, 6 + (feature.properties.count || 1) * 2),
-                            fillColor: '#c0392b',
-                            color: '#7b241c',
+                            fillColor: '#A61C1C',
+                            color: '#7A1515',
                             weight: 1,
                             fillOpacity: 0.75,
                         });

@@ -125,7 +125,7 @@
             statsScope: 'map.stats_scope'|trans,
         }|json_encode|raw }};
     </script>
-    <script src="{{ asset('js/caert-map.js') }}?v=3"></script>
+    <script src="{{ asset('js/caert-map.js') }}?v=4"></script>
     <script>
         initCaertMap({
             countriesUrl: {{ path('api_map_countries')|json_encode|raw }},

@@ -1,30 +1,40 @@
 /**
- * CAERT — Wave UX design system (overlay non-breaking sur Bootstrap 4).
+ * AUCTC — thème institutionnel Union Africaine (or, vert, rouge).
  */
 :root {
     --caert-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --caert-primary: #1e3a5f;
-    --caert-primary-light: #2d5a8a;
-    --caert-accent: #0ea5e9;
-    --caert-success: #059669;
-    --caert-warning: #d97706;
-    --caert-danger: #dc2626;
-    --caert-bg: #f1f5f9;
+    /* Or — actions, boutons primaires */
+    --caert-primary: #B8860B;
+    --caert-primary-light: #D4AF37;
+    --caert-primary-dark: #96700A;
+    /* Vert UA — structure, header, navigation */
+    --caert-secondary: #006B3F;
+    --caert-secondary-light: #008751;
+    --caert-secondary-soft: #E8F5EE;
+    /* Accents */
+    --caert-accent: #006B3F;
+    --caert-accent-gold: #C5A059;
+    --caert-success: #006B3F;
+    --caert-warning: #B8860B;
+    --caert-danger: #A61C1C;
+    /* Neutres chauds */
+    --caert-bg: #F8F6F1;
     --caert-surface: #ffffff;
-    --caert-border: #e2e8f0;
-    --caert-text: #0f172a;
-    --caert-text-muted: #64748b;
+    --caert-border: #E8E2D6;
+    --caert-text: #1A1A1A;
+    --caert-text-muted: #5C5C5C;
     --caert-sidebar-bg: #ffffff;
-    --caert-sidebar-text: #1e293b;
-    --caert-sidebar-text-muted: #64748b;
-    --caert-sidebar-active-bg: #e0f2fe;
-    --caert-sidebar-active-text: #0284c7;
-    --caert-sidebar-hover-bg: #f1f5f9;
-    --caert-sidebar-hover-text: #0f172a;
+    --caert-sidebar-text: #1A1A1A;
+    --caert-sidebar-text-muted: #5C5C5C;
+    --caert-sidebar-active-bg: #E8F5EE;
+    --caert-sidebar-active-text: #006B3F;
+    --caert-sidebar-hover-bg: #F3F0E8;
+    --caert-sidebar-hover-text: #1A1A1A;
     --caert-radius: 0.625rem;
     --caert-radius-sm: 0.375rem;
-    --caert-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
-    --caert-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+    --caert-shadow: 0 1px 3px rgba(26, 26, 26, 0.06), 0 1px 2px rgba(26, 26, 26, 0.04);
+    --caert-shadow-md: 0 4px 12px rgba(26, 26, 26, 0.08);
+    --caert-focus-ring: rgba(0, 107, 63, 0.18);
 }
 
 /* ── Base ── */
@@ -51,7 +61,7 @@ body.caert-app .topnavbar {
 }
 
 body.caert-app .topnavbar .navbar-header {
-    background: var(--caert-primary) !important;
+    background: var(--caert-secondary) !important;
 }
 
 body.caert-app .topnavbar .navbar-header .navbar-brand,
@@ -107,7 +117,7 @@ body.caert-app .topnavbar .navbar-nav > .nav-item > .nav-link {
 }
 
 body.caert-app .topnavbar .navbar-nav > .nav-item > .nav-link:hover {
-    color: var(--caert-primary) !important;
+    color: var(--caert-secondary) !important;
     background: var(--caert-bg);
 }
 
@@ -126,7 +136,7 @@ body.caert-app .caert-user-avatar {
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: var(--caert-primary);
+    background: var(--caert-secondary);
     color: #fff;
     font-size: 0.7rem;
     font-weight: 600;
@@ -298,7 +308,7 @@ body.caert-app .sidebar-nav > li > .nav-item:focus {
 }
 
 body.caert-app .sidebar-nav > li.active {
-    border-left-color: var(--caert-accent) !important;
+    border-left-color: var(--caert-primary) !important;
 }
 
 body.caert-app .sidebar-nav > li.open:not(.active) {
@@ -320,7 +330,7 @@ body.caert-app .sidebar-nav > li.open > a:hover {
 }
 
 body.caert-app .sidebar-subnav {
-    background: #f8fafc !important;
+    background: #FAF8F4 !important;
     margin: 0 0.5rem 0.25rem;
     border-radius: var(--caert-radius-sm);
     border: 1px solid var(--caert-border);
@@ -450,7 +460,7 @@ body.caert-app .content-heading .ml-auto {
 }
 
 .caert-panel-header em {
-    color: var(--caert-accent);
+    color: var(--caert-secondary);
 }
 
 .caert-panel-body {
@@ -483,9 +493,38 @@ body.caert-app .btn-primary {
     border-color: var(--caert-primary);
 }
 
-body.caert-app .btn-primary:hover {
+body.caert-app .btn-primary:hover,
+body.caert-app .btn-primary:focus {
     background-color: var(--caert-primary-light);
     border-color: var(--caert-primary-light);
+}
+
+body.caert-app .btn-primary:active,
+body.caert-app .btn-primary:not(:disabled):not(.disabled):active {
+    background-color: var(--caert-primary-dark);
+    border-color: var(--caert-primary-dark);
+}
+
+body.caert-app .btn-outline-primary {
+    color: var(--caert-primary);
+    border-color: var(--caert-primary);
+}
+
+body.caert-app .btn-outline-primary:hover,
+body.caert-app .btn-outline-primary:focus {
+    background-color: var(--caert-primary);
+    border-color: var(--caert-primary);
+    color: #fff;
+}
+
+body.caert-app .caert-locale-switcher .btn-primary {
+    background-color: var(--caert-secondary);
+    border-color: var(--caert-secondary);
+}
+
+body.caert-app .caert-locale-switcher .btn-primary:hover {
+    background-color: var(--caert-secondary-light);
+    border-color: var(--caert-secondary-light);
 }
 
 body.caert-app .btn {
@@ -507,8 +546,8 @@ body.caert-app .form-control {
 }
 
 body.caert-app .form-control:focus {
-    border-color: var(--caert-accent);
-    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+    border-color: var(--caert-secondary);
+    box-shadow: 0 0 0 3px var(--caert-focus-ring);
 }
 
 body.caert-app label {
@@ -521,7 +560,7 @@ body.caert-app label {
 .caert-kpi-card {
     border-radius: var(--caert-radius);
     border: 1px solid var(--caert-border);
-    border-left: 4px solid var(--caert-accent);
+    border-left: 4px solid var(--caert-primary);
     background: var(--caert-surface);
     box-shadow: var(--caert-shadow);
     padding: 1rem 1.25rem;
@@ -537,7 +576,14 @@ body.caert-app label {
 .caert-kpi-card.kpi-success .kpi-value { color: var(--caert-success); }
 .caert-kpi-card.kpi-warning { border-left-color: var(--caert-warning); }
 .caert-kpi-card.kpi-danger { border-left-color: var(--caert-danger); }
-.caert-kpi-card.kpi-purple { border-left-color: #7c3aed; }
+.caert-kpi-card.kpi-purple { border-left-color: var(--caert-accent-gold); }
+.caert-kpi-card.kpi-purple .kpi-value { color: var(--caert-primary); }
+.caert-kpi-card.kpi-info { border-left-color: var(--caert-secondary-light); }
+.caert-kpi-card.kpi-info .kpi-value { color: var(--caert-secondary); }
+
+body.caert-app .text-primary { color: var(--caert-primary) !important; }
+body.caert-app .text-success { color: var(--caert-success) !important; }
+body.caert-app .text-info { color: var(--caert-secondary) !important; }
 
 .caert-kpi-card .kpi-value {
     font-size: 1.75rem;
@@ -599,7 +645,7 @@ body.caert-app label {
 }
 
 #alldatasTable-wrapper table.dataTable tbody tr:hover {
-    background-color: #f8fafc !important;
+    background-color: #FAF8F4 !important;
 }
 
 .dataTables_wrapper .dataTables_length,
@@ -640,7 +686,7 @@ body.caert-app label {
 }
 
 .caert-user-toggle:focus {
-    outline: 2px solid var(--caert-accent);
+    outline: 2px solid var(--caert-secondary);
     outline-offset: 2px;
 }
 
@@ -700,13 +746,13 @@ body.caert-app .alert {
     box-shadow: var(--caert-shadow);
 }
 
-body.caert-app .alert-success { background: #ecfdf5; color: #065f46; }
-body.caert-app .alert-warning { background: #fffbeb; color: #92400e; }
-body.caert-app .alert-danger { background: #fef2f2; color: #991b1b; }
+body.caert-app .alert-success { background: #E8F5EE; color: #004D2E; }
+body.caert-app .alert-warning { background: #FBF6E8; color: #7A5A08; }
+body.caert-app .alert-danger { background: #FCEAEA; color: #7A1515; }
 
 /* ── Auth pages ── */
 body.caert-auth {
-    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0c4a6e 100%);
+    background: linear-gradient(145deg, #004D2E 0%, #006B3F 45%, #1A1A1A 100%);
     min-height: 100vh;
 }
 
@@ -732,7 +778,7 @@ body.caert-auth .wrapper {
 }
 
 .caert-auth-brand {
-    background: var(--caert-primary);
+    background: var(--caert-secondary);
     color: #fff;
     text-align: center;
     padding: 1.75rem 1.5rem;
@@ -766,8 +812,12 @@ body.caert-auth .wrapper {
 }
 
 .caert-auth-footer a {
-    color: var(--caert-primary-light);
+    color: var(--caert-primary);
     font-weight: 500;
+}
+
+.caert-auth-footer a:hover {
+    color: var(--caert-primary-dark);
 }
 
 body.caert-auth .btn-primary.btn-block {
@@ -807,7 +857,7 @@ body.caert-auth .btn-primary.btn-block {
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: #c0392b;
+    background: var(--caert-danger);
     margin-right: 0.35rem;
     vertical-align: middle;
 }
@@ -959,7 +1009,7 @@ body.modal-open .modal.caert-modal {
 .caert-form-section-title {
     font-size: 0.9375rem;
     font-weight: 600;
-    color: var(--caert-primary);
+    color: var(--caert-secondary);
     margin-bottom: 1rem;
 }
 
@@ -975,8 +1025,8 @@ body.modal-open .modal.caert-modal {
 }
 
 .caert-incident-form .form-control:focus {
-    border-color: var(--caert-accent);
-    box-shadow: 0 0 0 0.15rem rgba(14, 165, 233, 0.15);
+    border-color: var(--caert-secondary);
+    box-shadow: 0 0 0 0.15rem var(--caert-focus-ring);
 }
 
 .caert-form-actions {
@@ -998,8 +1048,8 @@ body.modal-open .modal.caert-modal {
 }
 
 .caert-detail-field-highlight {
-    background: rgba(14, 165, 233, 0.06);
-    border-color: rgba(14, 165, 233, 0.25);
+    background: rgba(0, 107, 63, 0.06);
+    border-color: rgba(0, 107, 63, 0.22);
 }
 
 .caert-detail-field-wide {
@@ -1007,8 +1057,8 @@ body.modal-open .modal.caert-modal {
 }
 
 .caert-detail-reject {
-    background: rgba(220, 38, 38, 0.04);
-    border-color: rgba(220, 38, 38, 0.2);
+    background: rgba(166, 28, 28, 0.05);
+    border-color: rgba(166, 28, 28, 0.2);
 }
 
 .caert-detail-reject .caert-detail-value {
@@ -1081,7 +1131,7 @@ body.modal-open .modal.caert-modal {
     width: 2rem;
     height: 2rem;
     border: 3px solid var(--caert-border);
-    border-top-color: var(--caert-accent);
+    border-top-color: var(--caert-secondary);
     border-radius: 50%;
     animation: caert-spin 0.75s linear infinite;
     vertical-align: middle;
