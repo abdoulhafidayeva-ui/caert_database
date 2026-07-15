@@ -41,25 +41,28 @@ class DemoIncidentFixtures extends Fixture implements DependentFixtureInterface
             return;
         }
 
-        $admin = $manager->getRepository(User::class)->findOneBy(['email' => AppFixtures::ADMIN_EMAIL]);
+        $superAdmin = $manager->getRepository(User::class)->findOneBy(['email' => AppFixtures::SUPER_ADMIN_EMAIL]);
+        $staff = $manager->getRepository(User::class)->findOneBy(['email' => AppFixtures::STAFF_EMAIL]);
         $focal = $manager->getRepository(User::class)->findOneBy(['email' => AppFixtures::FOCAL_EMAIL]);
-        if ($admin === null) {
+
+        if ($superAdmin === null) {
             return;
         }
 
+        $entryUser = $staff ?? $superAdmin;
         $refs = $this->loadReferences($manager);
 
         $scenarios = [
-            ['pays' => 'MALI', 'localite' => 'Gao', 'date' => '-4 months', 'published' => true, 'user' => $admin, 'mortCivil' => 3, 'mortMil' => 1, 'mortTer' => 2, 'details' => 'Attaque convoi sécurité'],
-            ['pays' => 'NIGERIA', 'localite' => 'Maiduguri', 'date' => '-3 months', 'published' => true, 'user' => $admin, 'mortCivil' => 8, 'mortMil' => 2, 'mortTer' => 5, 'details' => 'Attentat marché'],
-            ['pays' => 'BURKINA FASO', 'localite' => 'Ouahigouya', 'date' => '-2 months', 'published' => true, 'user' => $admin, 'mortCivil' => 4, 'mortMil' => 0, 'mortTer' => 1, 'details' => 'Embuscade route nationale'],
-            ['pays' => 'NIGER', 'localite' => 'Tillabéri', 'date' => '-5 months', 'published' => true, 'user' => $admin, 'mortCivil' => 2, 'mortMil' => 3, 'mortTer' => 0, 'details' => 'Affrontement frontière'],
-            ['pays' => 'KENYA', 'localite' => 'Mandera', 'date' => '-1 month', 'published' => true, 'user' => $admin, 'mortCivil' => 1, 'mortMil' => 1, 'mortTer' => 2, 'details' => 'Attaque poste frontière'],
-            ['pays' => 'SENEGAL', 'localite' => 'Dakar', 'date' => '-2 weeks', 'published' => null, 'user' => $admin, 'mortCivil' => 0, 'mortMil' => 0, 'mortTer' => 0, 'details' => 'Incident en cours de vérification'],
-            ['pays' => 'MALI', 'localite' => 'Mopti', 'date' => '-1 week', 'published' => null, 'user' => $focal ?? $admin, 'mortCivil' => 2, 'mortMil' => 0, 'mortTer' => 1, 'details' => 'Attaque village — en attente validation'],
-            ['pays' => 'NIGERIA', 'localite' => 'Jos', 'date' => '-3 weeks', 'published' => null, 'user' => $admin, 'mortCivil' => 5, 'mortMil' => 1, 'mortTer' => 0, 'details' => 'Rapport incomplet — à valider'],
-            ['pays' => 'GHANA', 'localite' => 'Tamale', 'date' => '-6 months', 'published' => false, 'user' => $admin, 'mortCivil' => 1, 'mortMil' => 0, 'mortTer' => 0, 'details' => 'Données incohérentes', 'rejet' => 'Sources non vérifiables — resoumettre avec pièces jointes'],
-            ['pays' => 'CAMEROUN', 'localite' => 'Maroua', 'date' => '-7 months', 'published' => false, 'user' => $admin, 'mortCivil' => 0, 'mortMil' => 2, 'mortTer' => 1, 'details' => 'Doublon signalé', 'rejet' => 'Doublon avec incident #12 — fusionner les rapports'],
+            ['pays' => 'MALI', 'localite' => 'Gao', 'date' => '-4 months', 'published' => true, 'user' => $entryUser, 'mortCivil' => 3, 'mortMil' => 1, 'mortTer' => 2, 'details' => 'Attaque convoi sécurité'],
+            ['pays' => 'NIGERIA', 'localite' => 'Maiduguri', 'date' => '-3 months', 'published' => true, 'user' => $entryUser, 'mortCivil' => 8, 'mortMil' => 2, 'mortTer' => 5, 'details' => 'Attentat marché'],
+            ['pays' => 'BURKINA FASO', 'localite' => 'Ouahigouya', 'date' => '-2 months', 'published' => true, 'user' => $entryUser, 'mortCivil' => 4, 'mortMil' => 0, 'mortTer' => 1, 'details' => 'Embuscade route nationale'],
+            ['pays' => 'NIGER', 'localite' => 'Tillabéri', 'date' => '-5 months', 'published' => true, 'user' => $entryUser, 'mortCivil' => 2, 'mortMil' => 3, 'mortTer' => 0, 'details' => 'Affrontement frontière'],
+            ['pays' => 'KENYA', 'localite' => 'Mandera', 'date' => '-1 month', 'published' => true, 'user' => $entryUser, 'mortCivil' => 1, 'mortMil' => 1, 'mortTer' => 2, 'details' => 'Attaque poste frontière'],
+            ['pays' => 'SENEGAL', 'localite' => 'Dakar', 'date' => '-2 weeks', 'published' => null, 'user' => $focal ?? $entryUser, 'mortCivil' => 0, 'mortMil' => 0, 'mortTer' => 0, 'details' => 'Incident hors Mali — en attente validation staff'],
+            ['pays' => 'MALI', 'localite' => 'Mopti', 'date' => '-1 week', 'published' => null, 'user' => $focal ?? $entryUser, 'mortCivil' => 2, 'mortMil' => 0, 'mortTer' => 1, 'details' => 'Attaque village — saisie point focal Mali'],
+            ['pays' => 'NIGERIA', 'localite' => 'Jos', 'date' => '-3 weeks', 'published' => null, 'user' => $focal ?? $entryUser, 'mortCivil' => 5, 'mortMil' => 1, 'mortTer' => 0, 'details' => 'Rapport point focal — lecture seule pour autres pays'],
+            ['pays' => 'GHANA', 'localite' => 'Tamale', 'date' => '-6 months', 'published' => false, 'user' => $entryUser, 'mortCivil' => 1, 'mortMil' => 0, 'mortTer' => 0, 'details' => 'Données incohérentes', 'rejet' => 'Sources non vérifiables — resoumettre avec pièces jointes'],
+            ['pays' => 'CAMEROUN', 'localite' => 'Maroua', 'date' => '-7 months', 'published' => false, 'user' => $entryUser, 'mortCivil' => 0, 'mortMil' => 2, 'mortTer' => 1, 'details' => 'Doublon signalé', 'rejet' => 'Doublon avec incident #12 — fusionner les rapports'],
         ];
 
         foreach ($scenarios as $scenario) {

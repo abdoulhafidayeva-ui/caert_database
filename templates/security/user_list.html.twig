@@ -60,6 +60,8 @@
 
                                     <th>{{ 'user.email'|trans }}</th>
 
+                                    <th>{{ 'user.field.profile'|trans }}</th>
+
                                     <th class="sort-numeric">{{ 'user.created_at'|trans }}</th>
 
                                     <th class="sort-numeric">{{ 'user.verified'|trans }}</th>
@@ -85,6 +87,8 @@
                                         <td>{{ user.prenoms }}</td>
 
                                         <td>{{ user.email }}</td>
+
+                                        <td>{{ user.profileTranslationKey|trans }}</td>
 
                                         <td>{{ user.createdAt|date('d/m/Y') }}</td>
 

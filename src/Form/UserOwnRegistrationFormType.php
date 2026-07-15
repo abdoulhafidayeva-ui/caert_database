@@ -7,6 +7,7 @@ use App\Entity\Region;
 use App\Entity\User;
 use App\Repository\PaysRepository;
 use App\Repository\RegionRepository;
+use App\Service\Security\UserProfile;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -59,31 +60,17 @@ class UserOwnRegistrationFormType extends AbstractType
                     new Length(['min' => 6, 'max' => 4096]),
                 ],
             ])
-            ->add('regions', EntityType::class, [
+            ->add('region', EntityType::class, [
                 'label' => 'user.field.region',
                 'class' => Region::class,
-                'mapped' => false,
-                'query_builder' => function (RegionRepository $er) {
-                    return $er->createQueryBuilder('r')->orderBy('r.libelle', 'ASC');
-                },
-                'choice_value' => 'libelle',
+                'query_builder' => fn (RegionRepository $er) => $er->createQueryBuilder('r')->orderBy('r.libelle', 'ASC'),
                 'choice_label' => 'libelle',
-                'multiple' => false,
-                'expanded' => false,
-                'required' => false,
+                'required' => true,
                 'placeholder' => 'common.choose',
-                'by_reference' => false,
             ])
             ->add('pays', ChoiceType::class, [
                 'placeholder' => 'user.field.country_region_first',
                 'required' => true,
-            ])
-            ->add('profil', ChoiceType::class, [
-                'label' => 'user.field.profile',
-                'placeholder' => 'common.choose',
-                'required' => true,
-                'choices' => $this->getProfils(),
-                'choice_translation_domain' => 'messages',
             ])
             ->add('organisation', TextType::class, [
                 'required' => true,
@@ -92,15 +79,15 @@ class UserOwnRegistrationFormType extends AbstractType
             ])
         ;
 
-        $formModifier = function (FormInterface $form, ?Region $regions = null) {
-            $pays = null === $regions || $regions->getLibelle() === null
+        $formModifier = function (FormInterface $form, ?Region $region = null) {
+            $pays = $region === null
                 ? []
-                : $this->paysRepository->findUniqueByRegionLibelle($regions->getLibelle());
+                : $this->paysRepository->findUniqueByRegionLibelle($region->getLibelle());
 
             $form->add('pays', EntityType::class, [
                 'class' => Pays::class,
                 'choices' => $pays,
-                'required' => false,
+                'required' => true,
                 'choice_label' => 'libelle',
                 'placeholder' => 'common.choose',
                 'attr' => ['class' => 'custom-select'],
@@ -108,13 +95,30 @@ class UserOwnRegistrationFormType extends AbstractType
             ]);
         };
 
-        $builder->get('regions')->addEventListener(
+        $builder->get('region')->addEventListener(
             FormEvents::POST_SUBMIT,
             function (FormEvent $event) use ($formModifier) {
                 $region = $event->getForm()->getData();
-                $formModifier($event->getForm()->getParent(), $region);
+                $parent = $event->getForm()->getParent();
+                if ($parent instanceof FormInterface) {
+                    $formModifier($parent, $region);
+                }
             }
         );
+
+        $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
+            $user = $event->getData();
+            if (!$user instanceof User || !$event->getForm()->isValid()) {
+                return;
+            }
+
+            if ($user->getRegion() === null && $user->getPays()?->getRegion() !== null) {
+                $user->setRegion($user->getPays()->getRegion());
+            }
+
+            $user->setProfil(UserProfile::FOCAL);
+            $user->setRoles(UserProfile::resolveRoles(UserProfile::FOCAL));
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -123,14 +127,5 @@ class UserOwnRegistrationFormType extends AbstractType
             'data_class' => User::class,
             'translation_domain' => 'messages',
         ]);
-    }
-
-    private function getProfils(): array
-    {
-        return [
-            'user.profile.focal' => 0,
-            'user.profile.staff' => 1,
-            'user.profile.admin' => 3,
-        ];
     }
 }

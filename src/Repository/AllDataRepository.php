@@ -4,9 +4,12 @@ namespace App\Repository;
 
 use App\Entity\AllData;
 use App\Entity\Region;
+use App\Entity\User;
 use App\Service\Gis\CountryCentroidProvider;
+use App\Service\Security\UserDataScope;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -21,10 +24,27 @@ class AllDataRepository extends ServiceEntityRepository
         parent::__construct($registry, AllData::class);
     }
 
-    public function getCountTotalAttackInjuredDeath(string $type): int|float|null
+    public function createPublishedAnalyticsQueryBuilder(?User $user = null, ?UserDataScope $dataScope = null): QueryBuilder
     {
-        $qb = $this->createQueryBuilder('a');
-        $qb->where('a.isPublished = :published')->setParameter('published', true);
+        $qb = $this->createQueryBuilder('a')
+            ->andWhere('a.isPublished = :published')
+            ->setParameter('published', true);
+
+        if ($dataScope !== null) {
+            $qb->andWhere('a.dateAttaque >= :analyticsDateStart')
+                ->setParameter('analyticsDateStart', $dataScope->getDefaultDateStart());
+        }
+
+        if ($user instanceof User && $dataScope instanceof UserDataScope && $dataScope->isRegionScoped($user)) {
+            $dataScope->applyRegionScopeToQueryBuilder($qb, $user);
+        }
+
+        return $qb;
+    }
+
+    public function getCountTotalAttackInjuredDeath(string $type, ?User $user = null, ?UserDataScope $dataScope = null): int|float|null
+    {
+        $qb = $this->createPublishedAnalyticsQueryBuilder($user, $dataScope);
 
         if ($type === 'attack') {
             $qb->select('COUNT(a.id) as total');
@@ -37,18 +57,16 @@ class AllDataRepository extends ServiceEntityRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function getCountTotalTargetsAttacks(string $type): int|float|null
+    public function getCountTotalTargetsAttacks(string $type, ?User $user = null, ?UserDataScope $dataScope = null): int|float|null
     {
-        $qb = $this->createQueryBuilder('a');
+        $qb = $this->createPublishedAnalyticsQueryBuilder($user, $dataScope);
         $select = match ($type) {
             'civil' => 'SUM(a.blesseCivil)',
             'securiteMilitaire' => 'SUM(a.blesseSecuriteMilitaire)',
             default => 'SUM(a.blesseTerroriste)',
         };
 
-        return $qb->select($select . ' as total')
-            ->where('a.isPublished = :published')
-            ->setParameter('published', true)
+        return $qb->select($select.' as total')
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -125,7 +143,7 @@ class AllDataRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function createPendingReviewQueryBuilder(): \Doctrine\ORM\QueryBuilder
+    public function createPendingReviewQueryBuilder(): QueryBuilder
     {
         return $this->createQueryBuilder('a')
             ->andWhere('a.isPublished IS NULL')
@@ -133,14 +151,14 @@ class AllDataRepository extends ServiceEntityRepository
             ->orderBy('a.createdAt', 'DESC');
     }
 
-    public function countPendingReview(): int
+    public function countPendingReview(?User $user = null, ?UserDataScope $dataScope = null): int
     {
-        return (int) $this->createQueryBuilder('a')
-            ->select('COUNT(a.id)')
-            ->andWhere('a.isPublished IS NULL')
-            ->andWhere('a.objetRejet IS NULL OR a.objetRejet = \'\'')
-            ->getQuery()
-            ->getSingleScalarResult();
+        $qb = $this->createPendingReviewQueryBuilder();
+        if ($user instanceof User && $dataScope instanceof UserDataScope) {
+            $dataScope->applyRegionScopeToQueryBuilder($qb, $user);
+        }
+
+        return (int) $qb->select('COUNT(a.id)')->getQuery()->getSingleScalarResult();
     }
 
     /**
@@ -258,9 +276,9 @@ class AllDataRepository extends ServiceEntityRepository
     /**
      * @return list<array{country: string, count: int, deaths: int, injured: int, lat: float, lng: float}>
      */
-    public function findMapAggregatesByCountry(): array
+    public function findMapAggregatesByCountry(?User $user = null, ?UserDataScope $dataScope = null): array
     {
-        $rows = $this->createQueryBuilder('a')
+        $qb = $this->createQueryBuilder('a')
             ->select(
                 'p.libelle AS country',
                 'COUNT(a.id) AS incidentCount',
@@ -270,9 +288,18 @@ class AllDataRepository extends ServiceEntityRepository
             ->innerJoin('a.pays', 'p')
             ->andWhere('a.isPublished = true')
             ->andWhere('a.dateAttaque IS NOT NULL')
-            ->groupBy('p.libelle')
-            ->getQuery()
-            ->getArrayResult();
+            ->groupBy('p.libelle');
+
+        if ($user instanceof User && $dataScope instanceof UserDataScope) {
+            $qb->andWhere('a.dateAttaque >= :mapDefaultDateStart')
+                ->setParameter('mapDefaultDateStart', $dataScope->getDefaultDateStart());
+
+            if ($dataScope->isRegionScoped($user)) {
+                $dataScope->applyRegionScopeToQueryBuilder($qb, $user);
+            }
+        }
+
+        $rows = $qb->getQuery()->getArrayResult();
 
         $aggregates = [];
         foreach ($rows as $row) {

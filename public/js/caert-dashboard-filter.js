@@ -217,6 +217,65 @@
         }
     }
 
+    function readScopeDefaults($form) {
+        return {
+            region: $form.data('default-region') || '',
+            dateStart: $form.data('default-date-start') || '',
+            dateEnd: $form.data('default-date-end') || '',
+        };
+    }
+
+    function applyScopeDefaultsToForm($form, defaults) {
+        if (!defaults) {
+            return;
+        }
+
+        if (defaults.region) {
+            $('#region').val([defaults.region]).trigger('change');
+        }
+        if (defaults.dateStart) {
+            $('#createdAt_start').val(defaults.dateStart);
+        }
+        if (defaults.dateEnd) {
+            $('#createdAt_end').val(defaults.dateEnd);
+        }
+    }
+
+    function applyScopeDefaultsToTable(dt, columnMap, defaults) {
+        if (!defaults) {
+            return;
+        }
+
+        if (defaults.region) {
+            setMultiSearch(dt, columnMap, 'region', [defaults.region]);
+        }
+        setDateSearch(dt, columnMap, defaults.dateStart || '', defaults.dateEnd || '');
+    }
+
+    function applyFiltersFromForm(dt, columnMap) {
+        setMultiSearch(dt, columnMap, 'isPublished', $('#filterStatus').val());
+        setMultiSearch(dt, columnMap, 'attaque', $('#attaque').val());
+        setMultiSearch(dt, columnMap, 'cible', $('#cible').val());
+        setMultiSearch(dt, columnMap, 'pays', $('#pays').val());
+        setMultiSearch(dt, columnMap, 'perpetrateurs', $('#perpetrateur').val());
+        setMultiSearch(dt, columnMap, 'espace', $('#espace').val());
+        setMultiSearch(dt, columnMap, 'region', $('#region').val());
+        setDateSearch(
+            dt,
+            columnMap,
+            $.trim($('#createdAt_start').val() || ''),
+            $.trim($('#createdAt_end').val() || '')
+        );
+    }
+
+    function drawWithLoading(dt) {
+        setSearchLoading(true);
+        dt.one('draw', function () {
+            setSearchLoading(false);
+        });
+        dt.draw();
+    }
+
     function getAllPaysOptions() {
         if (window.caertDashboardAllPaysOptions && window.caertDashboardAllPaysOptions.length) {
             return window.caertDashboardAllPaysOptions;
@@ -233,24 +292,12 @@
 
         var allPaysOptions = getAllPaysOptions();
         var columnMap = buildColumnIndexMap(dt);
+        var scopeDefaults = readScopeDefaults($form);
 
         $form.on('submit', function (e) {
             e.preventDefault();
             setSearchLoading(true);
-
-            setMultiSearch(dt, columnMap, 'isPublished', $('#filterStatus').val());
-            setMultiSearch(dt, columnMap, 'attaque', $('#attaque').val());
-            setMultiSearch(dt, columnMap, 'cible', $('#cible').val());
-            setMultiSearch(dt, columnMap, 'pays', $('#pays').val());
-            setMultiSearch(dt, columnMap, 'perpetrateurs', $('#perpetrateur').val());
-            setMultiSearch(dt, columnMap, 'espace', $('#espace').val());
-            setMultiSearch(dt, columnMap, 'region', $('#region').val());
-            setDateSearch(
-                dt,
-                columnMap,
-                $.trim($('#createdAt_start').val() || ''),
-                $.trim($('#createdAt_end').val() || '')
-            );
+            applyFiltersFromForm(dt, columnMap);
 
             dt.one('draw', function () {
                 setSearchLoading(false);
@@ -260,15 +307,19 @@
 
         $('#resetSearchForm').on('click', function (e) {
             e.preventDefault();
-            setSearchLoading(true);
             resetFilterForm($form, allPaysOptions);
             clearAllFilters(dt, columnMap);
             clearTableStateFromUrl();
+            applyScopeDefaultsToForm($form, scopeDefaults);
+            applyScopeDefaultsToTable(dt, columnMap, scopeDefaults);
             dt.order(getDefaultOrder(columnMap));
-            dt.one('draw', function () {
-                setSearchLoading(false);
-            });
-            dt.draw();
+            drawWithLoading(dt);
         });
+
+        if (scopeDefaults.region || scopeDefaults.dateStart || scopeDefaults.dateEnd) {
+            applyScopeDefaultsToForm($form, scopeDefaults);
+            applyScopeDefaultsToTable(dt, columnMap, scopeDefaults);
+            drawWithLoading(dt);
+        }
     };
 })(window.jQuery);

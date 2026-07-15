@@ -1,4 +1,9 @@
-<form id="searchForm" action="#" method="POST" class="caert-filter-form" novalidate onsubmit="return false;">
+<form id="searchForm" action="#" method="POST" class="caert-filter-form" novalidate onsubmit="return false;"
+    {% if dashboardDefaults is defined and dashboardDefaults %}
+    data-default-region="{{ dashboardDefaults.region }}"
+    data-default-date-start="{{ dashboardDefaults.dateStart }}"
+    data-default-date-end="{{ dashboardDefaults.dateEnd }}"
+    {% endif %}>
     <div class="row">
         <div class="col-md-3 col-sm-6">
             <div class="form-group">

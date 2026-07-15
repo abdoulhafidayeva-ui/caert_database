@@ -4,6 +4,8 @@ namespace App\Security\Voter;
 
 use App\Entity\AllData;
 use App\Entity\User;
+use App\Service\Security\UserDataScope;
+use App\Service\Security\UserProfile;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -13,6 +15,10 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
  */
 final class AllDataVoter extends Voter
 {
+    public function __construct(private readonly UserDataScope $dataScope)
+    {
+    }
+
     public const VIEW = 'INCIDENT_VIEW';
     public const EDIT = 'INCIDENT_EDIT';
     public const DELETE = 'INCIDENT_DELETE';
@@ -35,25 +41,26 @@ final class AllDataVoter extends Voter
             return false;
         }
 
-        if (in_array('ROLE_SUPER_ADMIN', $user->getRoles(), true)) {
-            return true;
-        }
-
         return match ($attribute) {
-            self::PUBLISH => in_array('ROLE_ADMIN', $user->getRoles(), true),
-            self::VIEW, self::EDIT, self::DELETE => $this->canAccessCountry($user, $subject),
+            self::VIEW => true,
+            self::PUBLISH => UserProfile::canPublish($user),
+            self::EDIT, self::DELETE => $this->canModify($user, $subject),
             default => false,
         };
     }
 
-    private function canAccessCountry(User $user, ?AllData $incident): bool
+    private function canModify(User $user, ?AllData $incident): bool
     {
-        if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+        if (UserProfile::hasFullDataAccess($user)) {
             return true;
         }
 
         if ($incident === null) {
             return true;
+        }
+
+        if (UserProfile::isStaff($user)) {
+            return $this->dataScope->incidentInAssignedRegion($user, $incident);
         }
 
         $userCountry = $user->getPays();

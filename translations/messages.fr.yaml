@@ -28,7 +28,7 @@ nav:
     attack_means: "Moyens d'attaque"
     groups: Groupes
     space: Espace
-    env_config: Variables d'environnement
+    env_config: Variables d'env
     collapse_menu: Réduire le menu
     menu: Menu
 
@@ -67,20 +67,16 @@ auth:
     register_platform: "Demande d'accès à la plateforme AUCTC"
     welcome_user: "BIENVENUE %name%"
     forgot:
-        mode: Mode
-        mode_hint: Mail ou Telephone
-        by_mail: PAR MAIL
-        by_phone: PAR TELEPHONE
-        email_prompt: Remplissez votre e-mail pour la réinitialisation de votre mot de passe
-        phone_prompt: Remplissez votre numéro pour la réinitialisation de votre mot de passe
-        phone: Téléphone
-        phone_placeholder: "Ex. : 93432250"
-        code_hint: code envoyé
-        code_sent_before: Un code vous a été envoyé sur votre
-        code_sent_after: ", renseignez le"
-        code_label: Le code
-        step3: Step 3
-        mail: mail
+        step_email: E-mail
+        step_email_hint: Saisie de l'adresse
+        email_prompt: Remplissez votre e-mail pour recevoir un code de réinitialisation
+        email_required: Renseignez votre e-mail.
+        code_hint: Code reçu par e-mail
+        code_sent_email: Un code vous a été envoyé par e-mail. Saisissez-le ci-dessous pour définir un nouveau mot de passe.
+        code_label: Code de vérification
+        code_required: Renseignez le code reçu par e-mail.
+        invalid_code: Le code ne correspond pas.
+        code_expired: Ce code a expiré. Recommencez la procédure.
 
 user:
     title: Utilisateurs
@@ -117,6 +113,8 @@ user:
         country: Pays
         country_region_first: Pays (choisir une région)
         profile: Profil
+        super_admin: Super administrateur système
+        super_admin_help: Accès maximal — gestion des utilisateurs et paramètres du logiciel.
         organisation: Organisation
         locale: Langue
         password: Mot de passe
@@ -125,6 +123,7 @@ user:
         focal: Point focal Pays
         staff: Staff AUCTC
         admin: Administrateur
+        super_admin: Super administrateur
     password_modal:
         title: Nouveau mot de passe
         intro: "Définir un nouveau mot de passe pour %name% (%email%)."
@@ -445,6 +444,7 @@ security:
     access_app: "Vous n'avez pas accès à cette partie de l'application."
     no_country: Aucun pays assigné à votre compte.
     country_restricted: Vous ne pouvez enregistrer des incidents que pour votre pays.
+    region_restricted: Vous ne pouvez enregistrer des incidents que pour votre région assignée.
 
 flash:
     title:
@@ -488,7 +488,8 @@ flash:
     install_complete: Configuration terminée. Connectez-vous à votre application.
 
 role:
-    user: Utilisateur
+    user: Point focal
+    staff: Staff AUCTC
     admin: Administrateur
     users_management: Gestion des utilisateurs
     super_admin: Super administrateur

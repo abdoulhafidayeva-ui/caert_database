@@ -5,7 +5,10 @@
       onsubmit="return false;"
       data-search-url="{{ path('search_for_graphique') }}"
       data-incidents-url="{{ path('nb_Terrorist_Incidents') }}"
-      data-targets-url="{{ path('pr_Targets_Attacks') }}">
+      data-targets-url="{{ path('pr_Targets_Attacks') }}"
+      data-default-start-month="{{ analyticsDefaults.startMonth }}"
+      data-default-end-month="{{ analyticsDefaults.endMonth }}"
+      data-default-region-ids="{{ analyticsDefaults.regionIds|join(',') }}">
     <div class="row">
         <div class="col-md-4 col-sm-6">
             <div class="form-group">
@@ -34,7 +37,7 @@
                 <label for="region">{{ 'analytics.filter.regions'|trans }}</label>
                 <select id="region" name="region[]" class="form-control select2" multiple required data-placeholder="{{ 'common.select'|trans }}">
                     {% for region in regions %}
-                        <option value="{{ region.id }}">{{ region.libelle }}</option>
+                        <option value="{{ region.id }}"{% if region.id in analyticsDefaults.regionIds %} selected{% endif %}>{{ region.libelle }}</option>
                     {% endfor %}
                 </select>
             </div>

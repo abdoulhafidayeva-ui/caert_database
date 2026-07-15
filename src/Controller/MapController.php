@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Repository\AllDataRepository;
 use App\Service\Gis\CountryCentroidProvider;
+use App\Service\Security\UserDataScope;
+use App\Entity\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,13 +21,18 @@ class MapController extends AbstractAppController
     public function __construct(
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly CountryCentroidProvider $countryCentroidProvider,
+        private readonly UserDataScope $dataScope,
     ) {
     }
 
     #[Route(path: '/map', name: 'app_map')]
     public function index(AllDataRepository $repository): Response
     {
-        $aggregates = $repository->findMapAggregatesByCountry();
+        $user = $this->getUser();
+        $aggregates = $repository->findMapAggregatesByCountry(
+            $user instanceof User ? $user : null,
+            $this->dataScope,
+        );
 
         return $this->render('map/index.html.twig', [
             'menu' => $this->menu,
@@ -60,6 +67,8 @@ class MapController extends AbstractAppController
     #[Route(path: '/api/map/countries', name: 'api_map_countries', methods: ['GET'])]
     public function countries(AllDataRepository $repository): JsonResponse
     {
+        $user = $this->getUser();
+
         return $this->json([
             'type' => 'FeatureCollection',
             'features' => array_map(static fn (array $row) => [
@@ -74,7 +83,10 @@ class MapController extends AbstractAppController
                     'deaths' => $row['deaths'],
                     'injured' => $row['injured'],
                 ],
-            ], $repository->findMapAggregatesByCountry()),
+            ], $repository->findMapAggregatesByCountry(
+                $user instanceof User ? $user : null,
+                $this->dataScope,
+            )),
         ]);
     }
 

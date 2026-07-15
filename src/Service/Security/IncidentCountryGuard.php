@@ -9,21 +9,37 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class IncidentCountryGuard
 {
-    public function __construct(private readonly TranslatorInterface $translator)
-    {
+    public function __construct(
+        private readonly TranslatorInterface $translator,
+        private readonly UserDataScope $dataScope,
+    ) {
     }
 
     public function isCountryRestricted(User $user): bool
     {
-        $roles = $user->getRoles();
-
-        return !in_array('ROLE_ADMIN', $roles, true)
-            && !in_array('ROLE_SUPER_ADMIN', $roles, true);
+        return UserProfile::isCountryRestricted($user);
     }
 
     public function getAssignedCountry(User $user): ?Pays
     {
         return $user->getPays();
+    }
+
+    public function assertWriteAllowed(User $user, ?Pays $pays): void
+    {
+        if (UserProfile::hasFullDataAccess($user)) {
+            return;
+        }
+
+        if (UserProfile::isStaff($user)) {
+            if (!$this->dataScope->paysInAssignedRegion($user, $pays)) {
+                throw new AccessDeniedException($this->translator->trans('security.region_restricted'));
+            }
+
+            return;
+        }
+
+        $this->assertCountryAllowed($user, $pays);
     }
 
     public function assertCountryAllowed(User $user, ?Pays $pays): void

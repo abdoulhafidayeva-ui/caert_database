@@ -16,6 +16,7 @@ use Knp\Component\Pager\PaginatorInterface;
 use App\Notification\EmailNotification;
 use App\Repository\AppParamRepository;
 use App\Service\Locale\LocaleResolver;
+use App\Service\Security\UserProfile;
 use App\Service\TokenGenerator;
 use App\Service\UserManager;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -66,7 +67,9 @@ class SecurityController extends AbstractAppController
     public function register(Request $request): Response
     {
         $menu = 'userRegister';
-        $form = $this->createForm(UserRegistrationFormType::class);
+        $form = $this->createForm(UserRegistrationFormType::class, null, [
+            'show_super_admin_option' => true,
+        ]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -96,7 +99,9 @@ class SecurityController extends AbstractAppController
     public function edit(Request $request, User $user): Response
     {
 
-        $form = $this->createForm(UserRegistrationFormType::class, $user);
+        $form = $this->createForm(UserRegistrationFormType::class, $user, [
+            'show_super_admin_option' => true,
+        ]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -162,11 +167,12 @@ class SecurityController extends AbstractAppController
             $user->setTokenCreatedAt(new \DateTime());
             $user->setToken($token);
 
-            $defaultRoles = ["ROLE_USER"];
+            $defaultRoles = UserProfile::resolveRoles(UserProfile::FOCAL);
             $plainPassword = $form['plainPassword']->getData();
             $password = $passwordHasher->hashPassword($user, $plainPassword);
             $user->setPassword($password);
             $user->setRoles($defaultRoles);
+            $user->setProfil(UserProfile::FOCAL);
             $user->setNotifyBy(0);
             $this->em->persist($user);
             $this->em->flush();
@@ -346,57 +352,77 @@ class SecurityController extends AbstractAppController
         return $this->redirectToRoute('app_user_list');
     }
 
-    #[Route(path: '/forgotten-pass', name: 'app_forgotten_password', methods: ['GET', 'POST'])]
-    public function forgottenPassword(Request $request): Response
+    #[Route(path: '/forgotten-pass', name: 'app_forgotten_password', methods: ['GET'])]
+    public function forgottenPassword(): Response
     {
         return $this->render('security/forgotten_password.html.twig');
     }
 
-    #[Route(path: '/forgotten-pass-{moyen}-{variable}', name: 'app_forgotten_password_code', options: ['expose' => true], methods: ['GET'])]
-    public function forgottenPasswordCode($moyen, $variable): Response
+    #[Route(path: '/forgotten-pass/code', name: 'app_forgotten_password_code', methods: ['POST'])]
+    public function forgottenPasswordCode(Request $request): JsonResponse
     {
-        $data = false;
-        if ($moyen == 1 && $variable != "") {
-            $user = $this->userRepository->findOneByEmail($variable);
-            if($user != null){
-                $token = $this->tokenGenerator->getCode();
-                $user->setToken($token);
-                $this->em->persist($user);
-                $this->em->flush();
-
-                $this->notification->sendCode($user);
-                $data = true;
-            }
-        }else {
-            // $phone = $request->get('phone');
-            // $user = $this->userRepository->findOneByPhone($phone);
+        if (!$this->isCsrfTokenValid('forgot_password', (string) $request->request->get('_token'))) {
+            return new JsonResponse(['success' => false, 'message' => $this->trans('flash.invalid_csrf')], 400);
         }
-        $response = new JsonResponse();
-        $response->setData($data);
-        return $response;
+
+        $email = mb_strtolower(trim((string) $request->request->get('email', '')));
+        if ($email === '') {
+            return new JsonResponse(['success' => false, 'message' => $this->trans('auth.forgot.email_required')], 400);
+        }
+
+        $user = $this->userRepository->findOneByEmail($email);
+        if ($user !== null) {
+            $token = $this->tokenGenerator->getCode();
+            $user->setToken($token);
+            $user->setTokenCreatedAt(new \DateTime());
+            $this->em->flush();
+
+            try {
+                $this->notification->sendCode($user);
+            } catch (TransportExceptionInterface) {
+                return new JsonResponse(['success' => false, 'message' => $this->trans('flash.user_password_reset_mail_failed')], 503);
+            }
+        }
+
+        return new JsonResponse(['success' => true]);
     }
 
-    #[Route(path: '/forgotten-password-code-{moyen}-{variable}-{token}', name: 'app_forgotten_password_verif_code', options: ['expose' => true], methods: ['GET'])]
-    public function forgottenPasswordVerifCode($moyen, $variable, $token): Response
+    #[Route(path: '/forgotten-pass/verify', name: 'app_forgotten_password_verify', methods: ['POST'])]
+    public function forgottenPasswordVerify(Request $request): JsonResponse
     {
-        $data = false;
-        if ($moyen == 1 && $variable != "") {
-            $user = $this->userRepository->findOneBy(array('email'=>$variable, 'token'=>$token));
-            if($user != null){
-                $token = $this->tokenGenerator->generateToken();
-                $user->setTokenCreatedAt(new \DateTime());
-                $user->setToken($token);
-                $this->em->persist($user);
-                $this->em->flush();
-                $data = true;
-            }
-        }else {
-            // $phone = $request->get('phone');
-            // $user = $this->userRepository->findOneByPhone($phone);
+        if (!$this->isCsrfTokenValid('forgot_password', (string) $request->request->get('_token'))) {
+            return new JsonResponse(['success' => false, 'message' => $this->trans('flash.invalid_csrf')], 400);
         }
-        $response = new JsonResponse();
-        $response->setData($data);
-        return $response;
+
+        $email = mb_strtolower(trim((string) $request->request->get('email', '')));
+        $code = trim((string) $request->request->get('code', ''));
+
+        if ($email === '' || $code === '') {
+            return new JsonResponse(['success' => false, 'message' => $this->trans('auth.forgot.code_required')], 400);
+        }
+
+        $user = $this->userRepository->findOneBy(['email' => $email, 'token' => $code]);
+        if ($user === null) {
+            return new JsonResponse(['success' => false, 'message' => $this->trans('auth.forgot.invalid_code')], 400);
+        }
+
+        $tokenCreated = $user->getTokenCreatedAt();
+        if ($tokenCreated instanceof \DateTimeInterface) {
+            $ageSeconds = (new \DateTime())->getTimestamp() - $tokenCreated->getTimestamp();
+            if ($ageSeconds > 30 * 60) {
+                return new JsonResponse(['success' => false, 'message' => $this->trans('auth.forgot.code_expired')], 400);
+            }
+        }
+
+        $token = $this->tokenGenerator->generateToken();
+        $user->setToken($token);
+        $user->setTokenCreatedAt(new \DateTime());
+        $this->em->flush();
+
+        return new JsonResponse([
+            'success' => true,
+            'redirect' => $this->generateUrl('app_add_password', ['token' => $token]),
+        ]);
     }
 
 

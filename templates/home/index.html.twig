@@ -14,7 +14,7 @@
             <div class="content-heading">
                <div>{{ 'incident.dashboard_title'|trans }}<small>{{ 'incident.title'|trans }}</small></div>
                <div class="ml-auto">
-                    {% if is_granted('ROLE_ADMIN') and pendingCount > 0 %}
+                    {% if is_granted('ROLE_STAFF') and pendingCount > 0 %}
                     <a class="btn btn-sm btn-warning" href="{{ path('workflow_inbox') }}">
                         <em class="fas fa-inbox"></em> {{ 'incident.pending_badge'|trans({'%count%': pendingCount}) }}
                     </a>
@@ -85,9 +85,9 @@
                 <div class="caert-panel-header">
                     <em class="fas fa-filter"></em> {{ 'incident.filter_title'|trans }}
                 </div>
-                <div class="caert-panel-body">
+            <div class="caert-panel-body">
                     {% include "home/_filter_form.html.twig" %}
-                </div>
+            </div>
             </div>
 
             <div class="caert-panel">
@@ -111,7 +111,7 @@
 
 {% block javascripts %}
     <script src="{{ asset('bundles/datatables/js/datatables.js') }}"></script>
-    <script src="{{ asset('js/caert-dashboard-filter.js') }}?v=11"></script>
+    <script src="{{ asset('js/caert-dashboard-filter.js') }}?v=12"></script>
     <script>
         $(function() {
             var today = new Date();

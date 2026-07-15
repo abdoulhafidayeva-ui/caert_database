@@ -77,7 +77,7 @@ final class IncidentFormCountryConfigurator
                 }
             }
 
-            $countryGuard->assertCountryAllowed($user, $data->getPays());
+            $countryGuard->assertWriteAllowed($user, $data->getPays());
         });
     }
 }

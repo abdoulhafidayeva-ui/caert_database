@@ -28,6 +28,14 @@ npm run docs:all
 | `word/CAERT_Manuel_Administrateur_2026.docx` | Manuel admin seul |
 | `word/CAERT_Formation_Onboarding_2026.docx` | Guide onboarding |
 | `word/CAERT_Guide_Analyste_2026.docx` | Guide analyste |
+| `word/AUCTC_Hebergement_Reseau_Local_2026.docx` | Installation serveur local Windows (AUCTC) |
+| `AUCTC_Hebergement_Reseau_Local_2026.pdf` | PDF du guide hébergement local |
+
+Générer le guide local (Word + PDF) :
+
+```bash
+npm run docs:local-hosting
+```
 
 ## Export PDF
 

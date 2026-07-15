@@ -111,9 +111,13 @@ Ressource : [../etl/ETL_DOCUMENTATION.md](../etl/ETL_DOCUMENTATION.md)
 
 ## Comptes de démonstration (fixtures)
 
-| Rôle | E-mail | Usage |
-|------|--------|-------|
-| Super admin | Voir [../FINAL_DELIVERY.md](../FINAL_DELIVERY.md) | Formation admin |
-| Point focal | focal.mali@caert.test | Formation saisie |
+Mot de passe commun : voir [../FINAL_DELIVERY.md](../FINAL_DELIVERY.md) (`n4n86fgh`).
+
+| Profil | E-mail | Usage formation |
+|--------|--------|-----------------|
+| Super administrateur | abdoulhafidayeva@gmail.com | Gestion utilisateurs, référentiels, config |
+| Staff AUCTC | staff.caert@caert.test | Validation des saisies, boîte de réception |
+| Administrateur métier | admin.caert@caert.test | Données tous pays, tableau exécutif |
+| Point focal Mali | focal.mali@caert.test | Saisie Mali, lecture autres pays |
 
 > Ne pas utiliser en production. Changer les mots de passe après formation.

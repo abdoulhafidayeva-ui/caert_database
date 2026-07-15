@@ -23,6 +23,7 @@ const PACK_SECTIONS = [
   { file: 'security/SECURITY_DOCUMENTATION.md', title: 'Documentation sécurité' },
   { file: 'etl/ETL_DOCUMENTATION.md', title: 'Documentation ETL' },
   { file: 'gis/GIS_DOCUMENTATION.md', title: 'Documentation SIG' },
+  { file: 'infrastructure/LOCAL_NETWORK_HOSTING.md', title: 'Hébergement réseau local AUCTC (Windows)' },
   { file: 'DEPLOYMENT.md', title: 'Guide de déploiement' },
   { file: 'OPERATIONS.md', title: 'Opérations et continuité' },
   { file: 'maintenance/MAINTENANCE_GUIDE.md', title: 'Guide de maintenance' },
@@ -39,6 +40,7 @@ const STANDALONE = [
   { src: 'admin/ADMINISTRATOR_MANUAL.md', out: 'CAERT_Manuel_Administrateur_2026.docx' },
   { src: 'training/ONBOARDING.md', out: 'CAERT_Formation_Onboarding_2026.docx' },
   { src: 'training/ANALYST_GUIDE.md', out: 'CAERT_Guide_Analyste_2026.docx' },
+  { src: 'infrastructure/LOCAL_NETWORK_HOSTING.md', out: 'AUCTC_Hebergement_Reseau_Local_2026.docx' },
 ];
 
 function readMd(rel) {

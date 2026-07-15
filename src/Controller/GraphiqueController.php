@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\AllData;
 use App\Entity\Region;
+use App\Entity\User;
+use App\Service\Security\UserDataScope;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,9 +18,19 @@ class GraphiqueController extends AbstractAppController
 {
     private string $menu = 'graphique';
 
+    public function __construct(
+        private readonly UserDataScope $userDataScope,
+    ) {
+    }
+
     #[Route(path: '/graphique/page', name: 'graphique', methods: ['GET'])]
     public function index(EntityManagerInterface $em): Response
     {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
         return $this->render('graphique/index.html.twig', [
             'menu' => $this->menu,
             'regions' => $em->getRepository(Region::class)->findAllUniqueByLibelle(),
@@ -27,30 +39,41 @@ class GraphiqueController extends AbstractAppController
                 'perpetrateurs' => $this->trans('analytics.indicator.perpetrateurs'),
                 'civil' => $this->trans('analytics.indicator.civil'),
             ],
+            'analyticsDefaults' => $this->userDataScope->getAnalyticsDefaults($user),
         ]);
     }
 
     #[Route(path: '/graphique/nb_Terrorist_Incidents', name: 'nb_Terrorist_Incidents', methods: ['GET'])]
     public function getCountTotalIncidents(EntityManagerInterface $em): Response
     {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
         $allDataRep = $em->getRepository(AllData::class);
 
         return $this->json([
-            'totalDeath' => (int) $allDataRep->getCountTotalAttackInjuredDeath('death'),
-            'totalInjured' => (int) $allDataRep->getCountTotalAttackInjuredDeath('injured'),
-            'totalAttack' => (int) $allDataRep->getCountTotalAttackInjuredDeath('attack'),
+            'totalDeath' => (int) $allDataRep->getCountTotalAttackInjuredDeath('death', $user, $this->userDataScope),
+            'totalInjured' => (int) $allDataRep->getCountTotalAttackInjuredDeath('injured', $user, $this->userDataScope),
+            'totalAttack' => (int) $allDataRep->getCountTotalAttackInjuredDeath('attack', $user, $this->userDataScope),
         ]);
     }
 
     #[Route(path: '/graphique/pr_Targets_Attacks', name: 'pr_Targets_Attacks', methods: ['GET'])]
     public function getCountTotalTargetsAttacks(EntityManagerInterface $em): Response
     {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
         $allDataRep = $em->getRepository(AllData::class);
 
         return $this->json([
-            'totalCivil' => (int) $allDataRep->getCountTotalTargetsAttacks('civil'),
-            'totalSecuriteMilitaire' => (int) $allDataRep->getCountTotalTargetsAttacks('securiteMilitaire'),
-            'totalTerroriste' => (int) $allDataRep->getCountTotalTargetsAttacks('terroriste'),
+            'totalCivil' => (int) $allDataRep->getCountTotalTargetsAttacks('civil', $user, $this->userDataScope),
+            'totalSecuriteMilitaire' => (int) $allDataRep->getCountTotalTargetsAttacks('securiteMilitaire', $user, $this->userDataScope),
+            'totalTerroriste' => (int) $allDataRep->getCountTotalTargetsAttacks('terroriste', $user, $this->userDataScope),
         ]);
     }
 

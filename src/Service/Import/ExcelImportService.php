@@ -118,14 +118,13 @@ final class ExcelImportService
         $incident->setMoyenAttaque($this->resolveRef(MoyenAttaque::class, $row['I'] ?? null, 'moyen d\'attaque'));
         $incident->setPerpetrateur($this->resolveRef(Perpetrateurs::class, $row['G'] ?? null, 'groupe'));
         $pays = $this->resolveRef(Pays::class, $row['D'] ?? null, 'pays');
-        if ($this->countryGuard->isCountryRestricted($user)) {
-            $assigned = $this->countryGuard->getAssignedCountry($user);
-            if ($assigned !== null && $pays->getId() !== $assigned->getId()) {
-                throw new \InvalidArgumentException(sprintf(
-                    'Import refusé : le pays « %s » ne correspond pas à votre pays assigné.',
-                    $pays->getLibelle()
-                ));
-            }
+        try {
+            $this->countryGuard->assertWriteAllowed($user, $pays);
+        } catch (\Symfony\Component\Security\Core\Exception\AccessDeniedException $e) {
+            throw new \InvalidArgumentException(sprintf(
+                'Import refusé : %s',
+                $pays->getLibelle()
+            ), 0, $e);
         }
         $incident->setPays($pays);
         $incident->setEspace($this->resolveRef(Espace::class, $row['C'] ?? null, 'espace'));

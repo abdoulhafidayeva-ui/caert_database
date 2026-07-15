@@ -1,105 +1,106 @@
 import './styles/forgotten-password.css';
-import 'smartwizard/dist/css/smart_wizard_all.min.css'
-import smartWizard from 'smartwizard'
+import 'smartwizard/dist/css/smart_wizard_all.min.css';
+import smartWizard from 'smartwizard';
 
+$(document).ready(function () {
+    var wizardForm = $('#smartwizard');
+    var storedEmail = '';
 
-
-$(document).ready(function() {
-    $('input[type=radio][name=moyen]').change(function() {
-        var val = this.value;
-        if(val == 1){
-            $('#mail').show();
-            $("#resetInputEmail").attr('required', '');    
-            $('#phone').hide();
-            $("#resetInputPhone").removeAttr('required'); 
-
-            $('#choix').html('Mail');
-        }else{
-            $('#mail').hide();
-            $("#resetInputEmail").removeAttr('required'); 
-            $('#phone').show();
-            $("#resetInputPhone").attr('required', ''); 
-            
-            $('#choix').html('Numéro de telephone');
-        }
-    });
-
-    
-    let wizardForm = $('#smartwizard');
     wizardForm.smartWizard({
         theme: 'arrows',
         transition: {
-            animation: 'fade', 
+            animation: 'fade',
             speed: '400',
-            easing:''
+            easing: '',
         },
         lang: {
             next: 'Suivant',
-            previous: 'Précédent'
+            previous: 'Précédent',
         },
     });
 
-    var ajaxInvoke = false;
-    var error = false;
-    var variable = "";
-    var stop = false;
-    wizardForm.on('leaveStep', function(e, anchorObject, stepNumber, stepDirection) {
-        var moyen = $('#moyen:checked').val();
-        var email = $('#email').val();
-        var phone = $('#phone').val();
-
-        // stepDirection === 'forward' && 
-        if (stepNumber === 0 && ajaxInvoke ==false) {
-            if ((moyen == 1 && email === "") || (moyen == 2 && phone === "")) {
-                $("#error-step-1").html('Renseignez le champs svp');
-                error = true;
-                return false;
-            }
-            if (error === false) {
-                if (moyen == 1 && email !== "") { variable = email}
-                if (moyen == 2 && phone !== "") { variable = phone}
-                var urlFirst = Routing.generate('app_forgotten_password_code', {moyen:moyen,variable:variable});
-                //ajaxInvoke = true;
-                $.ajax({
-                    method: 'GET',
-                    url: urlFirst,
-                    async: false,
-                    success : function (response) {
-                        if (response === false) {
-                            $("#error-step-1").html('Ceci n\'existe pas dans notre base');
-                            stop = true;
-                        }else{ $("#error-step-1").html('');}
-                    }
-                });
-            }
-        }
-        error = false;
-        if (stepNumber === 1 && ajaxInvoke ==false) {
-            var token = $('#code').val();
-            if (code === "") {
-                $("#error-step-2").html('Renseignez le code svp');
-                error = true;
-                return false;
-            }
-            if (error === false) {
-                var urlSecond = Routing.generate('app_forgotten_password_verif_code', {moyen:moyen,variable:variable,token:token});
-                //ajaxInvoke = true;
-                $.ajax({
-                    method: 'GET',
-                    url: urlSecond
-                    }).then(function (response) {
-                        if (response === false) {
-                            $("#error-step-2").html('Le code ne correspond pas');
-                            stop = true;
-                        }else{ $("#error-step-2").html('');}
-                }, function (){
-                    //for error
-                });
-            }
+    wizardForm.on('leaveStep', function (e, anchorObject, stepNumber, stepDirection) {
+        if (stepDirection !== 'forward') {
+            return true;
         }
 
-        if(stop){stop = false; return false;};
+        if (stepNumber === 0) {
+            var email = ($('#email').val() || '').trim();
+            if (email === '') {
+                $('#error-step-1').text('Renseignez votre e-mail.');
+                return false;
+            }
+
+            var deferred = $.Deferred();
+            $.ajax({
+                method: 'POST',
+                url: '/forgotten-pass/code',
+                data: {
+                    email: email,
+                    _token: $('#forgot-csrf').val(),
+                },
+            }).done(function (response) {
+                if (!response || response.success !== true) {
+                    $('#error-step-1').text(response && response.message ? response.message : 'Une erreur est survenue.');
+                    deferred.resolve(false);
+                    return;
+                }
+                storedEmail = email;
+                $('#error-step-1').text('');
+                deferred.resolve(true);
+            }).fail(function (xhr) {
+                var message = xhr.responseJSON && xhr.responseJSON.message
+                    ? xhr.responseJSON.message
+                    : 'Une erreur est survenue.';
+                $('#error-step-1').text(message);
+                deferred.resolve(false);
+            });
+
+            e.preventDefault();
+            deferred.promise().then(function (canLeave) {
+                if (canLeave) {
+                    wizardForm.smartWizard('next');
+                }
+            });
+            return false;
+        }
+
+        if (stepNumber === 1) {
+            var code = ($('#code').val() || '').trim();
+            if (code === '') {
+                $('#error-step-2').text('Renseignez le code reçu par e-mail.');
+                return false;
+            }
+
+            var verifyDeferred = $.Deferred();
+            $.ajax({
+                method: 'POST',
+                url: '/forgotten-pass/verify',
+                data: {
+                    email: storedEmail,
+                    code: code,
+                    _token: $('#forgot-csrf').val(),
+                },
+            }).done(function (response) {
+                if (!response || response.success !== true || !response.redirect) {
+                    $('#error-step-2').text(response && response.message ? response.message : 'Le code ne correspond pas.');
+                    verifyDeferred.resolve(false);
+                    return;
+                }
+                window.location.href = response.redirect;
+                verifyDeferred.resolve(false);
+            }).fail(function (xhr) {
+                var message = xhr.responseJSON && xhr.responseJSON.message
+                    ? xhr.responseJSON.message
+                    : 'Le code ne correspond pas.';
+                $('#error-step-2').text(message);
+                verifyDeferred.resolve(false);
+            });
+
+            e.preventDefault();
+            return false;
+        }
+
+        return true;
     });
-    
-    
-})
+});

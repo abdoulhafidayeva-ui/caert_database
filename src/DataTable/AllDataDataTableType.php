@@ -3,6 +3,8 @@ namespace App\DataTable;
 
 use App\DataTable\Trait\RowNumberColumnTrait;
 use App\Entity\AllData;
+use App\Entity\User;
+use App\Service\Security\UserDataScope;
 use App\Entity\Attaque;
 use App\Entity\Cible;
 use App\Entity\Materiaux;
@@ -18,9 +20,8 @@ use Doctrine\ORM\QueryBuilder;
 use Omines\DataTablesBundle\DataTableState;
 use Doctrine\ORM\EntityManagerInterface;
 use Omines\DataTablesBundle\Column\DateTimeColumn;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AllDataDataTableType implements DataTableTypeInterface
@@ -29,19 +30,16 @@ class AllDataDataTableType implements DataTableTypeInterface
 
     private $em;
     private $router;
-    private $security;
-    private $authorizationChecker=null;
 
-    
-    public function __construct(EntityManagerInterface $em,
-    UrlGeneratorInterface $router, Security $security, AuthorizationCheckerInterface $authorizationChecker,
-    private readonly TranslatorInterface $translator)
-    {
+    public function __construct(
+        EntityManagerInterface $em,
+        UrlGeneratorInterface $router,
+        private readonly TranslatorInterface $translator,
+        private readonly Security $security,
+        private readonly UserDataScope $dataScope,
+    ) {
         $this->em = $em;
         $this->router = $router;
-        $this->security = $security;
-        $this->authorizationChecker=$authorizationChecker;
-        
     }
     
     public function configure(DataTable $dataTable, array $options): void
@@ -336,13 +334,14 @@ class AllDataDataTableType implements DataTableTypeInterface
                 ->leftJoin('a.moyenAttaque', 'moyenAttaque')
                 ->leftJoin('a.perpetrateur', 'perpetrateurs')
                 ->leftJoin('a.espace', 'espace');
-                if(!$this->authorizationChecker->isGranted('ROLE_ADMIN'))
-                {
-                    $queryBuilder->where('a.pays = :pays')->setParameter('pays', $this->security->getUser()->getPays());
-                }
             },
             'criteria' => [
                 function (QueryBuilder $qb, DataTableState $state) {
+                    $user = $this->security->getUser();
+                    if ($user instanceof User) {
+                        $this->dataScope->applyDefaultListScope($qb, $state, $user);
+                    }
+
                     foreach ($state->getSearchColumns() as $searchInfo) {
                         $column = $searchInfo['column'];
                         $value = $searchInfo['search'];

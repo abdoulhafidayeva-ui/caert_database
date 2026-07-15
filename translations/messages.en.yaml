@@ -28,7 +28,7 @@ nav:
     attack_means: Attack means
     groups: Groups
     space: Space
-    env_config: Environment variables
+    env_config: Env variables
     collapse_menu: Collapse menu
     menu: Menu
 
@@ -67,20 +67,16 @@ auth:
     register_platform: Request access to the AUCTC platform
     welcome_user: "WELCOME %name%"
     forgot:
-        mode: Mode
-        mode_hint: Mail or phone
-        by_mail: By email
-        by_phone: By phone
-        email_prompt: Enter your email to reset your password
-        phone_prompt: Enter your phone number to reset your password
-        phone: Phone
-        phone_placeholder: "e.g. 93432850"
-        code_hint: code sent
-        code_sent_before: A code was sent to your
-        code_sent_after: ", enter it"
-        code_label: Code
-        step3: Step 3
-        mail: mail
+        step_email: Email
+        step_email_hint: Enter your address
+        email_prompt: Enter your email to receive a reset code
+        email_required: Please enter your email.
+        code_hint: Code received by email
+        code_sent_email: A code was sent to your email. Enter it below to set a new password.
+        code_label: Verification code
+        code_required: Please enter the code received by email.
+        invalid_code: The code does not match.
+        code_expired: This code has expired. Please start again.
 
 user:
     title: Users
@@ -117,6 +113,8 @@ user:
         country: Country
         country_region_first: Country (select a region first)
         profile: Profile
+        super_admin: System super administrator
+        super_admin_help: Full access — user management and application settings.
         organisation: Organisation
         locale: Language
         password: Password
@@ -125,6 +123,7 @@ user:
         focal: Country focal point
         staff: AUCTC staff
         admin: Administrator
+        super_admin: Super administrator
     password_modal:
         title: New password
         intro: "Set a new password for %name% (%email%)."
@@ -445,6 +444,7 @@ security:
     access_app: You do not have access to this part of the application.
     no_country: No country is assigned to your account.
     country_restricted: You can only record incidents for your country.
+    region_restricted: You can only record incidents for your assigned region.
 
 flash:
     title:
@@ -488,7 +488,8 @@ flash:
     install_complete: Setup complete. Sign in to your application.
 
 role:
-    user: User
+    user: Focal point
+    staff: AUCTC staff
     admin: Administrator
     users_management: User management
     super_admin: Super administrator

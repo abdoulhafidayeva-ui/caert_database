@@ -5,7 +5,8 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     security.role_hierarchy.roles:
-        ROLE_ADMIN: [ROLE_USER]
+        ROLE_STAFF: [ROLE_USER]
+        ROLE_ADMIN: [ROLE_STAFF]
         ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_USERS_MANAGEMENT]
     app.upload_directory: '%kernel.project_dir%/var/uploads'
     app.default_uri: '%env(DEFAULT_URI)%'

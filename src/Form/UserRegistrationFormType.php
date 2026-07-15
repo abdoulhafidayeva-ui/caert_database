@@ -8,9 +8,10 @@ use App\Entity\User;
 use App\Repository\PaysRepository;
 use App\Repository\RegionRepository;
 use App\Service\Locale\SupportedLocales;
-use App\Service\UserManager;
+use App\Service\Security\UserProfile;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -24,7 +25,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class UserRegistrationFormType extends AbstractType
 {
     public function __construct(
-        private readonly UserManager $userManager,
         private readonly PaysRepository $paysRepository,
         private readonly TranslatorInterface $translator,
     ) {
@@ -32,8 +32,6 @@ class UserRegistrationFormType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $rolesChoices = $this->userManager->getAssignableRoleChoices();
-
         $builder
             ->add('name', TextType::class, ['required' => true, 'label' => 'user.field.name'])
             ->add('prenoms', TextType::class, ['required' => true, 'label' => 'user.field.firstnames'])
@@ -46,42 +44,23 @@ class UserRegistrationFormType extends AbstractType
                 'placeholder' => 'common.choose',
                 'choice_translation_domain' => 'messages',
             ])
-            ->add('roles', ChoiceType::class, [
-                'label' => 'user.field.roles',
-                'choices' => $rolesChoices,
-                'required' => false,
-                'multiple' => true,
-                'choice_translation_domain' => 'messages',
-                'attr' => [
-                    'class' => 'select2',
-                    'data-placeholder' => $this->translator->trans('user.field.roles_placeholder'),
-                ],
-            ])
-            ->add('regions', EntityType::class, [
+            ->add('region', EntityType::class, [
                 'label' => 'user.field.region',
                 'class' => Region::class,
-                'mapped' => false,
-                'query_builder' => function (RegionRepository $er) {
-                    return $er->createQueryBuilder('r')
-                        ->orderBy('r.libelle', 'ASC');
-                },
-                'choice_value' => 'libelle',
+                'query_builder' => fn (RegionRepository $er) => $er->createQueryBuilder('r')->orderBy('r.libelle', 'ASC'),
                 'choice_label' => 'libelle',
-                'multiple' => false,
-                'expanded' => false,
-                'required' => false,
+                'required' => true,
                 'placeholder' => 'common.choose',
-                'by_reference' => false,
             ])
             ->add('pays', ChoiceType::class, [
                 'placeholder' => 'user.field.country_region_first',
-                'required' => true,
+                'required' => false,
             ])
             ->add('profil', ChoiceType::class, [
                 'label' => 'user.field.profile',
                 'placeholder' => 'common.choose',
                 'required' => true,
-                'choices' => $this->getProfils(),
+                'choices' => UserProfile::choices(),
                 'choice_translation_domain' => 'messages',
             ])
             ->add('organisation', TextType::class, [
@@ -90,15 +69,24 @@ class UserRegistrationFormType extends AbstractType
             ])
         ;
 
-        $formModifier = function (FormInterface $form, ?Region $regions = null) {
-            $pays = null === $regions || $regions->getLibelle() === null
+        if ($options['show_super_admin_option']) {
+            $builder->add('isSuperAdmin', CheckboxType::class, [
+                'mapped' => false,
+                'required' => false,
+                'label' => 'user.field.super_admin',
+                'help' => 'user.field.super_admin_help',
+            ]);
+        }
+
+        $formModifier = function (FormInterface $form, ?Region $region = null, ?User $user = null) {
+            $pays = $region === null
                 ? []
-                : $this->paysRepository->findUniqueByRegionLibelle($regions->getLibelle());
+                : $this->paysRepository->findUniqueByRegionLibelle($region->getLibelle());
 
             $form->add('pays', EntityType::class, [
                 'class' => Pays::class,
                 'choices' => $pays,
-                'required' => false,
+                'required' => UserProfile::normalize((string) ($user?->getProfil() ?? UserProfile::FOCAL)) === UserProfile::FOCAL,
                 'choice_label' => 'libelle',
                 'placeholder' => 'common.choose',
                 'attr' => ['class' => 'custom-select'],
@@ -106,13 +94,59 @@ class UserRegistrationFormType extends AbstractType
             ]);
         };
 
-        $builder->get('regions')->addEventListener(
+        $builder->get('region')->addEventListener(
             FormEvents::POST_SUBMIT,
             function (FormEvent $event) use ($formModifier) {
                 $region = $event->getForm()->getData();
-                $formModifier($event->getForm()->getParent(), $region);
+                $parent = $event->getForm()->getParent();
+                $user = $parent?->getData();
+                if ($parent instanceof FormInterface) {
+                    $formModifier($parent, $region, $user instanceof User ? $user : null);
+                }
             }
         );
+
+        $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) use ($formModifier, $options) {
+            $user = $event->getData();
+            if (!$user instanceof User) {
+                return;
+            }
+
+            $form = $event->getForm();
+
+            if ($options['show_super_admin_option'] && $form->has('isSuperAdmin')) {
+                $form->get('isSuperAdmin')->setData(UserProfile::isSuperAdmin($user));
+            }
+
+            if ($user->getProfil() !== null) {
+                $user->setProfil(UserProfile::normalize($user->getProfil()));
+            }
+
+            $region = $user->getRegion() ?? $user->getPays()?->getRegion();
+            if ($region !== null) {
+                $formModifier($form, $region, $user);
+            }
+        });
+
+        $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($options) {
+            $user = $event->getData();
+            if (!$user instanceof User || !$event->getForm()->isValid()) {
+                return;
+            }
+
+            $profil = UserProfile::normalize($user->getProfil());
+            $user->setProfil($profil);
+
+            if ($user->getRegion() === null && $user->getPays()?->getRegion() !== null) {
+                $user->setRegion($user->getPays()->getRegion());
+            }
+
+            $isSuperAdmin = $options['show_super_admin_option']
+                && $event->getForm()->has('isSuperAdmin')
+                && $event->getForm()->get('isSuperAdmin')->getData() === true;
+
+            $user->setRoles(UserProfile::resolveRoles($profil, $isSuperAdmin));
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -120,15 +154,8 @@ class UserRegistrationFormType extends AbstractType
         $resolver->setDefaults([
             'data_class' => User::class,
             'translation_domain' => 'messages',
+            'show_super_admin_option' => false,
         ]);
-    }
-
-    private function getProfils(): array
-    {
-        return [
-            'user.profile.focal' => 0,
-            'user.profile.staff' => 1,
-            'user.profile.admin' => 3,
-        ];
+        $resolver->setAllowedTypes('show_super_admin_option', 'bool');
     }
 }

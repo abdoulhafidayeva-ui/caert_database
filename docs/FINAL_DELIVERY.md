@@ -68,10 +68,14 @@ curl -f http://localhost:8080/health
 
 ## 4. Comptes de test (fixtures)
 
-| Rôle | Email | Mot de passe |
-|------|-------|--------------|
-| Super admin | abdoulhafidayeva@gmail.com | n4n86fgh |
-| Point focal Mali | focal.mali@caert.test | n4n86fgh |
+Mot de passe commun de démonstration : `n4n86fgh`
+
+| Profil | E-mail | Rôle Symfony |
+|--------|--------|--------------|
+| Super administrateur | abdoulhafidayeva@gmail.com | `ROLE_SUPER_ADMIN` |
+| Staff AUCTC | staff.caert@caert.test | `ROLE_STAFF` |
+| Administrateur métier | admin.caert@caert.test | `ROLE_ADMIN` |
+| Point focal Mali | focal.mali@caert.test | `ROLE_USER` (pays : Mali) |
 
 ---
 

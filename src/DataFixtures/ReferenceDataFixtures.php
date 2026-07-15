@@ -23,7 +23,7 @@ class ReferenceDataFixtures extends Fixture implements DependentFixtureInterface
         }
 
         /** @var User $admin */
-        $admin = $manager->getRepository(User::class)->findOneBy(['email' => AppFixtures::ADMIN_EMAIL]);
+        $admin = $manager->getRepository(User::class)->findOneBy(['email' => AppFixtures::SUPER_ADMIN_EMAIL]);
         if ($admin === null) {
             return;
         }

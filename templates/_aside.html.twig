@@ -4,7 +4,7 @@
             {% if app.user %}
             <div class="caert-sidebar-user">
                 <div class="name">{{ app.user.prenoms }} {{ app.user.name }}</div>
-                <div class="role">{{ app.user.fonction|default(app.user.profil) }}</div>
+                <div class="role">{{ app.user.profileTranslationKey|trans }}</div>
             </div>
             {% endif %}
 
@@ -15,12 +15,14 @@
                         <em class="fas fa-th-large"></em><span>{{ 'nav.dashboard'|trans }}</span>
                     </a>
                 </li>
-                {% if is_granted('ROLE_ADMIN') %}
+                {% if is_granted('ROLE_STAFF') %}
                 <li class="{% if menu == 'workflow' %}active{% endif %}">
                     <a href="{{ path('workflow_inbox') }}" title="{{ 'nav.workflow'|trans }}">
                         <em class="fas fa-inbox"></em><span>{{ 'nav.workflow'|trans }}</span>
                     </a>
                 </li>
+                {% endif %}
+                {% if is_granted('ROLE_ADMIN') %}
                 <li class="{% if menu == 'executive' %}active{% endif %}">
                     <a href="{{ path('executive_dashboard') }}" title="{{ 'nav.executive'|trans }}">
                         <em class="fas fa-chart-bar"></em><span>{{ 'nav.executive'|trans }}</span>

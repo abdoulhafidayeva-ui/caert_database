@@ -6,6 +6,7 @@ use App\Form\AppParamType;
 use App\Repository\AppParamRepository;
 use App\Form\FirstUserRegistrationFormType;
 use App\Repository\UserRepository;
+use App\Service\Security\UserProfile;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -61,14 +62,17 @@ class ParamAppController extends AbstractController
             $user = $form->getData();
             $user->setTokenCreatedAt(new \DateTime());
 
-            $defaultRoles = ["ROLE_SUPER_ADMIN"];
             $plainPassword = $form['plainPassword']->getData();
             $password = $passwordHasher->hashPassword($user, $plainPassword);
             $user->setPassword($password);
             $user->setToken(null);
             $user->setIsVerified(true);
             $user->setEnable(true);
-            $user->setRoles($defaultRoles);
+            $user->setNotifyBy(0);
+            $user->setProfil(UserProfile::ADMIN);
+            $user->setOrganisation('AUCTC');
+            $user->setFonction('Super administrateur');
+            $user->setRoles(UserProfile::resolveRoles(UserProfile::ADMIN, true));
 
             $this->em->persist($user);
             $this->em->flush();

@@ -22,6 +22,7 @@ Ce répertoire regroupe l’ensemble de la documentation et des supports de form
 | 1 | Documentation technique | Équipe IT, intégrateurs | [technical/TECHNICAL_DOCUMENTATION.md](technical/TECHNICAL_DOCUMENTATION.md) |
 | 2 | Documentation base de données | DBA, architectes | [database/DATABASE_DOCUMENTATION.md](database/DATABASE_DOCUMENTATION.md) |
 | 3 | Documentation infrastructure | DevOps, hébergeur | [infrastructure/INFRASTRUCTURE_DOCUMENTATION.md](infrastructure/INFRASTRUCTURE_DOCUMENTATION.md) |
+| 3b | **Hébergement réseau local AUCTC (Windows)** | Admin IT, point focal | [infrastructure/LOCAL_NETWORK_HOSTING.md](infrastructure/LOCAL_NETWORK_HOSTING.md) |
 | 4 | Documentation API | Développeurs, intégrateurs | [api/API_DOCUMENTATION.md](api/API_DOCUMENTATION.md) |
 | 5 | Documentation sécurité | RSSI, admins sécurité | [security/SECURITY_DOCUMENTATION.md](security/SECURITY_DOCUMENTATION.md) |
 | 6 | Documentation ETL / import | Analystes, admins données | [etl/ETL_DOCUMENTATION.md](etl/ETL_DOCUMENTATION.md) |

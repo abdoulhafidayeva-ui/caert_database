@@ -19,6 +19,7 @@ use App\Service\Audit\AuditLogger;
 use App\Service\Import\ExcelImportService;
 use App\Service\Incident\AllDataTotalsCalculator;
 use App\Service\Security\IncidentCountryGuard;
+use App\Service\Security\UserDataScope;
 use Doctrine\ORM\EntityManagerInterface;
 use Omines\DataTablesBundle\DataTableFactory;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -39,6 +40,7 @@ class HomeController extends AbstractAppController
         private readonly AuditLogger $auditLogger,
         private readonly AllDataRepository $allDataRepository,
         private readonly IncidentCountryGuard $countryGuard,
+        private readonly UserDataScope $dataScope,
     ) {
     }
 
@@ -61,8 +63,15 @@ class HomeController extends AbstractAppController
 
         $pendingCount = 0;
         $summary = null;
-        if ($this->isGranted('ROLE_ADMIN')) {
-            $pendingCount = $this->allDataRepository->countPendingReview();
+        $dashboardDefaults = null;
+        $user = $this->getUser();
+        if ($user instanceof User) {
+            $dashboardDefaults = $this->dataScope->getDashboardDefaults($user);
+        }
+        if ($this->isGranted('ROLE_STAFF')) {
+            $pendingCount = $user instanceof User
+                ? $this->allDataRepository->countPendingReview($user, $this->dataScope)
+                : 0;
             $summary = $this->allDataRepository->getExecutiveSummary();
         }
 
@@ -81,6 +90,7 @@ class HomeController extends AbstractAppController
             'perpetrateurs' => $this->em->getRepository(Perpetrateurs::class)->findAll(),
             'espaces' => $this->em->getRepository(Espace::class)->findAll(),
             'regions' => $this->em->getRepository(Region::class)->findAllUniqueByLibelle(),
+            'dashboardDefaults' => $dashboardDefaults,
         ]);
     }
 
@@ -146,7 +156,7 @@ class HomeController extends AbstractAppController
             $incident = $form->getData();
             $user = $this->getUser();
             if ($user instanceof User) {
-                $this->countryGuard->assertCountryAllowed($user, $incident->getPays());
+                $this->countryGuard->assertWriteAllowed($user, $incident->getPays());
             }
 
             $now = new \DateTime();
@@ -223,7 +233,7 @@ class HomeController extends AbstractAppController
             $incident = $form->getData();
             $user = $this->getUser();
             if ($user instanceof User) {
-                $this->countryGuard->assertCountryAllowed($user, $incident->getPays());
+                $this->countryGuard->assertWriteAllowed($user, $incident->getPays());
             }
 
             $previousDate = $allData->getDateAttaque();

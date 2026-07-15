@@ -128,6 +128,32 @@
             window.caertInitSelect2($form[0]);
         }
 
+        function parseDefaultRegionIds() {
+            var raw = String($form.attr('data-default-region-ids') || '').trim();
+            if (!raw) {
+                return [];
+            }
+            return raw.split(',').map(function (id) { return String(id).trim(); }).filter(Boolean);
+        }
+
+        function applyAnalyticsDefaults() {
+            var startMonth = String($form.attr('data-default-start-month') || '').trim();
+            var endMonth = String($form.attr('data-default-end-month') || '').trim();
+            var regionIds = parseDefaultRegionIds();
+
+            if (startMonth) {
+                $('#start').val(startMonth);
+            }
+            if (endMonth) {
+                $('#end').val(endMonth);
+            }
+            if (regionIds.length > 0) {
+                $('#region').val(regionIds).trigger('change');
+            }
+        }
+
+        applyAnalyticsDefaults();
+
         function setLoading(isLoading) {
             const $btn = $('#generateGraphBtn');
             const $panel = $form.closest('.caert-panel');
@@ -313,10 +339,8 @@
                 resultChart = null;
             }
             $('.caert-chart-result').empty();
-            $('#start').val('');
-            $('#end').val('');
             $('#type').val($('#type option:first').val()).trigger('change');
-            $('#region').val(null).trigger('change');
+            applyAnalyticsDefaults();
         });
 
         if (urls.incidents && document.getElementById('nbTerroristIncidents')) {

@@ -34,6 +34,7 @@ class UserManager
     {
         $labels = [
             'ROLE_USER' => 'role.user',
+            'ROLE_STAFF' => 'role.staff',
             'ROLE_ADMIN' => 'role.admin',
             'ROLE_USERS_MANAGEMENT' => 'role.users_management',
             'ROLE_SUPER_ADMIN' => 'role.super_admin',

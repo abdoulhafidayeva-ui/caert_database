@@ -33,6 +33,8 @@ docker compose exec app php bin/console doctrine:migrations:migrate
 
 Application : http://localhost:8080
 
+> **Serveur local d’entreprise (Windows, AUCTC)** : voir [infrastructure/LOCAL_NETWORK_HOSTING.md](infrastructure/LOCAL_NETWORK_HOSTING.md) — IIS, PHP, MySQL, clone GitHub, démarrage automatique.
+
 ## Sauvegardes
 
 - MySQL : dump quotidien + binlog si disponible
@@ -54,7 +56,7 @@ Automatisé :
 ```bash
 bash scripts/deploy/smoke-test.sh https://votre-domaine
 # Windows
-powershell -File scripts/deploy/smoke-test.ps1 -BaseUrl https://votre-domaine
+powershell -File scripts/deploy/smoke-test.ps1 -BaseUrl http://votre-serveur-local
 ```
 
 Manuel :

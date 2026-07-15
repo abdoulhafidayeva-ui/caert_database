@@ -98,6 +98,8 @@ RUN_SMOKE=1 APP_URL=https://caert.example.org bash scripts/deploy/deploy-prod.sh
 
 Guide détaillé : [../DEPLOYMENT.md](../DEPLOYMENT.md)
 
+Hébergement sur **réseau local d’entreprise** (Windows Server, IIS, utilisateurs en Wi‑Fi) : [LOCAL_NETWORK_HOSTING.md](LOCAL_NETWORK_HOSTING.md)
+
 ---
 
 ## 6. Monitoring

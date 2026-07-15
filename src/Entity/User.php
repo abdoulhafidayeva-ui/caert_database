@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use App\Service\Security\UserProfile;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -25,9 +26,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     ];
 
     const  PROFILS = [
-        0 => 'Point focal Pays',
-        1 => 'Staff_Caert',
-        3 => 'Administrateur'
+        UserProfile::FOCAL => 'Point focal Pays',
+        UserProfile::STAFF => 'Staff_Caert',
+        UserProfile::ADMIN => 'Administrateur',
     ];
 
     #[ORM\Id]
@@ -101,6 +102,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne(targetEntity: Pays::class)]
     #[ORM\JoinColumn(nullable: true)]
     private $pays;
+
+    #[ORM\ManyToOne(targetEntity: Region::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private $region;
 
     #[ORM\OneToMany(targetEntity: AllData::class, mappedBy: 'user')]
     private $allData;
@@ -335,6 +340,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPays(?Pays $pays): self
     {
         $this->pays = $pays;
+        if ($pays?->getRegion() !== null) {
+            $this->region = $pays->getRegion();
+        }
+
+        return $this;
+    }
+
+    public function getRegion(): ?Region
+    {
+        return $this->region;
+    }
+
+    public function setRegion(?Region $region): self
+    {
+        $this->region = $region;
 
         return $this;
     }
@@ -342,6 +362,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getProfil(): ?string
     {
         return $this->profil;
+    }
+
+    public function getProfileTranslationKey(): string
+    {
+        return UserProfile::translationKey($this);
     }
 
     public function setProfil(?string $profil): self
