@@ -116,6 +116,8 @@ user:
         super_admin: Super administrateur système
         super_admin_help: Accès maximal — gestion des utilisateurs et paramètres du logiciel.
         organisation: Organisation
+        active: Compte actif
+        active_help: "Si coché, l'utilisateur pourra se connecter une fois son mot de passe défini. Décochez pour créer un compte suspendu."
         locale: Langue
         password: Mot de passe
         password_confirm: Confirmer le mot de passe

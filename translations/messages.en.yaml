@@ -116,6 +116,8 @@ user:
         super_admin: System super administrator
         super_admin_help: Full access — user management and application settings.
         organisation: Organisation
+        active: Active account
+        active_help: "If checked, the user can sign in once their password is set. Uncheck to create a suspended account."
         locale: Language
         password: Password
         password_confirm: Confirm password

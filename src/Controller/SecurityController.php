@@ -145,7 +145,7 @@ class SecurityController extends AbstractAppController
             $user->setPassword($password);
             $user->setToken(null);
             $user->setIsVerified(true);
-            $user->setEnable(true);
+            // Ne pas forcer enable : respecte le choix du super admin à la création
             $this->em->persist($user);
             $this->em->flush();
 
@@ -174,6 +174,9 @@ class SecurityController extends AbstractAppController
             $user->setRoles($defaultRoles);
             $user->setProfil(UserProfile::FOCAL);
             $user->setNotifyBy(0);
+            // Compte en attente : le super admin l'active depuis la liste des utilisateurs
+            $user->setEnable(false);
+            $user->setIsVerified(false);
             $this->em->persist($user);
             $this->em->flush();
 
@@ -260,14 +263,14 @@ class SecurityController extends AbstractAppController
             return $this->redirectToRoute('app_user_list');
         }
 
-        if ($user->getIsVerified() !== true) {
-            $this->addFlash('warning', 'flash.user_not_verified');
-
-            return $this->redirectToRoute('app_user_list');
-        }
-
         $activating = $user->getEnable() !== true;
         $user->setEnable($activating);
+
+        // Activation par le super admin = compte utilisable (vérifié + actif)
+        if ($activating) {
+            $user->setIsVerified(true);
+        }
+
         $this->em->flush();
 
         $fullName = $user->getPrenoms().' '.$user->getName();

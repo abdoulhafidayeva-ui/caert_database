@@ -67,6 +67,11 @@ class UserRegistrationFormType extends AbstractType
                 'required' => true,
                 'label' => 'user.field.organisation',
             ])
+            ->add('enable', CheckboxType::class, [
+                'required' => false,
+                'label' => 'user.field.active',
+                'help' => 'user.field.active_help',
+            ])
         ;
 
         if ($options['show_super_admin_option']) {
@@ -108,11 +113,20 @@ class UserRegistrationFormType extends AbstractType
 
         $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) use ($formModifier, $options) {
             $user = $event->getData();
+            $form = $event->getForm();
+
+            if ($form->has('enable')) {
+                // Création : actif par défaut ; édition : valeur existante (null → inactif)
+                if (!$user instanceof User || $user->getId() === null) {
+                    $form->get('enable')->setData(true);
+                } else {
+                    $form->get('enable')->setData($user->getEnable() === true);
+                }
+            }
+
             if (!$user instanceof User) {
                 return;
             }
-
-            $form = $event->getForm();
 
             if ($options['show_super_admin_option'] && $form->has('isSuperAdmin')) {
                 $form->get('isSuperAdmin')->setData(UserProfile::isSuperAdmin($user));
@@ -146,6 +160,11 @@ class UserRegistrationFormType extends AbstractType
                 && $event->getForm()->get('isSuperAdmin')->getData() === true;
 
             $user->setRoles(UserProfile::resolveRoles($profil, $isSuperAdmin));
+
+            // Checkbox non cochée → false (pas null)
+            if ($event->getForm()->has('enable')) {
+                $user->setEnable($event->getForm()->get('enable')->getData() === true);
+            }
         });
     }
 

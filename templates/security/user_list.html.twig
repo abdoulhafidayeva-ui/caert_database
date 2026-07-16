@@ -108,7 +108,7 @@
 
                                         <td>
 
-                                            {% if user.isVerified and not isSelf %}
+                                            {% if not isSelf %}
 
                                                 <form method="post"
 
@@ -138,21 +138,9 @@
 
                                                 </form>
 
-                                            {% elseif isSelf %}
-
-                                                <span class="badge badge-info">{{ 'user.you_badge'|trans }}</span>
-
                                             {% else %}
 
-                                                <span class="caert-user-toggle is-disabled" title="{{ 'user.unverified_account'|trans }}">
-
-                                                    <span class="caert-user-toggle-track">
-
-                                                        <span class="caert-user-toggle-thumb"></span>
-
-                                                    </span>
-
-                                                </span>
+                                                <span class="badge badge-info">{{ 'user.you_badge'|trans }}</span>
 
                                             {% endif %}
 
