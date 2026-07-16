@@ -316,74 +316,73 @@
 
 
 
+    function findRegionSelect(form) {
+        // Incidents: *_regions ; inscription / admin user: *_region
+        return form.querySelector('select[id$="_regions"]')
+            || form.querySelector('select[name$="[regions]"]')
+            || form.querySelector('select[id$="_region"]')
+            || form.querySelector('select[name$="[region]"]');
+    }
+
+    function regionLibelleFromSelect(regionEl) {
+        if (!regionEl || regionEl.selectedIndex < 0) {
+            return '';
+        }
+        var selectedOption = regionEl.options[regionEl.selectedIndex];
+        if (!selectedOption || selectedOption.value === '') {
+            return '';
+        }
+        return (selectedOption.textContent || selectedOption.text || '').trim();
+    }
+
+    function refreshPaysForRegionSelect(regionEl, paysEl) {
+        var libelle = regionLibelleFromSelect(regionEl);
+        if (!libelle) {
+            rebuildNativeSelect(paysEl, [], {
+                placeholder: (window.caertI18n && window.caertI18n.choose) || 'Choose',
+            });
+            return;
+        }
+
+        paysEl.disabled = true;
+        fetchPaysByRegion([libelle])
+            .then(function (paysList) {
+                rebuildNativeSelect(paysEl, paysList, {
+                    valueKey: 'id',
+                    placeholder: (window.caertI18n && window.caertI18n.choose) || 'Choose',
+                });
+            })
+            .catch(function (err) {
+                console.error('[caert-region-pays]', err);
+            })
+            .finally(function () {
+                paysEl.disabled = false;
+            });
+    }
+
     function bindSymfonyForms() {
-
         document.querySelectorAll('form').forEach(function (form) {
+            var regionEl = findRegionSelect(form);
+            var paysEl = form.querySelector('select[id$="_pays"]')
+                || form.querySelector('select[name$="[pays]"]');
 
-            var regionEl = form.querySelector('select[id$="_regions"]');
-
-            var paysEl = form.querySelector('select[id$="_pays"]');
-
-            if (!regionEl || !paysEl) {
-
+            if (!regionEl || !paysEl || regionEl.dataset.caertRegionPaysBound === '1') {
                 return;
-
             }
 
-
+            regionEl.dataset.caertRegionPaysBound = '1';
 
             regionEl.addEventListener('change', function () {
-
-                var selectedOption = this.options[this.selectedIndex];
-
-                var libelle = selectedOption && selectedOption.value !== ''
-
-                    ? selectedOption.text
-
-                    : '';
-
-                if (!libelle) {
-
-                    rebuildNativeSelect(paysEl, [], { placeholder: (window.caertI18n && window.caertI18n.choose) || 'Choose' });
-
-                    return;
-
-                }
-
-
-
-                paysEl.disabled = true;
-
-                fetchPaysByRegion([libelle])
-
-                    .then(function (paysList) {
-
-                        rebuildNativeSelect(paysEl, paysList, {
-
-                            valueKey: 'id',
-
-                            placeholder: (window.caertI18n && window.caertI18n.choose) || 'Choose',
-
-                        });
-
-                    })
-
-                    .catch(function (err) {
-
-                        console.error('[caert-region-pays]', err);
-
-                    })
-
-                    .finally(function () {
-
-                        paysEl.disabled = false;
-
-                    });
-
+                refreshPaysForRegionSelect(regionEl, paysEl);
             });
 
+            // Select2 (si présent) déclenche aussi change jQuery
+            if ($ && regionEl.id) {
+                $(regionEl).on('change.caertRegionPays select2:select.caertRegionPays select2:clear.caertRegionPays', function () {
+                    refreshPaysForRegionSelect(regionEl, paysEl);
+                });
+            }
         });
-
     }
 
 
