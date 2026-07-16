@@ -8,16 +8,21 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\Security\UserProfile;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
- * Comptes de démonstration CAERT — un exemple par profil métier.
- * Rechargeable : met à jour profil/rôles des comptes connus et réconcilie les utilisateurs existants.
+ * Comptes de démonstration — groupe demo (ne pas charger en production).
  */
-class AppFixtures extends Fixture implements DependentFixtureInterface
+class AppFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
+    public static function getGroups(): array
+    {
+        return ['demo'];
+    }
+
     public const DEMO_PASSWORD = 'n4n86fgh';
 
     /** Super administrateur système (gestion utilisateurs + paramètres). */

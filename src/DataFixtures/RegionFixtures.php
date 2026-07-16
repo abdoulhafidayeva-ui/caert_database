@@ -5,11 +5,19 @@ namespace App\DataFixtures;
 use App\Entity\Pays;
 use App\Entity\Region;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
-use Cocur\Slugify\Slugify;
 
-class RegionFixtures extends Fixture
+/**
+ * Régions et pays (Afrique de l'Ouest, Centrale, Est) — sans utilisateurs.
+ */
+class RegionFixtures extends Fixture implements FixtureGroupInterface
 {
+    public static function getGroups(): array
+    {
+        return ['geo', 'prod'];
+    }
+
     public function load(ObjectManager $manager): void
     {
         $regionTables = [
@@ -69,25 +77,6 @@ class RegionFixtures extends Fixture
                         ["pays"=>"ZIMBABWE","capitale"=>"HARARE"]
                     ]
                 ],
-                [   "region"=>"AFRIQUE DU NORD", 
-                    "lespays"=>[
-                        ["pays"=>"ALGERIE","capitale"=>"ALGER"],
-                        ["pays"=>"EGYPTE","capitale"=>"LE CAIRE"],
-                        ["pays"=>"LIBYE","capitale"=>"TRIPOLI"],
-                        ["pays"=>"MAROC","capitale"=>"RABAT"],
-                        ["pays"=>"SAHARA OCCIDENTAL","capitale"=>"LAAYOUNE"],
-                        ["pays"=>"TUNISIE","capitale"=>"TUNIS"]
-                    ]
-                ],
-                [   "region"=>"AFRIQUE DU NORD", 
-                    "lespays"=>[
-                        ["pays"=>"AFRIQUE DU SUD","capitale"=>"PRETORIA"],
-                        ["pays"=>"BOTSWANA","capitale"=>"GABORONE"],
-                        ["pays"=>"SWAZILAND","capitale"=>"MBABANE"],
-                        ["pays"=>"LESOTHO","capitale"=>"MASERU"],
-                        ["pays"=>"NAMIBIE","capitale"=>"WINDOEK"]
-                    ]
-                ]  
         ];
 
         foreach ($regionTables as $regionTable) {

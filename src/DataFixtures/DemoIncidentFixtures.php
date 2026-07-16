@@ -15,12 +15,21 @@ use App\Entity\User;
 use App\Repository\AllDataRepository;
 use App\Service\Incident\AllDataTotalsCalculator;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class DemoIncidentFixtures extends Fixture implements DependentFixtureInterface
+/**
+ * Incidents de démonstration — groupe demo uniquement.
+ */
+class DemoIncidentFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
     public const DEMO_MARKER = '[DEMO]';
+
+    public static function getGroups(): array
+    {
+        return ['demo'];
+    }
 
     public function __construct(
         private readonly AllDataTotalsCalculator $totalsCalculator,

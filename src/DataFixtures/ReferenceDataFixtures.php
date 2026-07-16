@@ -9,22 +9,18 @@ use App\Entity\Materiaux;
 use App\Entity\MaterielAttaque;
 use App\Entity\MoyenAttaque;
 use App\Entity\Perpetrateurs;
-use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class ReferenceDataFixtures extends Fixture implements DependentFixtureInterface
+/**
+ * Référentiels métier (types d'attaque, cibles, etc.) — sans utilisateurs ni incidents.
+ */
+class ReferenceDataFixtures extends Fixture implements FixtureGroupInterface
 {
     public function load(ObjectManager $manager): void
     {
         if ($manager->getRepository(Attaque::class)->count([]) > 0) {
-            return;
-        }
-
-        /** @var User $admin */
-        $admin = $manager->getRepository(User::class)->findOneBy(['email' => AppFixtures::SUPER_ADMIN_EMAIL]);
-        if ($admin === null) {
             return;
         }
 
@@ -42,9 +38,6 @@ class ReferenceDataFixtures extends Fixture implements DependentFixtureInterface
             foreach ($labels as $label) {
                 $entity = new $class();
                 $entity->setLibelle($label);
-                if (method_exists($entity, 'setUser')) {
-                    $entity->setUser($admin);
-                }
                 $manager->persist($entity);
             }
         }
@@ -52,8 +45,8 @@ class ReferenceDataFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    public function getDependencies(): array
+    public static function getGroups(): array
     {
-        return [AppFixtures::class];
+        return ['reference', 'prod'];
     }
 }

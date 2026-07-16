@@ -24,7 +24,8 @@
         "docs:word": "node scripts/build_documentation_pack.mjs",
         "docs:slides": "node scripts/build_training_slides.mjs",
         "docs:local-hosting": "node scripts/build_local_hosting_pdf.mjs",
-        "docs:all": "node scripts/build_documentation_pack.mjs && node scripts/build_training_slides.mjs && node scripts/build_local_hosting_pdf.mjs"
+        "docs:lancement-acces": "node scripts/build_lancement_acces_pdf.mjs",
+        "docs:all": "node scripts/build_documentation_pack.mjs && node scripts/build_training_slides.mjs && node scripts/build_local_hosting_pdf.mjs && node scripts/build_lancement_acces_pdf.mjs"
     },
     "dependencies": {
         "@ttskch/select2-bootstrap4-theme": "^1.4.0",

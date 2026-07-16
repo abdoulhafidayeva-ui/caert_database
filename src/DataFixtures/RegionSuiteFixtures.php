@@ -5,11 +5,19 @@ namespace App\DataFixtures;
 use App\Entity\Pays;
 use App\Entity\Region;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
-use Cocur\Slugify\Slugify;
 
-class RegionSuiteFixtures extends Fixture
+/**
+ * Afrique du Nord et Afrique du Sud — complète RegionFixtures.
+ */
+class RegionSuiteFixtures extends Fixture implements FixtureGroupInterface
 {
+    public static function getGroups(): array
+    {
+        return ['geo', 'prod'];
+    }
+
     public function load(ObjectManager $manager): void
     {
         $regionTables = [

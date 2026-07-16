@@ -1,0 +1,173 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">
+<title>AUCTC — Lancement, accès, redémarrage</title>
+<style>
+@page{margin:15mm}body{font-family:Calibri,'Segoe UI',Arial,sans-serif;font-size:11pt;line-height:1.45;max-width:210mm;margin:0 auto;padding:10mm;color:#1a1a1a}
+h1{color:#00529b;font-size:18pt;border-bottom:2px solid #00529b;page-break-before:always}h1:first-of-type{page-break-before:avoid}
+h2{color:#00529b;font-size:14pt;margin-top:16px}h3{font-size:12pt}
+pre{background:#f4f7fa;border:1px solid #d0d7de;padding:8px;font-size:9pt;white-space:pre-wrap}
+table{border-collapse:collapse;width:100%;margin:8px 0;font-size:10pt}th,td{border:1px solid #ccc;padding:5px 8px}th{background:#e8f0f8;color:#00529b}
+.note{color:#444}.cover{text-align:center;padding:40px 0;page-break-after:always}.cover h1{border:none;page-break-before:avoid}
+</style></head><body>
+<div class="cover"><p>UNION AFRICAINE — AUCTC</p>
+<h1>Lancement, accès Wi‑Fi<br>et redémarrage automatique</h1>
+<p>Guide ciblé — Windows Server / réseau local</p></div>
+<h1>AUCTC — Lancement, accès Wi‑Fi et redémarrage automatique</h1>
+<p><strong>Public :</strong> administrateur IT sur le serveur Windows local</p>
+<p><strong>Prérequis :</strong> projet déjà installé (<code>C:\caert</code>), base MySQL créée, migrations OK</p>
+<p><strong>Protocole :</strong> HTTP (réseau local)</p>
+<p>Ce document ne couvre <strong>que</strong> :</p>
+<p>1. IP fixe <strong>sans perdre Internet</strong></p>
+<p>2. Lancement du site (IIS + test)</p>
+<p>3. Accès depuis les machines Wi‑Fi du réseau</p>
+<p>4. Redémarrage automatique après coupure / reboot</p>
+<hr/>
+<h2>1. IP fixe sans perdre Internet</h2>
+<p>Si vous passez en IP fixe et que <strong>Internet disparaît</strong>, c’est presque toujours la <strong>passerelle</strong> ou le <strong>DNS</strong> qui sont incorrects (ou oubliés).</p>
+<h3>1.1 Avant de changer : noter la config DHCP actuelle</h3>
+<p>1. Branchez le serveur en <strong>câble Ethernet</strong></p>
+<p>2. Laissez temporairement <strong>Obtenir une adresse IP automatiquement</strong></p>
+<p>3. Ouvrez <strong>PowerShell</strong> et tapez :</p>
+<pre><code>ipconfig /all</code></pre>
+<p>Repérez la <strong>Carte Ethernet</strong> et notez :</p>
+<table><tr><th>Champ</th><th>Exemple</th><th>Votre valeur</th></tr><tr><td>Adresse IPv4</td><td>`192.168.1.45`</td><td></td></tr><tr><td>Masque</td><td>`255.255.255.0`</td><td></td></tr><tr><td>Passerelle par défaut</td><td>`192.168.1.1`</td><td></td></tr><tr><td>Serveurs DNS</td><td>`192.168.1.1`</td><td></td></tr></table>
+<p>La <strong>passerelle</strong> et le <strong>DNS</strong> doivent être <strong>les mêmes</strong> une fois l’IP fixe appliquée. Sinon : plus d’Internet.</p>
+<h3>1.2 Choisir une IP fixe libre</h3>
+<p>Prenez une adresse <strong>dans le même réseau</strong>, hors plage DHCP si possible.</p>
+<p>Exemples :</p>
+<table><tr><th>Si votre IP actuelle (DHCP) était…</th><th>IP fixe possible</th></tr><tr><td>`192.168.1.45`</td><td>`192.168.1.20`</td></tr><tr><td>`192.168.10.100`</td><td>`192.168.10.20`</td></tr></table>
+<p><strong>Règle :</strong> les 3 premiers nombres = ceux de la passerelle.</p>
+<p>Exemple passerelle <code>192.168.1.1</code> → IP du type <code>192.168.1.XX</code>.</p>
+<h3>1.3 Appliquer l’IP fixe (clic par clic)</h3>
+<p>1. <strong>Démarrer</strong> → tapez <code>ncpa.cpl</code> → <strong>Entrée</strong></p>
+<p>2. <strong>Clic droit</strong> sur <strong>Ethernet</strong> → <strong>Propriétés</strong></p>
+<p>3. Double-clic sur <strong>Protocole Internet version 4 (TCP/IPv4)</strong></p>
+<p>4. Cochez <strong>Utiliser l’adresse IP suivante</strong></p>
+<p>5. Saisissez (<strong>adaptez</strong> à vos notes de l’étape 1.1) :</p>
+<table><tr><th>Champ</th><th>Que saisir</th></tr><tr><td>Adresse IP</td><td>l’IP fixe choisie (ex. `192.168.1.20`)</td></tr><tr><td>Masque de sous-réseau</td><td>identique au DHCP (souvent `255.255.255.0`)</td></tr><tr><td>Passerelle par défaut</td><td>identique au DHCP (ex. `192.168.1.1`)</td></tr><tr><td>DNS préféré</td><td>identique au DHCP (souvent la même que la passerelle)</td></tr><tr><td>DNS auxiliaire</td><td>optionnel : `8.8.8.8`</td></tr></table>
+<p>6. Cliquez <strong>OK</strong> → <strong>OK</strong></p>
+<h3>1.4 Vérifier Internet + réseau local</h3>
+<pre><code>ipconfig
+ping 8.8.8.8
+ping www.google.com</code></pre>
+<table><tr><th>Test</th><th>Résultat attendu</th></tr><tr><td>`ipconfig`</td><td>Votre nouvelle IP fixe</td></tr><tr><td>`ping 8.8.8.8`</td><td>Réponses (Internet / route OK)</td></tr><tr><td>`ping www.google.com`</td><td>Réponses (DNS OK)</td></tr></table>
+<p>Si <code>8.8.8.8</code> marche mais pas <code>google.com</code> → DNS faux.</p>
+<p>Si rien ne marche → passerelle fausse.</p>
+<p>PowerShell (alternative) — <strong>remplacez</strong> les valeurs :</p>
+<pre><code># Remplacez "Ethernet" par le nom exact de votre carte (Get-NetAdapter)
+New-NetIPAddress -InterfaceAlias "Ethernet" -IPAddress 192.168.1.20 -PrefixLength 24 -DefaultGateway 192.168.1.1
+Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses 192.168.1.1,8.8.8.8</code></pre>
+<p class="note"><em>Dans la suite de ce guide, on utilise l’exemple `192.168.1.20`. **Remplacez par l’IP réelle de votre serveur.**</em></p>
+<hr/>
+<h2>2. Lancement du projet (IIS)</h2>
+<h3>2.1 Vérifier PHP et MySQL</h3>
+<pre><code>C:\PHP\php.exe -v
+Get-Service MySQL*
+Get-Service W3SVC</code></pre>
+<p>MySQL et <strong>W3SVC</strong> (IIS) doivent être <strong>Running</strong>.</p>
+<p>Si arrêtés :</p>
+<pre><code>Start-Service MySQL80
+Start-Service W3SVC</code></pre>
+<p>*(Le nom MySQL peut être <code>MySQL</code> ou <code>MySQL80</code> — vérifier avec <code>Get-Service MySQL*</code>.)*</p>
+<h3>2.2 Permissions du dossier `var`</h3>
+<pre><code>icacls C:\caert\var /grant "IIS_IUSRS:(OI)(CI)M" /T
+icacls C:\caert\var /grant "IUSR:(OI)(CI)M" /T</code></pre>
+<h3>2.3 Créer le site IIS (si pas encore fait)</h3>
+<p>1. <strong>Démarrer</strong> → <code>inetmgr</code> → <strong>Entrée</strong></p>
+<p>2. Clic droit <strong>Sites</strong> → <strong>Ajouter un site Web…</strong></p>
+<p>3. Remplir :</p>
+<table><tr><th>Champ</th><th>Valeur</th></tr><tr><td>Nom du site</td><td>`AUCTC`</td></tr><tr><td>Chemin physique</td><td>`C:\caert\public`</td></tr><tr><td>Type</td><td>`http`</td></tr><tr><td>Adresse IP</td><td>l’IP fixe du serveur ou « Toutes non attribuées »</td></tr><tr><td>Port</td><td>`80`</td></tr><tr><td>Nom d’hôte</td><td>*(vide)*</td></tr></table>
+<p>4. <strong>OK</strong> → démarrer le site <strong>AUCTC</strong></p>
+<h3>2.4 Pare-feu Windows (port 80)</h3>
+<p>PowerShell <strong>administrateur</strong> :</p>
+<pre><code>New-NetFirewallRule -DisplayName "AUCTC HTTP LAN" -Direction Inbound -Protocol TCP -LocalPort 80 -Action Allow</code></pre>
+<h3>2.5 Tests sur le serveur</h3>
+<p>Dans Edge sur le serveur :</p>
+<p>1. <code>http://127.0.0.1/health</code> → doit répondre <code>healthy</code></p>
+<p>2. <code>http://127.0.0.1/</code> → page AUCTC (login ou <code>/install</code>)</p>
+<p>3. <code>http://VOTRE-IP-FIXE/</code> (ex. <code>http://192.168.1.20/</code>) → même résultat</p>
+<p>Si <code>127.0.0.1</code> marche mais pas l’IP fixe : vérifier la liaison IIS (Adresse IP du site) et le pare-feu.</p>
+<h3>2.6 Premier compte (si base neuve)</h3>
+<p>1. Ouvrir <code>http://VOTRE-IP-FIXE/</code></p>
+<p>2. <code>/install</code> → nom <strong>AUCTC</strong></p>
+<p>3. <code>/first-user</code> → créer le super administrateur</p>
+<p>4. Se connecter</p>
+<h3>2.7 `APP_URL` dans `.env`</h3>
+<p>Dans <code>C:\caert\.env</code> :</p>
+<pre><code>APP_URL=http://192.168.1.20</code></pre>
+<p>(adapter à votre IP) puis :</p>
+<pre><code>cd C:\caert
+C:\PHP\php.exe bin\console cache:clear --env=prod</code></pre>
+<hr/>
+<h2>3. Accès depuis les machines Wi‑Fi</h2>
+<h3>3.1 URL à donner aux employés</h3>
+<pre><code>http://192.168.1.20</code></pre>
+<p>(Remplacer par l’IP fixe réelle du serveur.)</p>
+<p>Les employés doivent être sur le <strong>Wi‑Fi interne</strong> (même réseau que le serveur), <strong>pas</strong> le Wi‑Fi invité.</p>
+<h3>3.2 Test depuis un laptop Wi‑Fi</h3>
+<p>1. Connecter le laptop au SSID employés</p>
+<p>2. Edge / Chrome → <code>http://192.168.1.20</code></p>
+<p>3. Page de connexion AUCTC attendue</p>
+<p>Diagnostic sur le laptop :</p>
+<pre><code>ping 192.168.1.20</code></pre>
+<table><tr><th>Résultat</th><th>Meaning</th></tr><tr><td>Ping OK + page OK</td><td>Terminé</td></tr><tr><td>Ping OK + page KO</td><td>Pare-feu / IIS (voir §2)</td></tr><tr><td>Ping KO</td><td>Pas le même réseau, ou isolation Wi‑Fi</td></tr></table>
+<h3>3.3 Si le Wi‑Fi ne voit pas le serveur</h3>
+<p>Demander à l’IT réseau de vérifier :</p>
+<p>1. <strong>Même sous-réseau</strong> que le serveur (ex. tous en <code>192.168.1.x</code>)</p>
+<p>2. <strong>Isolation client</strong> (AP isolation) <strong>désactivée</strong> sur le SSID employés</p>
+<p>3. Pas de VLAN « invité » pour ce SSID</p>
+<p>4. Pare-feu du routeur : autoriser TCP <strong>80</strong> vers l’IP du serveur</p>
+<p>Test depuis un PC <strong>en câble</strong> sur le même switch : si le câble marche et le Wi‑Fi non → problème côté points d’accès / VLAN, pas côté AUCTC.</p>
+<h3>3.4 Affiche interne</h3>
+<p>Exemple à afficher dans les bureaux :</p>
+<pre><code>Application AUCTC
+Adresse : http://192.168.1.20
+Réseau : Wi‑Fi employés (pas invité)</code></pre>
+<hr/>
+<h2>4. Redémarrage automatique (délestage / reboot)</h2>
+<p>Objectif : après coupure de courant ou <code>Restart-Computer</code>, le site revient <strong>sans intervention</strong>.</p>
+<h3>4.1 BIOS — rallumer quand le courant revient</h3>
+<p>1. Redémarrer le serveur → Touche <strong>Del</strong>, <strong>F2</strong> ou <strong>F10</strong> (selon marque)</p>
+<p>2. Chercher : <strong>Restore on AC Power Loss</strong> / <strong>AC Power Recovery</strong> / <strong>After Power Loss</strong></p>
+<p>3. Mettre : <strong>Power On</strong> / <strong>Last State</strong> / <strong>Enabled</strong></p>
+<p>4. <strong>Save &amp; Exit</strong></p>
+<p>Sans cette option, le serveur reste éteint après un délestage.</p>
+<h3>4.2 Services Windows — démarrage Automatique</h3>
+<p>PowerShell <strong>administrateur</strong> :</p>
+<pre><code>Set-Service -Name W3SVC -StartupType Automatic
+Get-Service MySQL* | ForEach-Object { Set-Service -Name $_.Name -StartupType Automatic }
+
+Start-Service W3SVC
+Get-Service MySQL* | Start-Service
+
+Get-Service W3SVC, MySQL* | Format-Table Name, Status, StartType</code></pre>
+<table><tr><th>Service</th><th>Rôle</th><th>StartType attendu</th></tr><tr><td>`W3SVC`</td><td>IIS (site web)</td><td>Automatic</td></tr><tr><td>`MySQL80` (ou `MySQL`)</td><td>Base de données</td><td>Automatic</td></tr></table>
+<h3>4.3 Test de validation</h3>
+<pre><code>Restart-Computer</code></pre>
+<p>Après redémarrage (2–3 minutes) :</p>
+<p><strong>Sur le serveur :</strong></p>
+<pre><code>Get-Service W3SVC, MySQL*
+Invoke-WebRequest -Uri "http://127.0.0.1/health" -UseBasicParsing</code></pre>
+<p><strong>Depuis un laptop Wi‑Fi :</strong> ouvrir <code>http://VOTRE-IP-FIXE/</code></p>
+<p>Si le site ne répond pas :</p>
+<pre><code>Start-Service W3SVC
+Get-Service MySQL* | Start-Service
+iisreset /start</code></pre>
+<h3>4.4 Onduleur (recommandé)</h3>
+<p>Un <strong>UPS</strong> évite une coupure brutale de MySQL pendant le délestage. Brancher le serveur (et si possible le switch) dessus.</p>
+<hr/>
+<h2>5. Checklist finale</h2>
+<p>☐ IP fixe + passerelle + DNS → Internet OK (`ping 8.8.8.8`)</p>
+<p>☐ `http://127.0.0.1/health` → healthy</p>
+<p>☐ `http://IP-FIXE/` marche sur le serveur</p>
+<p>☐ Même URL marche depuis un PC **câble**</p>
+<p>☐ Même URL marche depuis un laptop **Wi‑Fi employés**</p>
+<p>☐ `W3SVC` et MySQL en **Automatic**</p>
+<p>☐ BIOS « Restore on AC Power » activé</p>
+<p>☐ Test après `Restart-Computer` OK</p>
+<p>☐ URL communiquée aux utilisateurs</p>
+<hr/>
+<h2>6. Fiche site</h2>
+<table><tr><th>Champ</th><th>Valeur</th></tr><tr><td>IP fixe serveur</td><td></td></tr><tr><td>Passerelle</td><td></td></tr><tr><td>DNS</td><td></td></tr><tr><td>URL employés</td><td>`http://`</td></tr><tr><td>SSID Wi‑Fi</td><td></td></tr><tr><td>Date mise en service</td><td></td></tr><tr><td>Responsable IT</td><td></td></tr></table>
+<hr/>
+<p>*AUCTC — Guide ciblé : IP fixe + Internet, lancement IIS, accès LAN/Wi‑Fi, redémarrage auto.*</p>
+</body></html>

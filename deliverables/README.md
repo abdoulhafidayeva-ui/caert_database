@@ -30,11 +30,11 @@ npm run docs:all
 | `word/CAERT_Guide_Analyste_2026.docx` | Guide analyste |
 | `word/AUCTC_Hebergement_Reseau_Local_2026.docx` | Installation serveur local Windows (AUCTC) |
 | `AUCTC_Hebergement_Reseau_Local_2026.pdf` | PDF du guide hébergement local |
-
-Générer le guide local (Word + PDF) :
+| `word/AUCTC_Lancement_Acces_Redemarrage_2026.docx` | **Lancement IIS + accès Wi‑Fi + reboot auto** |
+| `AUCTC_Lancement_Acces_Redemarrage_2026.pdf` | PDF du guide lancement / accès |
 
 ```bash
-npm run docs:local-hosting
+npm run docs:lancement-acces
 ```
 
 ## Export PDF
