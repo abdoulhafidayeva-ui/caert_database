@@ -670,6 +670,16 @@ body.caert-app .text-info { color: var(--caert-secondary) !important; }
     overflow: visible;
 }
 
+.caert-user-filters .form-group label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.caert-user-filters .form-control {
+    min-height: 2.25rem;
+}
+
 /* ── User list toggle ── */
 .caert-user-toggle-form {
     display: inline-block;

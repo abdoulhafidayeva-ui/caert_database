@@ -267,6 +267,14 @@
         }
     }
 
+    function submitFormNatively($form) {
+        var formEl = $form && $form.length ? $form.get(0) : null;
+        if (formEl) {
+            // submit() natif : ne déclenche pas le handler jQuery délégué (évite la boucle Swal)
+            HTMLFormElement.prototype.submit.call(formEl);
+        }
+    }
+
     document.addEventListener('click', function (e) {
         var dismissBtn = e.target.closest('[data-dismiss="modal"]');
         if (!dismissBtn) {
@@ -287,7 +295,7 @@
 
         if (typeof Swal === 'undefined') {
             if (window.confirm(t('deleteTitle', 'Supprimer cet utilisateur ?') + ' ' + name)) {
-                $form.off('submit').submit();
+                submitFormNatively($form);
             }
             return;
         }
@@ -302,7 +310,7 @@
             confirmButtonText: t('deleteConfirm', 'Supprimer'),
         }).then(function (result) {
             if (result.isConfirmed) {
-                $form.off('submit').submit();
+                submitFormNatively($form);
             }
         });
     });
@@ -382,7 +390,7 @@
 
         if (typeof Swal === 'undefined') {
             if (window.confirm(t('suspendTitle', 'Suspendre ce compte ?'))) {
-                $form.off('submit').submit();
+                submitFormNatively($form);
             }
             return;
         }
@@ -396,7 +404,7 @@
             confirmButtonText: t('suspendBtn', 'Suspendre'),
         }).then(function (result) {
             if (result.isConfirmed) {
-                $form.off('submit').submit();
+                submitFormNatively($form);
             }
         });
     });

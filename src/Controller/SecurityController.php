@@ -50,14 +50,25 @@ class SecurityController extends AbstractAppController
     public function list(PaginatorInterface $paginator, Request $request): Response
     {
         $menu = 'userList';
-        $query = $this->userRepository->findBy(array(), array('name' => 'ASC'));
+        $filters = [
+            'q' => trim((string) $request->query->get('q', '')),
+            'profil' => trim((string) $request->query->get('profil', '')),
+            'active' => (string) $request->query->get('active', ''),
+            'verified' => (string) $request->query->get('verified', ''),
+        ];
 
         $users = $paginator->paginate(
-            $query,
+            $this->userRepository->createAdminListQueryBuilder($filters),
             $request->query->getInt('page', 1),
             15
         );
-        return $this->render('security/user_list.html.twig',['users'=> $users, 'menu' => $menu]);
+
+        return $this->render('security/user_list.html.twig', [
+            'users' => $users,
+            'menu' => $menu,
+            'filters' => $filters,
+            'profileChoices' => UserProfile::choices(),
+        ]);
     }
 
 

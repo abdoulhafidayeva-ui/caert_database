@@ -46,9 +46,119 @@
 
                 <div class="caert-panel-body p-0 pt-3 px-3 pb-3 caert-user-list-table">
 
+                    <form method="get" action="{{ path('app_user_list') }}" class="caert-user-filters mb-3">
+
+                        <div class="row align-items-end">
+
+                            <div class="col-md-4 col-sm-6">
+
+                                <div class="form-group mb-2 mb-md-0">
+
+                                    <label for="user-filter-q">{{ 'user.filter.search'|trans }}</label>
+
+                                    <input type="search"
+
+                                           id="user-filter-q"
+
+                                           name="q"
+
+                                           value="{{ filters.q|default('') }}"
+
+                                           class="form-control"
+
+                                           placeholder="{{ 'user.filter.search_placeholder'|trans }}"
+
+                                           autocomplete="off">
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-2 col-sm-6">
+
+                                <div class="form-group mb-2 mb-md-0">
+
+                                    <label for="user-filter-profil">{{ 'user.field.profile'|trans }}</label>
+
+                                    <select id="user-filter-profil" name="profil" class="form-control">
+
+                                        <option value="">{{ 'user.filter.all_profiles'|trans }}</option>
+
+                                        {% for label, value in profileChoices %}
+
+                                            <option value="{{ value }}" {% if filters.profil|default('') == value %}selected{% endif %}>{{ label|trans }}</option>
+
+                                        {% endfor %}
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-2 col-sm-6">
+
+                                <div class="form-group mb-2 mb-md-0">
+
+                                    <label for="user-filter-active">{{ 'user.active'|trans }}</label>
+
+                                    <select id="user-filter-active" name="active" class="form-control">
+
+                                        <option value="">{{ 'user.filter.all_statuses'|trans }}</option>
+
+                                        <option value="1" {% if filters.active|default('') == '1' %}selected{% endif %}>{{ 'user.filter.active_only'|trans }}</option>
+
+                                        <option value="0" {% if filters.active|default('') == '0' %}selected{% endif %}>{{ 'user.filter.inactive_only'|trans }}</option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-2 col-sm-6">
+
+                                <div class="form-group mb-2 mb-md-0">
+
+                                    <label for="user-filter-verified">{{ 'user.verified'|trans }}</label>
+
+                                    <select id="user-filter-verified" name="verified" class="form-control">
+
+                                        <option value="">{{ 'user.filter.all_statuses'|trans }}</option>
+
+                                        <option value="1" {% if filters.verified|default('') == '1' %}selected{% endif %}>{{ 'user.verified_badge'|trans }}</option>
+
+                                        <option value="0" {% if filters.verified|default('') == '0' %}selected{% endif %}>{{ 'user.unverified_badge'|trans }}</option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-2 col-sm-12">
+
+                                <div class="form-group mb-0 d-flex flex-wrap" style="gap: .5rem;">
+
+                                    <button type="submit" class="btn btn-primary">
+
+                                        <em class="fas fa-search"></em> {{ 'common.search'|trans }}
+
+                                    </button>
+
+                                    <a href="{{ path('app_user_list') }}" class="btn btn-outline-secondary">{{ 'common.reset'|trans }}</a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </form>
+
                     <div class="table-responsive">
 
-                        <table class="table table-striped my-4 w-100" id="datatable3">
+                        <table class="table table-striped my-4 w-100" id="caert-users-table">
 
                             <thead>
 
@@ -224,7 +334,7 @@
 
                                     <tr>
 
-                                        <td colspan="7" class="text-center text-muted py-4">{{ 'user.empty'|trans }}</td>
+                                        <td colspan="8" class="text-center text-muted py-4">{{ 'user.empty'|trans }}</td>
 
                                     </tr>
 
@@ -236,11 +346,33 @@
 
                     </div>
 
-                    <div class="pagination justify-content-center pb-3">
+                    {% if users.getTotalItemCount > 0 %}
 
-                        {{ knp_pagination_render(users) }}
+                    <div class="d-flex flex-wrap justify-content-between align-items-center pb-2 px-1" style="gap: .75rem;">
+
+                        <div class="text-muted small">
+
+                            {{ 'user.pagination_summary'|trans({
+
+                                '%from%': users.getPaginationData.firstItemNumber,
+
+                                '%to%': users.getPaginationData.lastItemNumber,
+
+                                '%total%': users.getTotalItemCount
+
+                            }) }}
+
+                        </div>
+
+                        <div class="pagination mb-0">
+
+                            {{ knp_pagination_render(users) }}
+
+                        </div>
 
                     </div>
+
+                    {% endif %}
 
                 </div>
 
@@ -283,6 +415,6 @@
 
     {{ parent() }}
 
-    <script src="{{ asset('js/caert-user-list.js') }}?v=8"></script>
+    <script src="{{ asset('js/caert-user-list.js') }}?v=9"></script>
 
 {% endblock %}

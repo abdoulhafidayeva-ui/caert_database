@@ -102,6 +102,14 @@ user:
     unverified_badge: Non vérifié
     you_badge: Vous
     empty: Aucun utilisateur.
+    pagination_summary: "Affichage %from%–%to% sur %total%"
+    filter:
+        search: Recherche
+        search_placeholder: Nom, prénom, e-mail, organisation…
+        all_profiles: Tous les profils
+        all_statuses: Tous
+        active_only: Actifs
+        inactive_only: Inactifs
     field:
         name: Nom
         firstnames: Prénoms

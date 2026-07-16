@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -19,22 +20,51 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    // /**
-    //  * @return User[] Returns an array of User objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * Liste utilisateurs : plus récents d'abord, avec recherche et filtres.
+     *
+     * @param array{q?: string, profil?: string, active?: string, verified?: string} $filters
+     */
+    public function createAdminListQueryBuilder(array $filters = []): QueryBuilder
     {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $qb = $this->createQueryBuilder('u')
+            ->orderBy('u.createdAt', 'DESC')
+            ->addOrderBy('u.id', 'DESC');
+
+        $q = trim((string) ($filters['q'] ?? ''));
+        if ($q !== '') {
+            $qb->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->like('LOWER(u.name)', ':q'),
+                    $qb->expr()->like('LOWER(u.prenoms)', ':q'),
+                    $qb->expr()->like('LOWER(u.email)', ':q'),
+                    $qb->expr()->like('LOWER(u.organisation)', ':q')
+                )
+            )->setParameter('q', '%'.mb_strtolower($q).'%');
+        }
+
+        $profil = trim((string) ($filters['profil'] ?? ''));
+        if ($profil !== '') {
+            $qb->andWhere('u.profil = :profil')
+                ->setParameter('profil', $profil);
+        }
+
+        $active = (string) ($filters['active'] ?? '');
+        if ($active === '1') {
+            $qb->andWhere('u.enable = true');
+        } elseif ($active === '0') {
+            $qb->andWhere('u.enable = false OR u.enable IS NULL');
+        }
+
+        $verified = (string) ($filters['verified'] ?? '');
+        if ($verified === '1') {
+            $qb->andWhere('u.isVerified = true');
+        } elseif ($verified === '0') {
+            $qb->andWhere('u.isVerified = false OR u.isVerified IS NULL');
+        }
+
+        return $qb;
     }
-    */
 
     public function findOneByEmail($value): ?User
     {
