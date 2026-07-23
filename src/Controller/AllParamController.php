@@ -42,7 +42,7 @@ class AllParamController extends AbstractController
 
     #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_app")]
     #[Route(path: '/attaque/list/{attaque}', name: 'attaque', methods: ['GET', 'POST'])]
-    public function list(Request $request, DataTableFactory $dataTableFactory, Attaque $attaque = null)
+    public function list(Request $request, DataTableFactory $dataTableFactory, ?Attaque $attaque = null)
     {
         $parameterRep = $this->em->getRepository(Attaque::class);
         $form = $this->createForm(AttaqueFormType::class, $attaque, [
@@ -109,7 +109,7 @@ class AllParamController extends AbstractController
 
     #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_app")]
     #[Route(path: '/cible/list/{cible}', name: 'cible', methods: ['GET', 'POST'])]
-    public function cibleList(Request $request, DataTableFactory $dataTableFactory, Cible $cible = null)
+    public function cibleList(Request $request, DataTableFactory $dataTableFactory, ?Cible $cible = null)
     {
         $parameterRep = $this->em->getRepository(Cible::class);
         $form = $this->createForm(CibleFormType::class, $cible, [
@@ -177,7 +177,7 @@ class AllParamController extends AbstractController
 
     #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_app")]
     #[Route(path: '/materiel/list/{materiel}', name: 'materiel', methods: ['GET', 'POST'])]
-    public function materielList(Request $request, DataTableFactory $dataTableFactory, Materiaux $materiel = null)
+    public function materielList(Request $request, DataTableFactory $dataTableFactory, ?Materiaux $materiel = null)
     {
         $parameterRep = $this->em->getRepository(Materiaux::class);
         $form = $this->createForm(MaterielFormType::class, $materiel, [
@@ -244,7 +244,7 @@ class AllParamController extends AbstractController
 
     #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_app")]
     #[Route(path: '/materiel/attaque/list/{materielAttaque}', name: 'materielAttaque', methods: ['GET', 'POST'])]
-    public function materielAttaqueList(Request $request, DataTableFactory $dataTableFactory, MaterielAttaque $materielAttaque = null)
+    public function materielAttaqueList(Request $request, DataTableFactory $dataTableFactory, ?MaterielAttaque $materielAttaque = null)
     {
         $parameterRep = $this->em->getRepository(MaterielAttaque::class);
         $form = $this->createForm(MaterielAttaqueFormType::class, $materielAttaque, [
@@ -311,7 +311,7 @@ class AllParamController extends AbstractController
 
     #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_app")]
     #[Route(path: '/moyen/attaque/list/{moyenAttaque}', name: 'moyenAttaque', methods: ['GET', 'POST'])]
-    public function moyenAttaqueList(Request $request, DataTableFactory $dataTableFactory, MoyenAttaque $moyenAttaque = null)
+    public function moyenAttaqueList(Request $request, DataTableFactory $dataTableFactory, ?MoyenAttaque $moyenAttaque = null)
     {
         $parameterRep = $this->em->getRepository(MaterielAttaque::class);
         $form = $this->createForm(MoyenAttaqueFormType::class, $moyenAttaque, [
@@ -379,7 +379,7 @@ class AllParamController extends AbstractController
 
     #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_app")]
     #[Route(path: '/perpetrateur/list/{perpetrateur}', name: 'perpetrateur', methods: ['GET', 'POST'])]
-    public function moyenPerpetrateurList(Request $request, DataTableFactory $dataTableFactory, Perpetrateurs $perpetrateur = null)
+    public function moyenPerpetrateurList(Request $request, DataTableFactory $dataTableFactory, ?Perpetrateurs $perpetrateur = null)
     {
         $parameterRep = $this->em->getRepository(Perpetrateurs::class);
         $form = $this->createForm(PerpetrateurFormType::class, $perpetrateur, [
@@ -446,7 +446,7 @@ class AllParamController extends AbstractController
 
     #[IsGranted('ROLE_SUPER_ADMIN', message: "security.access_app")]
     #[Route(path: '/espace/list/{espace}', name: 'espace', methods: ['GET', 'POST'])]
-    public function espaceList(Request $request, DataTableFactory $dataTableFactory, Espace $espace = null)
+    public function espaceList(Request $request, DataTableFactory $dataTableFactory, ?Espace $espace = null)
     {
         $parameterRep = $this->em->getRepository(Espace::class);
         $form = $this->createForm(EspaceFormType::class, $espace, [
