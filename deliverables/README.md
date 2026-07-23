@@ -32,9 +32,11 @@ npm run docs:all
 | `AUCTC_Hebergement_Reseau_Local_2026.pdf` | PDF du guide hébergement local |
 | `word/AUCTC_Lancement_Acces_Redemarrage_2026.docx` | **Lancement IIS + accès Wi‑Fi + reboot auto** |
 | `AUCTC_Lancement_Acces_Redemarrage_2026.pdf` | PDF du guide lancement / accès |
+| `consultance_juillet_2026/` | **Pack clôture consultance** (3 Word : rapport, déploiement, diagrammes) |
 
 ```bash
 npm run docs:lancement-acces
+npm run docs:consultance
 ```
 
 ## Export PDF

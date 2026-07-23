@@ -157,9 +157,17 @@
     }
 
     function clearTableStateFromUrl() {
-        if (window.history) {
-            window.history.replaceState(null, '', window.location.pathname);
+        if (!window.history) {
+            return;
         }
+
+        var params = new URLSearchParams(window.location.search);
+        var year = params.get('year');
+        var next = window.location.pathname;
+        if (year) {
+            next += '?year=' + encodeURIComponent(year);
+        }
+        window.history.replaceState(null, '', next);
     }
 
     function isSelect2Available() {

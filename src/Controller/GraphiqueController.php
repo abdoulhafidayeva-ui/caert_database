@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\AllData;
 use App\Entity\Region;
 use App\Entity\User;
+use App\Service\Incident\AttackYearSelection;
 use App\Service\Security\UserDataScope;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,49 +32,62 @@ class GraphiqueController extends AbstractAppController
             throw $this->createAccessDeniedException();
         }
 
+        $currentYear = (int) (new DateTimeImmutable('today'))->format('Y');
+        $availableYears = AttackYearSelection::ensureCurrentYearListed(
+            $em->getRepository(AllData::class)->findDistinctAttackYears(),
+            $currentYear,
+        );
+
         return $this->render('graphique/index.html.twig', [
             'menu' => $this->menu,
             'regions' => $em->getRepository(Region::class)->findAllUniqueByLibelle(),
             'types' => [
                 'attaque' => $this->trans('analytics.indicator.attaque'),
-                'perpetrateurs' => $this->trans('analytics.indicator.perpetrateurs'),
-                'civil' => $this->trans('analytics.indicator.civil'),
+                'deces' => $this->trans('analytics.indicator.deces'),
+                'blesses' => $this->trans('analytics.indicator.blesses'),
             ],
             'analyticsDefaults' => $this->userDataScope->getAnalyticsDefaults($user),
+            'availableYears' => $availableYears,
+            'summaryPeriodDefault' => AttackYearSelection::MODE_LAST12,
         ]);
     }
 
     #[Route(path: '/graphique/nb_Terrorist_Incidents', name: 'nb_Terrorist_Incidents', methods: ['GET'])]
-    public function getCountTotalIncidents(EntityManagerInterface $em): Response
+    public function getCountTotalIncidents(Request $request, EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
         if (!$user instanceof User) {
             throw $this->createAccessDeniedException();
         }
 
+        $period = AttackYearSelection::fromSummaryQueryParam($request->query->get('year'));
         $allDataRep = $em->getRepository(AllData::class);
 
         return $this->json([
-            'totalDeath' => (int) $allDataRep->getCountTotalAttackInjuredDeath('death', $user, $this->userDataScope),
-            'totalInjured' => (int) $allDataRep->getCountTotalAttackInjuredDeath('injured', $user, $this->userDataScope),
-            'totalAttack' => (int) $allDataRep->getCountTotalAttackInjuredDeath('attack', $user, $this->userDataScope),
+            'totalDeath' => (int) $allDataRep->getCountTotalAttackInjuredDeath('death', $user, $this->userDataScope, $period),
+            'totalInjured' => (int) $allDataRep->getCountTotalAttackInjuredDeath('injured', $user, $this->userDataScope, $period),
+            'totalAttack' => (int) $allDataRep->getCountTotalAttackInjuredDeath('attack', $user, $this->userDataScope, $period),
+            'period' => $period['queryValue'],
         ]);
     }
 
     #[Route(path: '/graphique/pr_Targets_Attacks', name: 'pr_Targets_Attacks', methods: ['GET'])]
-    public function getCountTotalTargetsAttacks(EntityManagerInterface $em): Response
+    public function getCountTotalTargetsAttacks(Request $request, EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
         if (!$user instanceof User) {
             throw $this->createAccessDeniedException();
         }
 
+        $period = AttackYearSelection::fromSummaryQueryParam($request->query->get('year'));
         $allDataRep = $em->getRepository(AllData::class);
+        $rows = $allDataRep->getTopTargetsByIncidents($user, $this->userDataScope, 6, $period);
 
         return $this->json([
-            'totalCivil' => (int) $allDataRep->getCountTotalTargetsAttacks('civil', $user, $this->userDataScope),
-            'totalSecuriteMilitaire' => (int) $allDataRep->getCountTotalTargetsAttacks('securiteMilitaire', $user, $this->userDataScope),
-            'totalTerroriste' => (int) $allDataRep->getCountTotalTargetsAttacks('terroriste', $user, $this->userDataScope),
+            'labels' => array_column($rows, 'label'),
+            'values' => array_column($rows, 'count'),
+            'items' => $rows,
+            'period' => $period['queryValue'],
         ]);
     }
 
@@ -82,15 +96,11 @@ class GraphiqueController extends AbstractAppController
     {
         $start = trim((string) $request->request->get('start', ''));
         $end = trim((string) $request->request->get('end', ''));
-        $type = strtolower(trim((string) $request->request->get('type', '')));
+        $type = $this->normalizeIndicatorType((string) $request->request->get('type', ''));
         $regionIds = $this->normalizeRegionIds($request);
 
-        if ($start === '' || $type === '' || $regionIds === []) {
+        if ($start === '' || $type === null || $regionIds === []) {
             return $this->json(['error' => $this->trans('analytics.error.period_required')], 400);
-        }
-
-        if (!in_array($type, ['attaque', 'perpetrateurs', 'civil'], true)) {
-            return $this->json(['error' => $this->trans('analytics.error.invalid_indicator')], 400);
         }
 
         if ($end === '') {
@@ -101,6 +111,8 @@ class GraphiqueController extends AbstractAppController
         $periodOne = [];
         $periodTwo = [];
         $regionLabels = [];
+        $pendingTotal = 0;
+        $publishedIncidents = 0;
 
         foreach ($regionIds as $regionId) {
             $regionEntity = $em->getRepository(Region::class)->find($regionId);
@@ -108,20 +120,14 @@ class GraphiqueController extends AbstractAppController
                 continue;
             }
 
-            $periodOne[] = (int) ($allDataRep->getCountTotalForSearch(
-                $type,
-                $regionEntity,
-                $start,
-                $this->getLimitDay($start)
-            ) ?? 0);
+            $periodOne[] = (int) ($allDataRep->getCountTotalForSearch($type, $regionEntity, $start) ?? 0);
+            $publishedIncidents += (int) ($allDataRep->getCountTotalForSearch('attaque', $regionEntity, $start) ?? 0);
+            $pendingTotal += $allDataRep->countPendingForSearchRange($regionEntity, $start, $start);
 
             if ($end !== $start) {
-                $periodTwo[] = (int) ($allDataRep->getCountTotalForSearch(
-                    $type,
-                    $regionEntity,
-                    $end,
-                    $this->getLimitDay($end)
-                ) ?? 0);
+                $periodTwo[] = (int) ($allDataRep->getCountTotalForSearch($type, $regionEntity, $end) ?? 0);
+                $publishedIncidents += (int) ($allDataRep->getCountTotalForSearch('attaque', $regionEntity, $end) ?? 0);
+                $pendingTotal += $allDataRep->countPendingForSearchRange($regionEntity, $end, $end);
             }
 
             $regionLabels[] = (string) $regionEntity->getLibelle();
@@ -132,7 +138,6 @@ class GraphiqueController extends AbstractAppController
         }
 
         $locale = $request->getLocale();
-
         $countMonth = [
             [
                 'label' => $this->formatMonthLabel($start, $locale),
@@ -147,13 +152,25 @@ class GraphiqueController extends AbstractAppController
             ];
         }
 
-        $hasPublishedData = false;
+        $indicatorTotal = 0;
         foreach ($countMonth as $period) {
             foreach ($period['donnees'] as $value) {
-                if ((float) $value > 0) {
-                    $hasPublishedData = true;
-                    break 2;
-                }
+                $indicatorTotal += (float) $value;
+            }
+        }
+
+        $hasIndicatorData = $indicatorTotal > 0;
+        $info = null;
+        if (!$hasIndicatorData) {
+            if ($pendingTotal > 0) {
+                $info = $this->trans('analytics.error.pending_not_published', ['%count%' => $pendingTotal]);
+            } elseif ($publishedIncidents > 0 && $type !== 'attaque') {
+                $info = $this->trans('analytics.error.indicator_zero', [
+                    '%indicator%' => $this->trans('analytics.indicator.'.$type),
+                    '%count%' => $publishedIncidents,
+                ]);
+            } else {
+                $info = $this->trans('analytics.error.no_published_data');
             }
         }
 
@@ -163,14 +180,51 @@ class GraphiqueController extends AbstractAppController
             'sameMois' => $end === $start ? 'oui' : 'no',
             'regions' => $regionLabels,
             'countMonth' => $countMonth,
-            'noPublishedData' => !$hasPublishedData,
-            'info' => !$hasPublishedData ? $this->trans('analytics.error.no_published_data') : null,
+            'noPublishedData' => !$hasIndicatorData,
+            'pendingCount' => $pendingTotal,
+            'publishedIncidentCount' => $publishedIncidents,
+            'info' => $info,
         ]);
     }
 
     /**
-     * @return list<string|int>
+     * Accepte la valeur technique ou un libellé (Select2 / anciennes versions serveur).
      */
+    private function normalizeIndicatorType(string $raw): ?string
+    {
+        $type = mb_strtolower(trim($raw));
+        if ($type === '') {
+            return null;
+        }
+
+        // Si Select2 renvoie un tableau (cas rare)
+        $aliases = [
+            'attaque' => 'attaque',
+            'attack' => 'attaque',
+            'nombre d\'attaques' => 'attaque',
+            'number of attacks' => 'attaque',
+            'deces' => 'deces',
+            'deaths' => 'deces',
+            'total décès' => 'deces',
+            'total deces' => 'deces',
+            'total deaths' => 'deces',
+            // Anciens indicateurs détail → totaux (compat)
+            'perpetrateurs' => 'deces',
+            'perpetrators' => 'deces',
+            'morts terroristes' => 'deces',
+            'terrorist deaths' => 'deces',
+            'civil' => 'deces',
+            'morts civils' => 'deces',
+            'civilian deaths' => 'deces',
+            'blesses' => 'blesses',
+            'injured' => 'blesses',
+            'total blessés' => 'blesses',
+            'total blesses' => 'blesses',
+            'total injured' => 'blesses',
+        ];
+
+        return $aliases[$type] ?? (in_array($type, ['attaque', 'deces', 'blesses'], true) ? $type : null);
+    }
     private function normalizeRegionIds(Request $request): array
     {
         $regionIds = $request->request->all('region');
@@ -190,35 +244,44 @@ class GraphiqueController extends AbstractAppController
 
     private function formatMonthLabel(string $yearMonth, string $locale): string
     {
-        $date = DateTimeImmutable::createFromFormat('Y-m-d', $yearMonth . '-01');
-        if (!$date) {
+        $date = DateTimeImmutable::createFromFormat('Y-m-d', $yearMonth.'-01');
+        if ($date === false) {
             return $yearMonth;
         }
 
-        if (!class_exists(\IntlDateFormatter::class)) {
-            return $yearMonth;
+        $normalizedLocale = strtolower(substr($locale, 0, 2));
+
+        // Sous Windows sans extension intl native, le polyfill ne gère que "en".
+        if (class_exists(\IntlDateFormatter::class)) {
+            try {
+                $formatter = new \IntlDateFormatter(
+                    $normalizedLocale === 'fr' ? 'fr_FR' : ($normalizedLocale === 'en' ? 'en_US' : $locale),
+                    \IntlDateFormatter::NONE,
+                    \IntlDateFormatter::NONE,
+                    null,
+                    null,
+                    'MMMM yyyy'
+                );
+                $formatted = $formatter->format($date);
+                if (is_string($formatted) && $formatted !== '') {
+                    return ucfirst($formatted);
+                }
+            } catch (\Throwable) {
+                // Fallback ci-dessous
+            }
         }
 
-        $formatter = new \IntlDateFormatter(
-            $locale,
-            \IntlDateFormatter::NONE,
-            \IntlDateFormatter::NONE,
-            null,
-            null,
-            'MMMM yyyy'
-        );
-        $formatted = $formatter->format($date);
+        if ($normalizedLocale === 'fr') {
+            $months = [
+                1 => 'janvier', 2 => 'février', 3 => 'mars', 4 => 'avril',
+                5 => 'mai', 6 => 'juin', 7 => 'juillet', 8 => 'août',
+                9 => 'septembre', 10 => 'octobre', 11 => 'novembre', 12 => 'décembre',
+            ];
+            $monthNum = (int) $date->format('n');
 
-        return is_string($formatted) ? ucfirst($formatted) : $yearMonth;
-    }
-
-    private function getLimitDay(string $month): int
-    {
-        $date = DateTimeImmutable::createFromFormat('Y-m-d', $month . '-01');
-        if (!$date) {
-            return 31;
+            return ($months[$monthNum] ?? $date->format('m')).' '.$date->format('Y');
         }
 
-        return (int) $date->format('t');
+        return $date->format('F Y');
     }
 }

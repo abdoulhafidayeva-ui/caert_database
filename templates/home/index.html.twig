@@ -43,28 +43,49 @@
             </div>
             {% endif %}
             {% if summary %}
+            {% set isFr = app.request.locale starts with 'fr' %}
+            {% set numDec = isFr ? ',' : '.' %}
+            {% set numSep = isFr ? ' ' : ',' %}
+            <div class="d-flex flex-wrap align-items-center justify-content-between mb-2">
+                <small class="text-muted mb-1">
+                    {% if isAllYears %}
+                        {{ 'executive.subtitle_all_years'|trans }}
+                    {% else %}
+                        {{ 'executive.subtitle_year'|trans({'%year%': selectedYear}) }}
+                    {% endif %}
+                </small>
+                <form method="get" action="{{ path('app_home') }}" class="caert-executive-year-filter form-inline m-0 mb-1">
+                    <label for="dashboardYear" class="mr-2 mb-0 small text-muted font-weight-bold">{{ 'executive.filter.year'|trans }}</label>
+                    <select id="dashboardYear" name="year" class="form-control form-control-sm" onchange="this.form.submit()">
+                        <option value="all" {% if isAllYears %}selected{% endif %}>{{ 'executive.filter.all_years'|trans }}</option>
+                        {% for year in availableYears %}
+                            <option value="{{ year }}" {% if not isAllYears and selectedYear == year %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
             <div class="row caert-dashboard-kpis mb-4">
                 <div class="col-6 col-md-4 col-lg-2 mb-2">
                     <div class="caert-kpi-card mb-0">
-                        <div class="kpi-value text-primary">{{ summary.published }}</div>
+                        <div class="kpi-value text-primary" title="{{ summary.published }}">{{ summary.published|number_format(0, numDec, numSep) }}</div>
                         <div class="kpi-label">{{ 'incident.kpi.published'|trans }}</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-4 col-lg-2 mb-2">
                     <div class="caert-kpi-card kpi-warning mb-0">
-                        <div class="kpi-value text-warning">{{ summary.pending }}</div>
+                        <div class="kpi-value text-warning" title="{{ summary.pending }}">{{ summary.pending|number_format(0, numDec, numSep) }}</div>
                         <div class="kpi-label">{{ 'incident.kpi.pending'|trans }}</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-4 col-lg-2 mb-2">
                     <div class="caert-kpi-card kpi-danger mb-0">
-                        <div class="kpi-value text-danger">{{ summary.rejected }}</div>
+                        <div class="kpi-value text-danger" title="{{ summary.rejected }}">{{ summary.rejected|number_format(0, numDec, numSep) }}</div>
                         <div class="kpi-label">{{ 'incident.kpi.rejected'|trans }}</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-4 col-lg-2 mb-2">
                     <div class="caert-kpi-card kpi-purple mb-0">
-                        <div class="kpi-value">{{ summary.deaths }}</div>
+                        <div class="kpi-value" title="{{ summary.deaths }}">{{ summary.deaths|number_format(0, numDec, numSep) }}</div>
                         <div class="kpi-label">{{ 'incident.kpi.deaths'|trans }}</div>
                     </div>
                 </div>
@@ -111,7 +132,7 @@
 
 {% block javascripts %}
     <script src="{{ asset('bundles/datatables/js/datatables.js') }}"></script>
-    <script src="{{ asset('js/caert-dashboard-filter.js') }}?v=12"></script>
+    <script src="{{ asset('js/caert-dashboard-filter.js') }}?v=13"></script>
     <script>
         $(function() {
             var today = new Date();

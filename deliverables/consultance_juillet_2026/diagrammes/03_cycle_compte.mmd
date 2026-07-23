@@ -1,0 +1,6 @@
+stateDiagram-v2
+  [*] --> Cree
+  Cree --> Inactif
+  Inactif --> Actif: Activation super admin
+  Actif --> Suspendu: Suspension
+  Suspendu --> Actif: Réactivation

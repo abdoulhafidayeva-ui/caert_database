@@ -61,7 +61,7 @@ auth:
     link_invalid_title: Lien invalide !
     link_invalid_text: Ce lien est incorrect ou a déjà été utilisé.
     verification_title: Vérification
-    verification_sent: Un e-mail de vérification vous a été envoyé.
+    verification_sent: Un e-mail de vérification vous a été envoyé. (Si vous ne recevez pas de mail, demandez à l'administrateur d'activer votre compte)
     verification_resend: Renvoyer
     password_mismatch: Les mots de passe doivent correspondre.
     register_platform: "Demande d'accès à la plateforme AUCTC"
@@ -330,6 +330,12 @@ workflow:
 executive:
     title: Synthèse opérationnelle
     subtitle: Indicateurs consolidés
+    subtitle_year: Indicateurs consolidés — %year%
+    subtitle_all_years: Indicateurs consolidés — toutes les années
+    filter:
+        year: Année
+        all_years: Toutes les années
+    empty_period: Aucun incident publié pour cette période.
     kpi:
         total: Total incidents
         published: Publiés
@@ -338,6 +344,7 @@ executive:
         deaths: Décès (publiés)
         injured: Blessés (publiés)
     top_countries: Top pays — incidents publiés
+    top_countries_year: Top pays — incidents publiés (%year%)
     table:
         country: Pays
         count: Incidents
@@ -370,9 +377,9 @@ analytics:
     subtitle: "Tendances & indicateurs"
     filter_settings: "Paramètres d'analyse"
     chart:
-        incidents_count: "Nombre d'incidents terroristes"
+        incidents_count: Synthèse publiée (totaux)
         main_targets: Cibles principales des attaques
-        incidents_summary: Incidents terroristes (total publié)
+        incidents_summary: Totaux publiés
         attacks: Attaques
         deaths: Décès
         injured: Blessés
@@ -380,18 +387,24 @@ analytics:
         targets_civilian: Civils
         targets_military: Sécurité / militaire
         targets_terrorist: Terroristes
+        empty_period: Aucune donnée publiée pour cette période.
         generating: Génération du graphique en cours…
         region_comparison: "Comparaison par région — %type%"
         display_error: "Impossible d'afficher le graphique."
         chartjs_missing: "Chart.js n'est pas chargé. Rechargez la page."
+    summary_filter:
+        period: Période
+        last_12_months: 12 derniers mois
     indicator:
         attaque: "Nombre d'attaques"
-        perpetrateurs: Morts terroristes
-        civil: Morts civils
+        deces: Total décès
+        blesses: Total blessés
+        perpetrateurs: Total décès
+        civil: Total décès
     filter:
         period1: Période 1
         period2: Période 2
-        period1_month: Période 1 (mois)
+        period1_month: "Période 1 (mois)"
         period2_month: "Période 2 (mois, optionnel)"
         indicator: Indicateur
         regions: Régions
@@ -406,12 +419,17 @@ analytics:
         server_error: "Erreur serveur lors de la génération. Réessayez ou contactez l'administrateur."
         invalid_indicator: Indicateur invalide.
         no_valid_region: Aucune région valide sélectionnée.
-        no_published_data: "Aucun incident publié pour cette période et ces régions. Vérifiez le mois choisi (ex. mai 2026) et publiez l'incident depuis la file de validation si besoin."
+        no_published_data: "Aucun incident publié pour cette période et ces régions. Vérifiez la date d'attaque, la région du pays, et le statut publié."
+        pending_not_published: "%count% incident(s) trouvé(s) sur cette période / ces régions, mais pas encore publié(s). Validez-les depuis la file de validation pour les voir dans les Analyses."
+        indicator_zero: "%count% incident(s) publié(s) trouvé(s), mais l'indicateur « %indicator% » vaut 0 pour cette sélection. Essayez « Nombre d'attaques », ou vérifiez que les totaux sont renseignés sur les fiches."
 
 map:
     title: Carte SIG
     cartography: Cartographie
     subtitle: incidents publiés par pays
+    subtitle_year: incidents publiés par pays — %year%
+    subtitle_all_years: incidents publiés par pays — toutes les années
+    empty_period: Aucun incident publié pour cette période.
     incidents: Incidents
     deaths: Décès
     injured: Blessés

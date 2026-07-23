@@ -1,0 +1,50 @@
+<form id="inboxSearchForm" action="#" method="POST" class="caert-filter-form" novalidate onsubmit="return false;">
+    <div class="row">
+        <div class="col-md-3 col-sm-6">
+            <div class="form-group">
+                <label for="inbox_region">{{ 'incident.filter.region'|trans }}</label>
+                <select id="inbox_region" name="region" class="form-control select2" multiple="" data-placeholder="{{ 'common.select'|trans }}">
+                    {% for region in regions %}
+                        <option value="{{ region.libelle }}">{{ region.libelle }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="form-group">
+                <label for="inbox_pays">{{ 'incident.filter.country'|trans }}</label>
+                <select id="inbox_pays" name="pays" class="form-control select2" multiple="" data-placeholder="{{ 'common.select'|trans }}">
+                    {% for pays in lespays %}
+                        <option value="{{ pays.libelle }}">{{ pays.libelle }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="form-group">
+                <label for="inbox_date_start">{{ 'incident.filter.date_attack_from'|trans }}</label>
+                <div class="input-group date">
+                    <input class="form-control js-datepicker" id="inbox_date_start" name="date_start" placeholder="{{ 'incident.field.date_placeholder'|trans }}" type="text" autocomplete="off">
+                    <div class="input-group-append"><span class="input-group-text"><em class="fas fa-calendar-alt"></em></span></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="form-group">
+                <label for="inbox_date_end">{{ 'incident.filter.date_attack_to'|trans }}</label>
+                <div class="input-group date">
+                    <input class="form-control js-datepicker" id="inbox_date_end" name="date_end" placeholder="{{ 'incident.field.date_placeholder'|trans }}" type="text" autocomplete="off">
+                    <div class="input-group-append"><span class="input-group-text"><em class="fas fa-calendar-alt"></em></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="caert-filter-actions">
+        <button class="btn btn-primary" type="submit">
+            <em class="fas fa-search"></em> {{ 'common.search'|trans }}
+        </button>
+        <button id="resetInboxSearchForm" class="btn btn-outline-secondary" type="button">
+            <em class="fas fa-times"></em> {{ 'common.reset'|trans }}
+        </button>
+    </div>
+</form>

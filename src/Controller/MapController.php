@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Repository\AllDataRepository;
 use App\Service\Gis\CountryCentroidProvider;
+use App\Service\Incident\AttackYearSelection;
 use App\Service\Security\UserDataScope;
 use App\Entity\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,26 +27,44 @@ class MapController extends AbstractAppController
     }
 
     #[Route(path: '/map', name: 'app_map')]
-    public function index(AllDataRepository $repository): Response
+    public function index(Request $request, AllDataRepository $repository): Response
     {
+        $selection = AttackYearSelection::fromQueryParam($request->query->get('year'));
+        $availableYears = AttackYearSelection::ensureCurrentYearListed(
+            $repository->findDistinctAttackYears(),
+            $selection['currentYear'],
+        );
+
         $user = $this->getUser();
         $aggregates = $repository->findMapAggregatesByCountry(
             $user instanceof User ? $user : null,
             $this->dataScope,
+            $selection['selectedYear'],
         );
+
+        $yearQuery = AttackYearSelection::toQueryValue($selection['selectedYear'], $selection['isAllYears']);
 
         return $this->render('map/index.html.twig', [
             'menu' => $this->menu,
             'countryCount' => count($aggregates),
             'incidentCount' => array_sum(array_column($aggregates, 'count')),
+            'availableYears' => $availableYears,
+            'selectedYear' => $selection['selectedYear'],
+            'isAllYears' => $selection['isAllYears'],
+            'currentYear' => $selection['currentYear'],
+            'yearQuery' => $yearQuery,
         ]);
     }
 
     #[Route(path: '/api/map/incidents', name: 'api_map_incidents', methods: ['GET'])]
     public function incidents(Request $request, AllDataRepository $repository): JsonResponse
     {
+        $selection = AttackYearSelection::fromQueryParam($request->query->get('year'));
         $country = trim((string) $request->query->get('country', ''));
-        $rows = $repository->findMapIncidentDetails($country !== '' ? $country : null);
+        $rows = $repository->findMapIncidentDetails(
+            $country !== '' ? $country : null,
+            $selection['selectedYear'],
+        );
 
         $features = [];
         $incidents = [];
@@ -65,8 +84,9 @@ class MapController extends AbstractAppController
     }
 
     #[Route(path: '/api/map/countries', name: 'api_map_countries', methods: ['GET'])]
-    public function countries(AllDataRepository $repository): JsonResponse
+    public function countries(Request $request, AllDataRepository $repository): JsonResponse
     {
+        $selection = AttackYearSelection::fromQueryParam($request->query->get('year'));
         $user = $this->getUser();
 
         return $this->json([
@@ -86,6 +106,7 @@ class MapController extends AbstractAppController
             ], $repository->findMapAggregatesByCountry(
                 $user instanceof User ? $user : null,
                 $this->dataScope,
+                $selection['selectedYear'],
             )),
         ]);
     }

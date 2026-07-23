@@ -1,0 +1,51 @@
+{% set canEdit = is_granted(constant('App\\Security\\Voter\\AllDataVoter::EDIT'), row) and row.isPublished is null %}
+{% set canPublish = is_granted(constant('App\\Security\\Voter\\AllDataVoter::PUBLISH'), row) %}
+{% set canDelete = is_granted(constant('App\\Security\\Voter\\AllDataVoter::DELETE'), row) %}
+{% set hasExtra = canEdit or canPublish or canDelete %}
+
+<div class="btn-group btn-group-sm caert-row-actions" role="group">
+    <a class="btn btn-info btn-square"
+       href="{{ path('view_all_data', {allData: row.id, from: 'inbox'}) }}"
+       title="{{ 'incident.action.detail'|trans }}">
+        <em class="fa fa-eye"></em>
+    </a>
+    {% if hasExtra %}
+        <button type="button"
+                class="btn btn-outline-secondary btn-square dropdown-toggle"
+                data-caert-actions-toggle
+                title="{{ 'incident.action.other'|trans }}"
+                aria-haspopup="true"
+                aria-expanded="false">
+            <em class="fa fa-plus"></em>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right">
+            {% if canEdit %}
+                <a class="dropdown-item" href="{{ path('update_all_data', {allData: row.id}) }}?from=inbox">
+                    <em class="fa fa-pencil fa-fw"></em> {{ 'common.edit'|trans }}
+                </a>
+            {% endif %}
+            {% if canPublish %}
+                <form method="post" action="{{ path('publish_or_not', {allData: row.id}) }}" class="m-0 p-0">
+                    <button type="submit" class="dropdown-item text-success">
+                        <em class="fa fa-check fa-fw"></em> {{ 'incident.action.publish'|trans }}
+                    </button>
+                </form>
+                <a class="dropdown-item text-warning" href="{{ path('view_all_data', {allData: row.id, from: 'inbox'}) }}?reject=1">
+                    <em class="fa fa-times fa-fw"></em> {{ 'incident.action.reject'|trans }}…
+                </a>
+            {% endif %}
+            {% if canDelete %}
+                <div class="dropdown-divider"></div>
+                <form method="post"
+                      action="{{ path('delete_all_data', {allData: row.id}) }}"
+                      onsubmit="return confirm('{{ 'common.confirm_delete'|trans|e('js') }}');"
+                      class="m-0 p-0">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ row.id) }}">
+                    <button type="submit" class="dropdown-item text-danger">
+                        <em class="fa fa-trash fa-fw"></em> {{ 'common.delete'|trans }}
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>

@@ -2,6 +2,10 @@
 
 {% block title %}{{ 'map.title'|trans }}{% endblock %}
 
+{% set isFr = app.request.locale starts with 'fr' %}
+{% set numDec = isFr ? ',' : '.' %}
+{% set numSep = isFr ? ' ' : ',' %}
+
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -85,18 +89,38 @@
     <section class="section-container">
         <div class="content-wrapper">
             <div class="content-heading">
-                <div>{{ 'map.cartography'|trans }} <small>{{ 'map.subtitle'|trans }}</small></div>
+                <div>
+                    {{ 'map.cartography'|trans }}
+                    <small>
+                        {% if isAllYears %}
+                            {{ 'map.subtitle_all_years'|trans }}
+                        {% else %}
+                            {{ 'map.subtitle_year'|trans({'%year%': selectedYear}) }}
+                        {% endif %}
+                    </small>
+                </div>
+                <div class="ml-auto">
+                    <form method="get" action="{{ path('app_map') }}" class="caert-executive-year-filter form-inline m-0">
+                        <label for="mapYear" class="mr-2 mb-0 small text-muted font-weight-bold">{{ 'executive.filter.year'|trans }}</label>
+                        <select id="mapYear" name="year" class="form-control form-control-sm" onchange="this.form.submit()">
+                            <option value="all" {% if isAllYears %}selected{% endif %}>{{ 'executive.filter.all_years'|trans }}</option>
+                            {% for year in availableYears %}
+                                <option value="{{ year }}" {% if not isAllYears and selectedYear == year %}selected{% endif %}>{{ year }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-4">
                     <div class="caert-kpi-card mb-0">
-                        <div class="kpi-value">{{ countryCount }}</div>
+                        <div class="kpi-value" title="{{ countryCount }}">{{ countryCount|number_format(0, numDec, numSep) }}</div>
                         <div class="kpi-label">{{ 'map.kpi.countries'|trans }}</div>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="caert-kpi-card mb-0">
-                        <div class="kpi-value">{{ incidentCount }}</div>
+                        <div class="kpi-value" title="{{ incidentCount }}">{{ incidentCount|number_format(0, numDec, numSep) }}</div>
                         <div class="kpi-label">{{ 'map.kpi.published_incidents'|trans }}</div>
                     </div>
                 </div>
@@ -107,7 +131,13 @@
             <div class="caert-map-legend mb-2">
                 <span class="dot"></span> {{ 'map.legend'|trans }}
             </div>
-            <div id="map"></div>
+            {% if countryCount > 0 %}
+                <div id="map"></div>
+            {% else %}
+                <div class="alert alert-light border text-muted mb-0">
+                    {{ 'map.empty_period'|trans }}
+                </div>
+            {% endif %}
         </div>
     </section>
     {% include "_footer.html.twig" %}
@@ -116,6 +146,7 @@
 
 {% block javascripts %}
     {{ parent() }}
+    {% if countryCount > 0 %}
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         window.caertMapI18n = {{ {
@@ -125,10 +156,11 @@
             statsScope: 'map.stats_scope'|trans,
         }|json_encode|raw }};
     </script>
-    <script src="{{ asset('js/caert-map.js') }}?v=4"></script>
+    <script src="{{ asset('js/caert-map.js') }}?v=5"></script>
     <script>
         initCaertMap({
-            countriesUrl: {{ path('api_map_countries')|json_encode|raw }},
+            countriesUrl: {{ path('api_map_countries', { year: yearQuery })|json_encode|raw }},
         });
     </script>
+    {% endif %}
 {% endblock %}

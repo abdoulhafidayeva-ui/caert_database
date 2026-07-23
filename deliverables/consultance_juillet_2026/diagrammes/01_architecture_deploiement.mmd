@@ -1,0 +1,19 @@
+flowchart TB
+  subgraph LAN["Réseau local entreprise"]
+    U1[PC employés câble]
+    U2[PC / portables Wi-Fi]
+    AP[Points d'accès Wi-Fi]
+    SW[Switch / VLAN]
+    SRV["Serveur Windows IP fixe"]
+  end
+  U1 --> SW
+  U2 --> AP --> SW
+  SW --> SRV
+  subgraph SRVBOX["Serveur"]
+    IIS[IIS site AUCTC]
+    PHP[PHP 8.2]
+    APP["Symfony C:/caert"]
+    DB[(MySQL caert_db)]
+    IIS --> PHP --> APP --> DB
+  end
+  SRV --- SRVBOX

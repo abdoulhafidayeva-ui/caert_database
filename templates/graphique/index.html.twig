@@ -32,6 +32,23 @@
                 </div>
             </div>
 
+            <div class="caert-panel mb-3">
+                <div class="caert-panel-body py-3">
+                    <form id="analyticsSummaryPeriodForm" class="caert-executive-year-filter form-inline m-0" onsubmit="return false;">
+                        <label for="analyticsSummaryYear" class="mr-2 mb-0 small text-muted font-weight-bold">
+                            {{ 'analytics.summary_filter.period'|trans }}
+                        </label>
+                        <select id="analyticsSummaryYear" class="form-control form-control-sm" data-default="{{ summaryPeriodDefault }}">
+                            <option value="last12" selected>{{ 'analytics.summary_filter.last_12_months'|trans }}</option>
+                            <option value="all">{{ 'executive.filter.all_years'|trans }}</option>
+                            {% for year in availableYears %}
+                                <option value="{{ year }}">{{ year }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="caert-panel caert-chart-panel h-100 mb-0">
@@ -40,6 +57,7 @@
                         </div>
                         <div class="caert-panel-body">
                             <canvas id="nbTerroristIncidents"></canvas>
+                            <p id="nbTerroristIncidentsEmpty" class="text-muted small mb-0 d-none">{{ 'analytics.chart.empty_period'|trans }}</p>
                         </div>
                     </div>
                 </div>
@@ -50,6 +68,7 @@
                         </div>
                         <div class="caert-panel-body">
                             <canvas id="prTargetsOfAttacks"></canvas>
+                            <p id="prTargetsOfAttacksEmpty" class="text-muted small mb-0 d-none">{{ 'analytics.chart.empty_period'|trans }}</p>
                         </div>
                     </div>
                 </div>
@@ -62,5 +81,5 @@
 
 {% block javascripts %}
     <script src="{{ asset('vendor/chart.js/chart.min.js') }}"></script>
-    <script src="{{ asset('js/caert-graphique.js') }}?v=6"></script>
+    <script src="{{ asset('js/caert-graphique.js') }}?v=10"></script>
 {% endblock %}

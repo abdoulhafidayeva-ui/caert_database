@@ -61,7 +61,7 @@ auth:
     link_invalid_title: Invalid link!
     link_invalid_text: This link is incorrect or has already been used.
     verification_title: Verification
-    verification_sent: A verification email has been sent to you.
+    verification_sent: A verification email has been sent to you. (If you do not receive an email, please ask the administrator to activate your account.)
     verification_resend: Resend
     password_mismatch: Passwords must match.
     register_platform: Request access to the AUCTC platform
@@ -330,6 +330,12 @@ workflow:
 executive:
     title: Executive summary
     subtitle: Consolidated indicators
+    subtitle_year: Consolidated indicators — %year%
+    subtitle_all_years: Consolidated indicators — all years
+    filter:
+        year: Year
+        all_years: All years
+    empty_period: No published incidents for this period.
     kpi:
         total: Total incidents
         published: Published
@@ -338,6 +344,7 @@ executive:
         deaths: Deaths (published)
         injured: Injured (published)
     top_countries: Top countries — published incidents
+    top_countries_year: Top countries — published incidents (%year%)
     table:
         country: Country
         count: Incidents
@@ -370,9 +377,9 @@ analytics:
     subtitle: Trends & indicators
     filter_settings: Analysis settings
     chart:
-        incidents_count: Number of terrorist incidents
+        incidents_count: Published summary (totals)
         main_targets: Main attack targets
-        incidents_summary: Terrorist incidents (published total)
+        incidents_summary: Published totals
         attacks: Attacks
         deaths: Deaths
         injured: Injured
@@ -380,14 +387,20 @@ analytics:
         targets_civilian: Civilians
         targets_military: Security / military
         targets_terrorist: Terrorists
+        empty_period: No published data for this period.
         generating: Generating chart…
         region_comparison: "Comparison by region — %type%"
         display_error: Unable to display the chart.
         chartjs_missing: Chart.js is not loaded. Reload the page.
+    summary_filter:
+        period: Period
+        last_12_months: Last 12 months
     indicator:
         attaque: Number of attacks
-        perpetrateurs: Terrorist deaths
-        civil: Civilian deaths
+        deces: Total deaths
+        blesses: Total injured
+        perpetrateurs: Total deaths
+        civil: Total deaths
     filter:
         period1: Period 1
         period2: Period 2
@@ -406,12 +419,17 @@ analytics:
         server_error: Server error while generating the chart. Try again or contact an administrator.
         invalid_indicator: Invalid indicator.
         no_valid_region: No valid region selected.
-        no_published_data: No published incidents for this period and these regions. Check the selected month (e.g. May 2026) and publish the incident from the validation inbox if needed.
+        no_published_data: No published incidents for this period and these regions. Check the attack date, country region, and published status.
+        pending_not_published: "%count% incident(s) found for this period / these regions, but not published yet. Validate them from the inbox to see them in Analytics."
+        indicator_zero: "%count% published incident(s) found, but the « %indicator% » indicator is 0 for this selection. Try “Number of attacks”, or check that totals are filled on the records."
 
 map:
     title: GIS map
     cartography: Cartography
     subtitle: published incidents by country
+    subtitle_year: published incidents by country — %year%
+    subtitle_all_years: published incidents by country — all years
+    empty_period: No published incidents for this period.
     incidents: Incidents
     deaths: Deaths
     injured: Injured

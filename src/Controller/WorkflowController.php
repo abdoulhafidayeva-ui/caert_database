@@ -2,10 +2,14 @@
 
 namespace App\Controller;
 
+use App\DataTable\PendingValidationDataTableType;
+use App\Entity\Pays;
+use App\Entity\Region;
 use App\Entity\User;
 use App\Repository\AllDataRepository;
 use App\Service\Security\UserDataScope;
-use Knp\Component\Pager\PaginatorInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Omines\DataTablesBundle\DataTableFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,31 +19,41 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_STAFF')]
 class WorkflowController extends AbstractController
 {
-    private const INBOX_PAGE_SIZE = 20;
-
-    public function __construct(private readonly UserDataScope $dataScope)
-    {
+    public function __construct(
+        private readonly UserDataScope $dataScope,
+        private readonly EntityManagerInterface $em,
+    ) {
     }
 
     #[Route(path: '/workflow/inbox', name: 'workflow_inbox')]
-    public function inbox(Request $request, AllDataRepository $repository, PaginatorInterface $paginator): Response
-    {
-        $qb = $repository->createPendingReviewQueryBuilder();
-        $user = $this->getUser();
-        if ($user instanceof User) {
-            $this->dataScope->applyRegionScopeToQueryBuilder($qb, $user);
+    public function inbox(
+        Request $request,
+        AllDataRepository $repository,
+        DataTableFactory $factory,
+    ): Response {
+        $table = $factory->createFromType(
+            PendingValidationDataTableType::class,
+            [
+                'dataTableName' => 'pendingValidationTable',
+            ],
+            ['pageLength' => 25, 'order' => []]
+        )->handleRequest($request);
+
+        if ($table->isCallback()) {
+            return $table->getResponse();
         }
 
-        $pending = $paginator->paginate(
-            $qb,
-            $request->query->getInt('page', 1),
-            self::INBOX_PAGE_SIZE
-        );
+        $user = $this->getUser();
+        $total = $user instanceof User
+            ? $repository->countPendingReview($user, $this->dataScope)
+            : $repository->countPendingReview();
 
         return $this->render('workflow/inbox.html.twig', [
             'menu' => 'workflow',
-            'pending' => $pending,
-            'total' => $pending->getTotalItemCount(),
+            'table' => $table,
+            'total' => $total,
+            'regions' => $this->em->getRepository(Region::class)->findAllUniqueByLibelle(),
+            'lespays' => $this->em->getRepository(Pays::class)->findAllUniqueByLibelle(),
         ]);
     }
 }

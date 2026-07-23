@@ -46,17 +46,29 @@
     function renderSummaryBarChart(canvasId, labels, values, title) {
         const Chart = getChart();
         const canvas = document.getElementById(canvasId);
+        const emptyEl = document.getElementById(canvasId + 'Empty');
         if (!Chart || !canvas) {
-            return;
+            return null;
         }
 
-        new Chart(canvas, {
+        var safeValues = Array.isArray(values) ? values.map(function (v) { return Number(v) || 0; }) : [];
+        var hasData = safeValues.some(function (v) { return v > 0; });
+
+        if (emptyEl) {
+            emptyEl.classList.toggle('d-none', hasData);
+        }
+        canvas.classList.toggle('d-none', !hasData);
+        if (!hasData) {
+            return null;
+        }
+
+        return new Chart(canvas, {
             type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
                     label: title,
-                    data: values,
+                    data: safeValues,
                     backgroundColor: [
                         'rgba(184, 134, 11, 0.65)',
                         'rgba(166, 28, 28, 0.65)',
@@ -76,22 +88,40 @@
     function renderSummaryPieChart(canvasId, labels, values, title) {
         const Chart = getChart();
         const canvas = document.getElementById(canvasId);
+        const emptyEl = document.getElementById(canvasId + 'Empty');
         if (!Chart || !canvas) {
-            return;
+            return null;
         }
 
-        new Chart(canvas, {
+        var safeLabels = Array.isArray(labels) ? labels : [];
+        var safeValues = Array.isArray(values) ? values.map(function (v) { return Number(v) || 0; }) : [];
+        var hasData = safeLabels.length > 0 && safeValues.some(function (v) { return v > 0; });
+
+        if (emptyEl) {
+            emptyEl.classList.toggle('d-none', hasData);
+        }
+        canvas.classList.toggle('d-none', !hasData);
+        if (!hasData) {
+            return null;
+        }
+
+        var palette = [
+            'rgba(184, 134, 11, 0.75)',
+            'rgba(0, 107, 63, 0.75)',
+            'rgba(166, 28, 28, 0.75)',
+            'rgba(197, 160, 89, 0.75)',
+            'rgba(0, 135, 81, 0.75)',
+            'rgba(92, 92, 92, 0.75)',
+        ];
+
+        return new Chart(canvas, {
             type: 'pie',
             data: {
-                labels: labels,
+                labels: safeLabels,
                 datasets: [{
                     label: title,
-                    data: values,
-                    backgroundColor: [
-                        'rgba(184, 134, 11, 0.75)',
-                        'rgba(0, 107, 63, 0.75)',
-                        'rgba(166, 28, 28, 0.75)',
-                    ],
+                    data: safeValues,
+                    backgroundColor: safeLabels.map(function (_, i) { return palette[i % palette.length]; }),
                     borderWidth: 1,
                 }],
             },
@@ -122,11 +152,76 @@
         };
 
         let resultChart = null;
+        let summaryBarChart = null;
+        let summaryPieChart = null;
         let requestInFlight = false;
 
         if (typeof window.caertInitSelect2 === 'function') {
             window.caertInitSelect2($form[0]);
         }
+
+        function withYearParam(url, year) {
+            if (!url) {
+                return url;
+            }
+            var sep = url.indexOf('?') >= 0 ? '&' : '?';
+            return url + sep + 'year=' + encodeURIComponent(year || 'last12');
+        }
+
+        function destroyChart(chart) {
+            if (chart && typeof chart.destroy === 'function') {
+                chart.destroy();
+            }
+            return null;
+        }
+
+        function getSummaryYear() {
+            var $select = $('#analyticsSummaryYear');
+            if (!$select.length) {
+                return 'last12';
+            }
+            return String($select.val() || $select.attr('data-default') || 'last12');
+        }
+
+        function loadSummaryCharts() {
+            var year = getSummaryYear();
+
+            if (urls.incidents && document.getElementById('nbTerroristIncidents')) {
+                $.getJSON(withYearParam(urls.incidents, year)).done(function (data) {
+                    summaryBarChart = destroyChart(summaryBarChart);
+                    summaryBarChart = renderSummaryBarChart(
+                        'nbTerroristIncidents',
+                        [
+                            (window.caertI18n && window.caertI18n.chartAttacks) || 'Attacks',
+                            (window.caertI18n && window.caertI18n.chartDeaths) || 'Deaths',
+                            (window.caertI18n && window.caertI18n.chartInjured) || 'Injured',
+                        ],
+                        [data.totalAttack, data.totalDeath, data.totalInjured],
+                        (window.caertI18n && window.caertI18n.chartIncidentsSummary) || 'Published totals'
+                    );
+                }).fail(function () {
+                    console.warn('[caert-graphique] Chargement incidents impossible.');
+                });
+            }
+
+            if (urls.targets && document.getElementById('prTargetsOfAttacks')) {
+                $.getJSON(withYearParam(urls.targets, year)).done(function (data) {
+                    summaryPieChart = destroyChart(summaryPieChart);
+                    summaryPieChart = renderSummaryPieChart(
+                        'prTargetsOfAttacks',
+                        Array.isArray(data.labels) ? data.labels : [],
+                        Array.isArray(data.values) ? data.values : [],
+                        (window.caertI18n && window.caertI18n.chartTargetsTitle) || 'Attack targets'
+                    );
+                }).fail(function () {
+                    console.warn('[caert-graphique] Chargement cibles impossible.');
+                });
+            }
+        }
+
+        $('#analyticsSummaryYear').on('change', function () {
+            loadSummaryCharts();
+        });
 
         function parseDefaultRegionIds() {
             var raw = String($form.attr('data-default-region-ids') || '').trim();
@@ -211,10 +306,24 @@
             requestInFlight = true;
             setLoading(true);
 
+            // Forcer la valeur technique de l'indicateur (évite un libellé Select2 côté serveur)
+            var formData = $form.serializeArray();
+            var typeVal = String($('#type').val() || '').trim();
+            var hasType = false;
+            for (var i = 0; i < formData.length; i++) {
+                if (formData[i].name === 'type') {
+                    formData[i].value = typeVal;
+                    hasType = true;
+                }
+            }
+            if (!hasType && typeVal) {
+                formData.push({ name: 'type', value: typeVal });
+            }
+
             $.ajax({
                 method: 'POST',
                 url: urls.search,
-                data: $form.serialize(),
+                data: $.param(formData),
                 dataType: 'json',
             }).done(function (response) {
                 const $result = $('.caert-chart-result');
@@ -259,8 +368,8 @@
                 if (response.noPublishedData) {
                     var infoMessage = response.info || i18n('analyticsNoPublishedData', 'No published incidents for this period.');
                     infoHtml =
-                        '<div class="alert alert-info mb-3" role="status">' +
-                        '<em class="fas fa-info-circle mr-1"></em> ' + infoMessage +
+                        '<div class="alert alert-warning mb-3" role="status">' +
+                        '<em class="fas fa-exclamation-triangle mr-1"></em> ' + infoMessage +
                         '</div>';
                 }
 
@@ -343,39 +452,7 @@
             applyAnalyticsDefaults();
         });
 
-        if (urls.incidents && document.getElementById('nbTerroristIncidents')) {
-            $.getJSON(urls.incidents).done(function (data) {
-                renderSummaryBarChart(
-                    'nbTerroristIncidents',
-                    [
-                        (window.caertI18n && window.caertI18n.chartAttacks) || 'Attacks',
-                        (window.caertI18n && window.caertI18n.chartDeaths) || 'Deaths',
-                        (window.caertI18n && window.caertI18n.chartInjured) || 'Injured',
-                    ],
-                    [data.totalAttack, data.totalDeath, data.totalInjured],
-                    (window.caertI18n && window.caertI18n.chartIncidentsSummary) || 'Terrorist incidents (published total)'
-                );
-            }).fail(function () {
-                console.warn('[caert-graphique] Chargement incidents impossible.');
-            });
-        }
-
-        if (urls.targets && document.getElementById('prTargetsOfAttacks')) {
-            $.getJSON(urls.targets).done(function (data) {
-                renderSummaryPieChart(
-                    'prTargetsOfAttacks',
-                    [
-                        (window.caertI18n && window.caertI18n.chartTargetsCivilian) || 'Civilians',
-                        (window.caertI18n && window.caertI18n.chartTargetsMilitary) || 'Security / military',
-                        (window.caertI18n && window.caertI18n.chartTargetsTerrorist) || 'Terrorists',
-                    ],
-                    [data.totalCivil, data.totalSecuriteMilitaire, data.totalTerroriste],
-                    (window.caertI18n && window.caertI18n.chartTargetsTitle) || 'Attack targets'
-                );
-            }).fail(function () {
-                console.warn('[caert-graphique] Chargement cibles impossible.');
-            });
-        }
+        loadSummaryCharts();
     }
 
     $(initGraphiquePage);

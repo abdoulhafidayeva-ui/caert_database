@@ -18,6 +18,7 @@ use App\Security\Voter\AllDataVoter;
 use App\Service\Audit\AuditLogger;
 use App\Service\Import\ExcelImportService;
 use App\Service\Incident\AllDataTotalsCalculator;
+use App\Service\Incident\AttackYearSelection;
 use App\Service\Security\IncidentCountryGuard;
 use App\Service\Security\UserDataScope;
 use Doctrine\ORM\EntityManagerInterface;
@@ -64,6 +65,11 @@ class HomeController extends AbstractAppController
         $pendingCount = 0;
         $summary = null;
         $dashboardDefaults = null;
+        $yearSelection = AttackYearSelection::fromQueryParam($request->query->get('year'));
+        $availableYears = AttackYearSelection::ensureCurrentYearListed(
+            $this->allDataRepository->findDistinctAttackYears(),
+            $yearSelection['currentYear'],
+        );
         $user = $this->getUser();
         if ($user instanceof User) {
             $dashboardDefaults = $this->dataScope->getDashboardDefaults($user);
@@ -72,7 +78,17 @@ class HomeController extends AbstractAppController
             $pendingCount = $user instanceof User
                 ? $this->allDataRepository->countPendingReview($user, $this->dataScope)
                 : 0;
-            $summary = $this->allDataRepository->getExecutiveSummary();
+            $summary = $this->allDataRepository->getExecutiveSummary($yearSelection['selectedYear']);
+
+            // Option douce : l’année préremplit les dates du formulaire / tableau (datepickers restent modifiables).
+            if (!$yearSelection['isAllYears'] && $yearSelection['selectedYear'] !== null) {
+                $year = $yearSelection['selectedYear'];
+                $dashboardDefaults = [
+                    'region' => \is_array($dashboardDefaults) ? ($dashboardDefaults['region'] ?? null) : null,
+                    'dateStart' => sprintf('01/01/%04d', $year),
+                    'dateEnd' => sprintf('31/12/%04d', $year),
+                ];
+            }
         }
 
         $importErrors = $request->getSession()->get('import_errors');
@@ -91,6 +107,9 @@ class HomeController extends AbstractAppController
             'espaces' => $this->em->getRepository(Espace::class)->findAll(),
             'regions' => $this->em->getRepository(Region::class)->findAllUniqueByLibelle(),
             'dashboardDefaults' => $dashboardDefaults,
+            'availableYears' => $availableYears,
+            'selectedYear' => $yearSelection['selectedYear'],
+            'isAllYears' => $yearSelection['isAllYears'],
         ]);
     }
 
