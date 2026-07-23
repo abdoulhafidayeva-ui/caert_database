@@ -333,7 +333,8 @@ class AllDataDataTableType implements DataTableTypeInterface
                 ->leftJoin('a.materieaux', 'materieaux')
                 ->leftJoin('a.moyenAttaque', 'moyenAttaque')
                 ->leftJoin('a.perpetrateur', 'perpetrateurs')
-                ->leftJoin('a.espace', 'espace');
+                ->leftJoin('a.espace', 'espace')
+                ->leftJoin('a.user', 'entryUser');
             },
             'criteria' => [
                 function (QueryBuilder $qb, DataTableState $state) {
@@ -370,9 +371,57 @@ class AllDataDataTableType implements DataTableTypeInterface
                         $qb->andWhere($qb->expr()->in('UPPER(' . $field . ')', ':' . $columnName))
                             ->setParameter($columnName, array_map(static fn (string $v) => mb_strtoupper($v), $filterValues));
                     }
+
+                    $this->applyGlobalSearch($qb, $state);
                 },
             ]
         ]);
+    }
+
+    private function applyGlobalSearch(QueryBuilder $qb, DataTableState $state): void
+    {
+        $globalSearch = trim((string) $state->getGlobalSearch());
+        if ($globalSearch === '') {
+            return;
+        }
+
+        $term = '%' . mb_strtoupper($globalSearch) . '%';
+        $expr = $qb->expr();
+        $orX = $expr->orX();
+
+        $textFields = [
+            'pays.libelle',
+            'pays.capitale',
+            'region.libelle',
+            'espace.libelle',
+            'perpetrateurs.libelle',
+            'attaque.libelle',
+            'cible.libelle',
+            'moyenAttaque.libelle',
+            'materielAttaque.libelle',
+            'materieaux.libelle',
+            'a.localite',
+            'a.details',
+            'a.autres',
+            'a.remarque',
+            'entryUser.name',
+            'entryUser.prenoms',
+            'entryUser.email',
+        ];
+
+        foreach ($textFields as $i => $field) {
+            $param = 'global_search_' . $i;
+            $orX->add($expr->like('UPPER(' . $field . ')', ':' . $param));
+            $qb->setParameter($param, $term);
+        }
+
+        // Recherche par id (saisie numérique)
+        if (ctype_digit($globalSearch)) {
+            $orX->add($expr->eq('a.id', ':global_search_id'));
+            $qb->setParameter('global_search_id', (int) $globalSearch);
+        }
+
+        $qb->andWhere($orX);
     }
 
     /**
